@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          client:
+            RestTemplate: DEBUG
+
+ldap:
+    url: ...
+    userSearchBase: ...
+    ouSearchBase: ...
+
+zammad:
+  assignment:
+    role:
+      id: 4
+  token: Token token=...
+  url:
+     base: http://...
+     groups: groups
+     users: users
+     roles: roles

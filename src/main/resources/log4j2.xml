@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${hostName} --- [%t] %-40.40c{1.} : %m%n%ex</Pattern>
+            </PatternLayout>
+        </Console>
+
+        <RollingFile name="FileAppender" fileName="log/zammad.log" filePattern="logs/zammad-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${hostName} --- [%t] %-40.40c{1.} : %m%n%ex</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy
+                    size="2MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="2" />
+        </RollingFile>
+         
+    </Appenders>
+
+    <Loggers>
+        <Logger name="de.muenchen.mpdz.zammad" level="debug" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="FileAppender" />
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="FileAppender" />
+        </Root>
+    </Loggers>
+   
+
+</Configuration>
