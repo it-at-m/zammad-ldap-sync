@@ -78,13 +78,17 @@ public class ZammadSyncServiceSubtreeUtil {
             } else {
                 log.debug("Group not found in Zammad --> creating.");
                 //Not found: create new with doNotUpdate=false
-                ZammadGroupDTO zammadGroupDTO = zammadService.createZammadGroup(zammadGroupCompareDTO);
-                ongoingZammadGroupId = zammadGroupCompareDTO.getId();
-                log.debug("Creating group with ID " + zammadGroupDTO.getId());
+                ZammadGroupDTO createdZammadGroupDTO = zammadService.createZammadGroup(zammadGroupCompareDTO);
+                ongoingZammadGroupId = createdZammadGroupDTO.getId();
+                log.debug("Creating group with ID " + createdZammadGroupDTO.getId());
             }
 
-            if (node.getUsers() != null)
-                updateZammadGroupUsers(node.getUsers(), ongoingZammadGroupId);
+            if (node.getUsers() != null) {
+            	if (ongoingZammadGroupId == null)
+            		log.error("'{}' : GROUPID is NULL for user: '{}'", ldapOuDto.getLhmOULongname() ,node.getUsers().stream().map(n -> String.valueOf(n)).collect(Collectors.joining("; ")));
+
+            	updateZammadGroupUsers(node.getUsers(), ongoingZammadGroupId);
+            }
 
             if (!node.getChildNodes().isEmpty())
                 updateZammadGroupsWithUsers(node.getChildNodes(), zammadCurrentGroupName, ongoingZammadGroupId);
