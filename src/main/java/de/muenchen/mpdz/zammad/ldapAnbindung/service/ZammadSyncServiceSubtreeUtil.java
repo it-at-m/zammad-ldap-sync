@@ -6,6 +6,7 @@ import de.muenchen.oss.ezldap.core.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -117,12 +118,12 @@ public class ZammadSyncServiceSubtreeUtil {
 
                     if (!zammadLdapSyncUser.isDonotupdate()) {
                         log.debug("Attribute doNotUpdate=false --> check for update.");
-
-                        //To compare add Id, updated_at und role_ids
+                        //Update Id, updated_at und role_ids in case updateZammadUser
                         prepareUserForComparison(zammadUserCompareDTO, zammadLdapSyncUser);
-                        if (!foundZammadUser.equals(zammadUserCompareDTO)) {
+                        if (zammadLdapSyncUser.compareTo(zammadUserCompareDTO) != 0) {
                             log.debug("Something has changed --> updating.");
-                            log.debug("foundZammadUser '{}' zammadUserCompareDTO '{}'" , foundZammadUser, zammadUserCompareDTO);
+                            log.debug("zammadLdapSyncUser   '{}'" , zammadLdapSyncUser);
+                            log.debug("zammadUserCompareDTO '{}'" , zammadUserCompareDTO);
                             zammadService.updateZammadUser(zammadUserCompareDTO);
                         } else {
                             log.debug("No change --> skipping.");
