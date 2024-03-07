@@ -1,7 +1,7 @@
-package de.muenchen.mpdz.zammad.ldapAnbindung.service;
+package de.muenchen.mpdz.zammad.ldap.service;
 
-import de.muenchen.mpdz.zammad.ldapAnbindung.domain.ZammadGroupDTO;
-import de.muenchen.mpdz.zammad.ldapAnbindung.domain.ZammadUserDTO;
+import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
+import de.muenchen.mpdz.zammad.ldap.domain.ZammadUserDTO;
 import de.muenchen.oss.ezldap.core.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -140,11 +140,12 @@ public class ZammadSyncServiceSubtreeUtil {
         });
     }
 
-    public void deleteUpdateZammadUser(Map<String, LdapOuNode> subtree) {
+
+    public void assignDeletionFlagZammadUser(LdapOuNode rootNode) {
 
         log.debug("=============================");
         log.debug("Full-Sync requested - Checking for update and deletions of users ...");
-        var ldapUserMap = flatMapLdapUserDTO(subtree);
+        var ldapUserMap = rootNode.flatMapLdapUserDTO();
 
         getCurrentZammadUsers().forEach((lhmObjectId, list) -> {
 
@@ -168,14 +169,8 @@ public class ZammadSyncServiceSubtreeUtil {
                         if (zammadUser.isActive()) {
                             log.debug("User in Zammad is active - setting to inactive as a first step.");
                             zammadUser.setActive(false);
+                            zammadUser.setDeleteldapsync("delete");
                             zammadService.updateZammadUser(zammadUser);
-                        } else {
-                            log.debug("User in Zammad is inactive - deleting.");
-                            /*
-                             * TODO: Not practicable. Set inactiv instead.
-                             * Before any change check if user has tickets ?
-                             */
-                            zammadService.deleteZammadUser(zammadUser.getId());
                         }
                     } else {
                         log.debug("Found user in LDAP - not deleting.");
@@ -185,72 +180,6 @@ public class ZammadSyncServiceSubtreeUtil {
                 log.debug("Found doNotUpdate Flag - skipping.");
             }
         });
-    }
-
-    /*
-     *
-     */
-    public List<String> deleteSubtree(Map<String, LdapOuNode> subtree) {
-
-        var deleteLog = new ArrayList<String>();
-
-        log.debug("------------------------");
-        log.debug("Processing delete Zammad user ... ");
-
-        setZammadUsersByLhmObjectId(getCurrentZammadUsers());
-        var ldapUsers = flatMapLdapUserDTO(subtree);
-
-        ldapUsers.forEach((lhmObjectId, user) -> {
-            var zammadUsers = getCurrentZammadUsers().get(lhmObjectId);
-            if (zammadUsers != null)
-                zammadUsers.forEach(zammadUser -> deleteLog.add(zammadService.deleteZammadUser(zammadUser.getId())));
-            else
-                deleteLog.add("Zammd user with lhmObjectId not found: " + lhmObjectId);
-        });
-
-        log.debug("Processing delete Zammad groups ... ");
-        setZammadGroupsByLhmObjectId(getCurrentZammadGroups());
-
-        var ldapOus = flatMapLdapOuDTO(subtree);
-        Collections.reverse(ldapOus);    // Remove tree leafs at first
-        ldapOus.forEach(ou -> {
-            var zammadGroups = getCurrentZammadGroups().get(ou.getLhmObjectId());
-            if (zammadGroups != null)
-            	/*
-            	 * TODO: Not practicable. Set inactiv instead.
-            	 */
-                zammadGroups.forEach(zammadGroup -> deleteLog.add(zammadService.deleteZammadGroup(zammadGroup.getId())));
-            else
-                deleteLog.add("Zammd group/ou with lhmObjectId not found: " + ou.getLhmObjectId());
-        });
-
-        return deleteLog;
-    }
-
-    private Map<String, LdapUserDTO> flatMapLdapUserDTO(Map<String, LdapOuNode> subtree) {
-
-        var users = new HashMap<String, LdapUserDTO>();
-        subtree.forEach((key, node) -> {
-            if (node.getUsers() != null)
-                node.getUsers().forEach(u -> users.put(u.getLhmObjectId(), u));
-
-            users.putAll(flatMapLdapUserDTO(node.getChildNodes()));
-        });
-        return users;
-    }
-
-    private List<LdapOuSearchResultDTO> flatMapLdapOuDTO(Map<String, LdapOuNode> subtree) {
-
-        var ous = new ArrayList<LdapOuSearchResultDTO>();
-        subtree.forEach((key, node) -> {
-               ous.add(node.getNode());
-               ous.addAll(flatMapLdapOuDTO(node.getChildNodes()));
-        });
-        return ous;
-    }
-
-    public Set<String> userLhmObjectIdsSet(Map<String, LdapOuNode> subtree) {
-        return flatMapLdapUserDTO(subtree).keySet();
     }
 
     private Map<String, List<ZammadGroupDTO>> getCurrentZammadGroups() {

@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldapAnbindung.service;
+package de.muenchen.mpdz.zammad.ldap.service;
 
 import java.util.Map;
 import java.util.Optional;

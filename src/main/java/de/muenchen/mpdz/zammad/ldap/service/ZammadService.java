@@ -1,8 +1,5 @@
-package de.muenchen.mpdz.zammad.ldapAnbindung.service;
+package de.muenchen.mpdz.zammad.ldap.service;
 
-import de.muenchen.mpdz.zammad.ldapAnbindung.domain.ZammadGroupDTO;
-import de.muenchen.mpdz.zammad.ldapAnbindung.domain.ZammadRoleDTO;
-import de.muenchen.mpdz.zammad.ldapAnbindung.domain.ZammadUserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -12,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
+import de.muenchen.mpdz.zammad.ldap.domain.ZammadRoleDTO;
+import de.muenchen.mpdz.zammad.ldap.domain.ZammadUserDTO;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ public class ZammadService {
 
     @Value("${zammad.token}")
     private String authorization;
+
     @Value("${zammad.url.base}")
     private String zammadBaseURL;
 

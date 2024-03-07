@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldapAnbindung.service;
+package de.muenchen.mpdz.zammad.ldap.service;
 
 
 import de.muenchen.oss.ezldap.core.LdapService;

@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldapAnbindung;
+package de.muenchen.mpdz.zammad.ldap;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

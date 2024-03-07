@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldapAnbindung.domain;
+package de.muenchen.mpdz.zammad.ldap.domain;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +19,7 @@ public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
     private Map<String, List<String>> group_ids;
     private String updated_at;
     private boolean active;
+    private String deleteldapsync;
 
 
 	@Override
