@@ -5,8 +5,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import de.muenchen.oss.ezldap.core.LdapOuNode;
-import de.muenchen.oss.ezldap.core.LdapService;
+import de.muenchen.mpdz.zammad.ldap.tree.LdapOuNode;
+import de.muenchen.mpdz.zammad.ldap.tree.LdapService;
+
 
 @Service
 public class ZammadLdapService {

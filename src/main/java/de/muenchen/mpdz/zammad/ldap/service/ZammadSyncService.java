@@ -65,6 +65,8 @@ public class ZammadSyncService {
      * @param distinguishedName
      * @param modifyTimeStamp   Optional search attribute for ldap ou und user
      * @return ldapTreeView
+     * @throws ZammadLdapException
+     * @throws Exception
      */
     public String syncSubtreeByDn(String distinguishedName, String modifyTimeStamp) {
 
@@ -75,11 +77,11 @@ public class ZammadSyncService {
         log.debug("Calculate LDAP Subtree with DN ... " + dn);
         var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, modifyTimeStamp);
 
-        var treeView = shadeDnSubtree.get().values().iterator().next().toTree();
+        var treeView = shadeDnSubtree.get().values().iterator().next().toString();
         log.debug(treeView);
 
         log.debug("Update zammad groups and users ...");
-        subtreeUtil.updateZammadGroupsWithUsers(shadeDnSubtree.get(), null, null);
+        subtreeUtil.updateZammadGroupsWithUsers(shadeDnSubtree.get());
 
         log.debug("Sync assignment roles ...");
         syncAssignmentRole();
@@ -113,7 +115,7 @@ public class ZammadSyncService {
         var rootEntry = shadeDnSubtree.get().entrySet().iterator().next();
         subtreeUtil.assignDeletionFlagZammadUser(rootEntry.getValue());
 
-        var treeView = rootEntry.getValue().toTree();
+        var treeView = rootEntry.getValue().toString();
         log.debug(treeView);
 
         log.info("END assign deletion flag with LDAP DN : " + dn);
@@ -130,19 +132,19 @@ public class ZammadSyncService {
      * @return ldap tree as json
      * @throws JsonProcessingException
      */
-    public String subtreeAsJson(String distinguishedName, String modifyTimeStamp) throws JsonProcessingException {
-
-        var dn = distinguishedName;
-        log.info("*****************************************");
-        log.info("START sychronize Zammad groups and users with LDAP DN : " + dn);
-
-        log.debug("Calculate LDAP Subtree with DN ... " + dn);
-        var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, modifyTimeStamp);
-
-        var json = shadeDnSubtree.get().values().iterator().next().toJson();
-        log.debug(json);
-
-        return json;
-    }
+//    public String subtreeAsJson(String distinguishedName, String modifyTimeStamp) throws JsonProcessingException {
+//
+//        var dn = distinguishedName;
+//        log.info("*****************************************");
+//        log.info("START sychronize Zammad groups and users with LDAP DN : " + dn);
+//
+//        log.debug("Calculate LDAP Subtree with DN ... " + dn);
+//        var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, modifyTimeStamp);
+//
+//        var json = shadeDnSubtree.get().values().iterator().next().toJson();
+//        log.debug(json);
+//
+//        return json;
+//    }
 
 }

@@ -2,7 +2,9 @@ package de.muenchen.mpdz.zammad.ldap.service;
 
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadUserDTO;
-import de.muenchen.oss.ezldap.core.*;
+import de.muenchen.mpdz.zammad.ldap.tree.LdapOuNode;
+import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
+import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,12 +37,14 @@ public class ZammadSyncServiceSubtreeUtil {
     @Setter
     Map<String, List<ZammadUserDTO>> zammadUsersByLhmObjectId;
 
-    public void updateZammadGroupsWithUsers(Map<String, LdapOuNode> shadeLdapSubtree, String zammadGroupName, final String parentGroupID) {
+    public void updateZammadGroupsWithUsers(Map<String, LdapOuNode> shadeLdapSubtree) {
 
-        if (zammadGroupName == null) { // Only once
             setZammadGroupsByLhmObjectId(getCurrentZammadGroups());
             setZammadUsersByLhmObjectId(getCurrentZammadUsers());
-        }
+            updateZammadGroupsWithUsers(shadeLdapSubtree, null, null);
+    }
+
+    private void updateZammadGroupsWithUsers(Map<String, LdapOuNode> shadeLdapSubtree, String zammadGroupName, final String parentGroupID) {
 
         shadeLdapSubtree.forEach((ou, node) -> {
 
@@ -93,6 +98,7 @@ public class ZammadSyncServiceSubtreeUtil {
 
             if (!node.getChildNodes().isEmpty())
                 updateZammadGroupsWithUsers(node.getChildNodes(), zammadCurrentGroupName, ongoingZammadGroupId);
+
         });
     }
 
@@ -145,7 +151,7 @@ public class ZammadSyncServiceSubtreeUtil {
 
         log.debug("=============================");
         log.debug("Full-Sync requested - Checking for update and deletions of users ...");
-        var ldapUserMap = rootNode.flatMapLdapUserDTO();
+        var ldapUserMap = rootNode.flatListLdapUserDTO().stream().collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity()));
 
         getCurrentZammadUsers().forEach((lhmObjectId, list) -> {
 
@@ -163,7 +169,7 @@ public class ZammadSyncServiceSubtreeUtil {
                 if (lhmObjectId == null || lhmObjectId.isEmpty()) {
                     log.debug("No lhmObjectId - skipping.");
                 } else {
-                    LdapBaseUserDTO ldapBaseUserDTO = ldapUserMap.get(lhmObjectId);
+                    var ldapBaseUserDTO = ldapUserMap.get(lhmObjectId);
                     if (ldapBaseUserDTO == null) {
                         log.debug("Did not find ZammadUser in LDAP-Users.");
                         if (zammadUser.isActive()) {

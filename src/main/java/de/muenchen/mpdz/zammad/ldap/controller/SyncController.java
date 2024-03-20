@@ -13,7 +13,6 @@ import de.muenchen.mpdz.zammad.ldap.domain.ZammadRoleDTO;
 import de.muenchen.mpdz.zammad.ldap.service.ZammadLdapService;
 import de.muenchen.mpdz.zammad.ldap.service.ZammadService;
 import de.muenchen.mpdz.zammad.ldap.service.ZammadSyncService;
-import de.muenchen.oss.ezldap.core.LdapOuNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -107,23 +106,23 @@ public class SyncController {
         }
     }
 
-    @Operation(summary="Get ldap subtree as json")
-    @ApiResponses(
-            value = {
-                @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LdapOuNode.class)) ),
-                @ApiResponse(responseCode = "400", description = "BAD REQUEST" ),
-            }
-        )
-    @GetMapping("/subtreeasjson")
-    public ResponseEntity<Object> subtreeAsJson(@Schema(example="o=oubase,dc=example,dc=org") @RequestParam(required = true) String distinguishedName, @Schema(example="20240226083627Z (yyyyMMddHHmmssZ)") @RequestParam(required = false) String timeStamp) {
-        try {
-            var treeView = syncService.subtreeAsJson(distinguishedName, timeStamp);
-            return new ResponseEntity<>(treeView, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error(e.getLocalizedMessage());
-            return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @Operation(summary="Get ldap subtree as json")
+//    @ApiResponses(
+//            value = {
+//                @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LdapOuNode.class)) ),
+//                @ApiResponse(responseCode = "400", description = "BAD REQUEST" ),
+//            }
+//        )
+//    @GetMapping("/subtreeasjson")
+//    public ResponseEntity<Object> subtreeAsJson(@Schema(example="o=oubase,dc=example,dc=org") @RequestParam(required = true) String distinguishedName, @Schema(example="20240226083627Z (yyyyMMddHHmmssZ)") @RequestParam(required = false) String timeStamp) {
+//        try {
+//            var treeView = syncService.subtreeAsJson(distinguishedName, timeStamp);
+//            return new ResponseEntity<>(treeView, HttpStatus.OK);
+//        } catch (Exception e) {
+//            log.error(e.getLocalizedMessage());
+//            return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
 
 }
