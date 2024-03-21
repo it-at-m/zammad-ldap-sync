@@ -24,6 +24,10 @@ package de.muenchen.mpdz.zammad.ldap.tree;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
+import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapOuAttributesMapper;
+import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapOuSearchResultDTO;
+import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapUserAttributesMapper;
+import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapUserDto;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,9 +42,7 @@ import org.springframework.ldap.query.SearchScope;
 
 import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
 import de.muenchen.oss.ezldap.core.LdapOuAttributesMapper;
-import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.LdapUserAttributesMapper;
-import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -59,8 +61,8 @@ public class LdapService {
 	private final String userSearchBase;
 
 	private final LdapTemplate ldapTemplate;
-	private final LdapUserAttributesMapper ldapUserAttributesMapper;
-	private final LdapOuAttributesMapper ldapOuAttributesMapper;
+	private final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper;
+	private final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper;
 	private LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper;
 	private DtoMapper mapper;
 
@@ -69,24 +71,24 @@ public class LdapService {
      * Erzeugt eine neue Instanz.
      *
      * @param ldapTemplate ein {@link LdapTemplate} für LDAP
-     * @param ldapUserAttributesMapper ein {@link LdapUserAttributesMapper}
+     * @param enhancedLdapOuAttributesMapper ein {@link LdapUserAttributesMapper}
      * @param ldapBaseUserAttributesMapper ein {@link LdapBaseUserAttributesMapper}
-     * @param ldapOuAttributesMapper ein {@link LdapOuAttributesMapper}
+     * @param enhancedLdapOuAttributesMapper ein {@link LdapOuAttributesMapper}
      * @param modelMapper ein {@link DtoMapper}
      * @param userSearchBase Search-Base für User (DN)
      * @param ouSearchBase Search-Base für OUs (DN)
      */
     public LdapService(final LdapTemplate ldapTemplate,
-            final LdapUserAttributesMapper ldapUserAttributesMapper,
+            final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper,
             final LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper,
-            final LdapOuAttributesMapper ldapOuAttributesMapper,
+            final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper,
             final DtoMapper modelMapper,
             final String userSearchBase,
             final String ouSearchBase) {
         this.ldapTemplate = ldapTemplate;
-        this.ldapUserAttributesMapper = ldapUserAttributesMapper;
+        this.enhancedLdapUserAttributesMapper = enhancedLdapUserAttributesMapper;
         this.ldapBaseUserAttributesMapper = ldapBaseUserAttributesMapper;
-        this.ldapOuAttributesMapper = ldapOuAttributesMapper;
+        this.enhancedLdapOuAttributesMapper = enhancedLdapOuAttributesMapper;
         this.mapper = modelMapper;
         this.userSearchBase = userSearchBase;
         this.ouSearchBase = ouSearchBase;
@@ -111,8 +113,8 @@ public class LdapService {
         ldapContextSource.afterPropertiesSet();
         this.ldapTemplate = new LdapTemplate(ldapContextSource);
         this.ldapBaseUserAttributesMapper = new LdapBaseUserAttributesMapper();
-        this.ldapOuAttributesMapper = new LdapOuAttributesMapper();
-        this.ldapUserAttributesMapper = new LdapUserAttributesMapper(this.ldapBaseUserAttributesMapper);
+        this.enhancedLdapOuAttributesMapper = new EnhancedLdapOuAttributesMapper();
+        this.enhancedLdapUserAttributesMapper = new EnhancedLdapUserAttributesMapper(this.ldapBaseUserAttributesMapper);
         this.mapper = new DtoMapperImpl();
         this.userSearchBase = userSearchBase;
         this.ouSearchBase = ouSearchBase;
@@ -140,8 +142,8 @@ public class LdapService {
 					.attributes(ATTRIBUTE_MODIFY_TIMESTAMP, "*").where(ATTRIBUTE_OBJECT_CLASS)
 					.is(LHM_ORGANIZATIONAL_UNIT);
 
-			final List<LdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
-					this.ldapOuAttributesMapper);
+			final List<EnhancedLdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
+					this.enhancedLdapOuAttributesMapper);
 
 			if (searchResults.size() == 1) {
 
@@ -180,8 +182,8 @@ public class LdapService {
 			log.debug("Searching for dn='{}' & objectClass='{}' ...", distinguishedName, LHM_ORGANIZATIONAL_UNIT);
 			final LdapQuery ouObjectReferenceQuery = getOuObjectReferenceQuery(distinguishedName, null);
 
-			final List<LdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
-					this.ldapOuAttributesMapper);
+			final List<EnhancedLdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
+					this.enhancedLdapOuAttributesMapper);
 
 			searchResults.forEach(o -> {
 				var dn = String.format("ou=%s,%s", o.getOu().replace(",", "\\,"), distinguishedName);
@@ -224,8 +226,8 @@ public class LdapService {
 
 		final LdapQuery ouObjectReferenceQuery = getOuObjectReferenceQuery(searchBase, node, modifyTimeStamp);
 
-		final List<LdapUserDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
-				this.ldapUserAttributesMapper);
+		final List<EnhancedLdapUserDto> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
+				this.enhancedLdapUserAttributesMapper);
 		node.setUsers(searchResults);
 	}
 

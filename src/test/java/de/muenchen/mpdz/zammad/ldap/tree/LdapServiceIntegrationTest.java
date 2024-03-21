@@ -22,6 +22,8 @@
  */
 package de.muenchen.mpdz.zammad.ldap.tree;
 
+import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapOuAttributesMapper;
+import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapUserAttributesMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,8 +90,8 @@ public class LdapServiceIntegrationTest {
         final LdapContextSource contextSource = this.contextSource(exposedPort);
         final LdapBaseUserAttributesMapper baseUserAttributesMapper = new LdapBaseUserAttributesMapper();
         this.sut = new LdapService(this.ldapTemplate(contextSource),
-                new LdapUserAttributesMapper(baseUserAttributesMapper),
-                baseUserAttributesMapper, new LdapOuAttributesMapper(), new DtoMapperImpl(), USER_BASE,
+                new EnhancedLdapUserAttributesMapper(baseUserAttributesMapper),
+                baseUserAttributesMapper, new EnhancedLdapOuAttributesMapper(), new DtoMapperImpl(), USER_BASE,
                 ORG_BASE);
     }
 
