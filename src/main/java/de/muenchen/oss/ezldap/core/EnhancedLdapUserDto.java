@@ -1,6 +1,5 @@
 package de.muenchen.oss.ezldap.core;
 
-import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
