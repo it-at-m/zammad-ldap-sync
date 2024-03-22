@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldap.ezldapextension;
+package de.muenchen.oss.ezldap.core;
 
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import lombok.AllArgsConstructor;

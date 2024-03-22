@@ -24,10 +24,10 @@ package de.muenchen.mpdz.zammad.ldap.tree;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
-import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapOuAttributesMapper;
-import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapOuSearchResultDTO;
-import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapUserAttributesMapper;
-import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.EnhancedLdapOuAttributesMapper;
+import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserAttributesMapper;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

@@ -22,8 +22,8 @@
  */
 package de.muenchen.mpdz.zammad.ldap.tree;
 
-import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapOuAttributesMapper;
-import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapUserAttributesMapper;
+import de.muenchen.oss.ezldap.core.EnhancedLdapOuAttributesMapper;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserAttributesMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,8 +39,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
 import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
-import de.muenchen.oss.ezldap.core.LdapOuAttributesMapper;
-import de.muenchen.oss.ezldap.core.LdapUserAttributesMapper;
 
 @Testcontainers
 public class LdapServiceIntegrationTest {

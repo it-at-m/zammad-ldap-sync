@@ -22,8 +22,8 @@
  */
 package de.muenchen.mpdz.zammad.ldap.tree;
 
-import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapOuSearchResultDTO;
-import de.muenchen.mpdz.zammad.ldap.ezldapextension.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import java.util.ArrayList;
 import java.util.List;

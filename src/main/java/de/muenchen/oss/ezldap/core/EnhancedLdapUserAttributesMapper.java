@@ -1,11 +1,7 @@
-package de.muenchen.mpdz.zammad.ldap.ezldapextension;
+package de.muenchen.oss.ezldap.core;
 
 import static de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper.safelyGet;
 
-import de.muenchen.oss.ezldap.core.AnschriftDTO;
-import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
-import de.muenchen.oss.ezldap.core.LdapUserAttributesMapper;
-import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import org.springframework.ldap.core.AttributesMapper;
