@@ -22,15 +22,17 @@
  */
 package de.muenchen.mpdz.zammad.ldap.tree;
 
-import lombok.*;
-
+import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
-import de.muenchen.oss.ezldap.core.LdapUserDTO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * Node class to create ldap shade tree representation
@@ -44,9 +46,9 @@ public class LdapOuNode {
     private static final long serialVersionUID = 1L;
 
     private String distinguishedName;
-    private LdapOuSearchResultDTO node;
-    private Map<String, LdapOuNode> childNodes = new TreeMap<String, LdapOuNode>();
-    private List<LdapUserDTO> users;
+    private EnhancedLdapOuSearchResultDTO node;
+    private Map<String, LdapOuNode> childNodes = new TreeMap<>();
+    private List<EnhancedLdapUserDto> users;
 
     /**
      * Creates formatted representation of the subtree
@@ -80,8 +82,8 @@ public class LdapOuNode {
      *
      * @return list
      */
-    public List<LdapUserDTO> flatListLdapUserDTO() {
-        var users = new ArrayList<LdapUserDTO>();
+    public List<EnhancedLdapUserDto> flatListLdapUserDTO() {
+        var users = new ArrayList<EnhancedLdapUserDto>();
         if (this.getUsers() != null)
             users.addAll(this.getUsers());
 
@@ -90,9 +92,9 @@ public class LdapOuNode {
         return users;
     }
 
-    private List<LdapUserDTO> flatListLdapUserDTO(Map<String, LdapOuNode> subtree) {
+    private List<EnhancedLdapUserDto> flatListLdapUserDTO(Map<String, LdapOuNode> subtree) {
 
-        var users = new ArrayList<LdapUserDTO>();
+        var users = new ArrayList<EnhancedLdapUserDto>();
         subtree.forEach((key, node) -> {
             if (node.getUsers() != null)
                 users.addAll(node.getUsers());

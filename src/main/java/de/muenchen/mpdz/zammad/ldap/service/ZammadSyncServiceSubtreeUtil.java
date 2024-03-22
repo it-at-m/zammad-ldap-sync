@@ -2,6 +2,7 @@ package de.muenchen.mpdz.zammad.ldap.service;
 
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.mpdz.zammad.ldap.tree.LdapOuNode;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
@@ -102,7 +103,7 @@ public class ZammadSyncServiceSubtreeUtil {
         });
     }
 
-    private void updateZammadGroupUsers(List<LdapUserDTO> ldapBaseUserDTOs, String zammadUserGroupId) {
+    private void updateZammadGroupUsers(List<EnhancedLdapUserDto> ldapBaseUserDTOs, String zammadUserGroupId) {
 
         ldapBaseUserDTOs.forEach(user -> {
 
