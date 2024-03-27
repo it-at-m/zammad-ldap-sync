@@ -13,6 +13,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class EnhancedLdapOuSearchResultDTO extends LdapOuSearchResultDTO {
 
-    private String modifyTimeStamp;
+    private static final long serialVersionUID = 1L;
+	private String modifyTimeStamp;
 
 }

@@ -25,15 +25,15 @@ public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
 	@Override
 	public int compareTo(ZammadUserDTO o) {
 
-		if (getFirstname().compareTo(o.getFirstname()) != 0)
+		if (getFirstname() != null && o.getFirstname() != null && getFirstname().compareTo(o.getFirstname()) != 0)
 			return getFirstname().compareTo(o.getFirstname());
-		if (getLastname().compareTo(o.getLastname()) != 0)
+		if (getLastname() != null && o.getLastname() != null && getLastname().compareTo(o.getLastname()) != 0)
 			return getLastname().compareTo(o.getLastname());
-		if (getEmail().compareTo(o.getEmail()) != 0)
+		if (getEmail() != null && o.getEmail() != null && getEmail().compareTo(o.getEmail()) != 0)
 			return getEmail().compareTo(o.getEmail());
-		if (getDepartment().compareTo(o.getDepartment()) != 0)
+		if (getDepartment() != null && o.getDepartment() != null && getDepartment().compareTo(o.getDepartment()) != 0)
 			return getDepartment().compareTo(o.getDepartment());
-		if (getLhmobjectid().compareTo(o.getLhmobjectid()) != 0)
+		if (getLhmobjectid() != null && o.getLhmobjectid() != null && getLhmobjectid().compareTo(o.getLhmobjectid()) != 0)
 			return getLhmobjectid().compareTo(o.getLhmobjectid());
 
 		return 0;
