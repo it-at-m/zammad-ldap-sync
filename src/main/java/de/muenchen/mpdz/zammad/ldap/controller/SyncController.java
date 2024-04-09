@@ -21,8 +21,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- *
- * Request swagger api documentation : http://[url]:[port]/swagger-ui/index.htm
+ * https://www.baeldung.com/spring-rest-openapi-documentation
+ * http://.../api-docs
+ * http://.../swagger-ui/index.html
  *
  */
 

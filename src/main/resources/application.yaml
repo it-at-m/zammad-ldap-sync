@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
 
 logging:
   level:
@@ -10,9 +10,9 @@ logging:
             RestTemplate: DEBUG
 
 ldap:
-    url: ...
-    userSearchBase: ...
-    ouSearchBase: ...
+  url: ...
+  userSearchBase: ...
+  ouSearchBase: ...
 
 zammad:
   assignment:
@@ -20,7 +20,11 @@ zammad:
       id: 4
   token: Token token=...
   url:
-     base: http://...
-     groups: groups
-     users: users
-     roles: roles
+    base: http://...
+    groups: groups
+    users: users
+    roles: roles
+
+springdoc:
+  api-docs:
+    path: /api-docs
