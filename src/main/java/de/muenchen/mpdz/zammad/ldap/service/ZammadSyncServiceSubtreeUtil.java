@@ -176,7 +176,7 @@ public class ZammadSyncServiceSubtreeUtil {
                         if (zammadUser.isActive()) {
                             log.debug("User in Zammad is active - setting to inactive as a first step.");
                             zammadUser.setActive(false);
-                            zammadUser.setDeleteldapsync("delete");
+                            zammadUser.setLdapsync("delete");
                             zammadService.updateZammadUser(zammadUser);
                         }
                     } else {

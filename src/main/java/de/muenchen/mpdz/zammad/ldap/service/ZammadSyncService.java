@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadRoleDTO;
 import lombok.extern.slf4j.Slf4j;

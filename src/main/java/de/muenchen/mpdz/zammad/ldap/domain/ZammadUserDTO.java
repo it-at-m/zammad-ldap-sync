@@ -19,7 +19,7 @@ public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
     private Map<String, List<String>> group_ids;
     private String updated_at;
     private boolean active;
-    private String deleteldapsync;
+    private String ldapsync;
 
 
 	@Override
