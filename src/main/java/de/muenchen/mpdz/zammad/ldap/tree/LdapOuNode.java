@@ -29,6 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -126,6 +130,10 @@ public class LdapOuNode {
             ous.addAll(flatListLdapOuDTO(node.getChildNodes()));
         });
         return ous;
+    }
+
+    public String json() throws JsonProcessingException {
+    	return new ObjectMapper().writeValueAsString(childNodes);
     }
 
 }

@@ -34,3 +34,15 @@ In `Einstellungen --> Rollen`:
 - create new Role:
     - NAME: `Zuweisungsrolle`
     - Check: `ticket->agent`
+
+
+# REST API
+The productive synchronization is started via the scheduler. For testing purposes, it can also be triggered manually via REST API. 
+
+The Rest API is accessible via Basic Auth. User and password can be configured in the application properties via spring security.
+
+spring.security.user.name=...
+spring.security.user.password=...
+
+Openapi documentation of the REST API is available with 
+http(s)://[url:port]/swagger-ui/index.html

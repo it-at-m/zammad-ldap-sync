@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadRoleDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -101,7 +103,7 @@ public class ZammadSyncService {
      * @param distinguishedName
      * @return ldapTreeView
      */
-    public String flagZammadUserToDelete(String distinguishedName) {
+    public String markZammadUserToDelete(String distinguishedName) {
 
     	var dn = distinguishedName;
         log.info("*****************************************");
@@ -130,19 +132,19 @@ public class ZammadSyncService {
      * @return ldap tree as json
      * @throws JsonProcessingException
      */
-//    public String subtreeAsJson(String distinguishedName, String modifyTimeStamp) throws JsonProcessingException {
-//
-//        var dn = distinguishedName;
-//        log.info("*****************************************");
-//        log.info("START sychronize Zammad groups and users with LDAP DN : " + dn);
-//
-//        log.debug("Calculate LDAP Subtree with DN ... " + dn);
-//        var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, modifyTimeStamp);
-//
-//        var json = shadeDnSubtree.get().values().iterator().next().toJson();
-//        log.debug(json);
-//
-//        return json;
-//    }
+    public String subtreeAsJson(String distinguishedName, String modifyTimeStamp) throws JsonProcessingException  {
+
+        var dn = distinguishedName;
+        log.info("*****************************************");
+        log.info("START sychronize Zammad groups and users with LDAP DN : " + dn);
+
+        log.debug("Calculate LDAP Subtree with DN ... " + dn);
+        var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, modifyTimeStamp);
+
+        var json = shadeDnSubtree.get().values().iterator().next().json();
+        log.debug(json);
+
+        return json;
+    }
 
 }
