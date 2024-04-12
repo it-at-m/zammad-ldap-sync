@@ -35,14 +35,32 @@ In `Einstellungen --> Rollen`:
     - NAME: `Zuweisungsrolle`
     - Check: `ticket->agent`
 
+# Configuration properties
+Where possible, the **application.yaml** is pre-filled.
+However, some properties still need to be added.
+```
+ldap:
+  url: [ldap url]
+  userSearchBase: [ldap user search base]
+  ouSearchBase: [ldap organizational unit search base]
+
+zammad:
+  token: Token token= [Zammad user profil generated access token]
+  url:
+    base: [Zammad REST API url]
+``` 
 
 # REST API
 The productive synchronization is started via the scheduler. For testing purposes, it can also be triggered manually via REST API. 
 
-The Rest API is accessible via Basic Auth. User and password can be configured in the application properties via spring security.
+The Rest API is accessible via Basic Auth. User and password can be configured in the configuration properties via spring security.
 
-spring.security.user.name=...
-spring.security.user.password=...
-
-Openapi documentation of the REST API is available with 
+````
+spring:
+  security:
+    user:
+    name: [user]
+    password: [changeit]
+````
+**Openapi documentation** of the REST API is available with 
 http(s)://[url:port]/swagger-ui/index.html
