@@ -6,3 +6,6 @@
 FROM registry.access.redhat.com/ubi9/openjdk-17-runtime:latest
 
 COPY target/*.jar /deployments/application.jar
+
+LABEL org.opencontainers.image.title="zammad-ldap-sync"
+LABEL org.opencontainers.image.url="https://github.com/it-at-m/zammad-ldap-sync"
