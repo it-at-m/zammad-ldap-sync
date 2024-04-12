@@ -1,33 +1,40 @@
 package de.muenchen.mpdz.zammad.ldap.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadUserDTO;
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.mpdz.zammad.ldap.tree.LdapOuNode;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 @Service
 @Slf4j
 public class ZammadSyncServiceSubtreeUtil {
 
-    @Autowired
+    public ZammadSyncServiceSubtreeUtil(ZammadService zammadService, ZammadLdapService zammadLdapService,
+			ZammadSyncContext context) {
+		super();
+		this.zammadService = zammadService;
+		this.zammadLdapService = zammadLdapService;
+		this.context = context;
+	}
+	
     public ZammadService zammadService;
-
-    @Autowired
+    
     public ZammadLdapService zammadLdapService;
-
-    @Autowired
+   
     public ZammadSyncContext context;
 
     @Getter

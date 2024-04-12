@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,20 +17,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ZammadSyncService {
 
-    @Value("${zammad.assignment.role.id}")
-    String ASSIGNMENT_ROLE_ID;
+    public ZammadSyncService(ZammadService zammadService, ZammadLdapService zammadLdapService,
+			ZammadSyncContext context, ZammadSyncServiceSubtreeUtil subtreeUtil) {
+		this.zammadService = zammadService;
+		this.zammadLdapService = zammadLdapService;
+		this.context = context;
+		this.subtreeUtil = subtreeUtil;
+	}
 
-    @Autowired
+	@Value("${zammad.assignment.role.id}")
+    private String assignment_role_id;
+
     public ZammadService zammadService;
 
-    @Autowired
     public ZammadLdapService zammadLdapService;
 
-    @Autowired
     public ZammadSyncContext context;
 
-    @Autowired
-    ZammadSyncServiceSubtreeUtil subtreeUtil;
+    private ZammadSyncServiceSubtreeUtil subtreeUtil;
 
     public void syncAssignmentRole() {
         log.debug("*****************************************");
@@ -42,7 +45,7 @@ public class ZammadSyncService {
 
         //Fetch asignmentrole
         log.debug("Getting assignment role");
-        ZammadRoleDTO zammadRoleDTO = zammadService.getZammadRole(ASSIGNMENT_ROLE_ID);
+        ZammadRoleDTO zammadRoleDTO = zammadService.getZammadRole(assignment_role_id);
 
         //Create group-map
         Map<String, List<String>> new_group_ids = new HashMap<>();

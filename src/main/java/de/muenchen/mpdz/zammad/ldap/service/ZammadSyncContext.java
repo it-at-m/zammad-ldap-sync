@@ -13,19 +13,19 @@ public class ZammadSyncContext {
 
     @Getter
     @Value("${ldap.url}")
-    private String LDAP_URL;
+    private String ldapUrl;
 
     @Getter
-    @Value("${ldap.userSearchBase}")
-    private String USER_SEARCH_BASE;
+    @Value("${ldap.user-search-base}")
+    private String userSearchBase;
 
     @Getter
-    @Value("${ldap.ouSearchBase}")
-    private String OU_SEARCH_BASE;
+    @Value("${ldap.ou-search-base}")
+    private String ouSearchBase;
 
     @Bean
     public LdapService ldapService(){
-        return new LdapService(LDAP_URL, "", "", USER_SEARCH_BASE, OU_SEARCH_BASE);
+        return new LdapService(ldapUrl, "", "", userSearchBase, ouSearchBase);
     }
 
 }

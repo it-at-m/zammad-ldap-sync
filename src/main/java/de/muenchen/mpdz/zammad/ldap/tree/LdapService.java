@@ -121,8 +121,6 @@ public class LdapService {
     }
 
 
-
-
 	/**
 	 * Set distinguished name entry point as root. Calculate ou ldap subtree child
 	 * entries (LdapOuNodes). Add ou assigned users. Returns a nested map
