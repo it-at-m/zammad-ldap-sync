@@ -21,7 +21,11 @@ What to adjust:
 
 The documentation project is built with technologies we use in our projects:
 
-* *write here the list of used technologies*
+* Spring boot
+  * REST
+  * LDAP / [ezLDAP](https://github.com/it-at-m/ezLDAP)
+* Openapi
+* [Zammad REST API](https://docs.zammad.org/en/latest/api/intro.html)
 
 ## Roadmap
 
@@ -32,10 +36,25 @@ See the [open issues](#) for a full list of proposed features (and known issues)
 
 
 ## Set up
-*how can i start and fly this project*
+For the LDAP-Zammad Synchronization we create an LDAP tree consisting of the organizational units and their employees.
+To do this, the data must be read from LDAP. The implementation fits our LDAP structure. If the LDAP structure is different, appropriate adjustments are required, to build the tree.
+
+The LDAP tree is then used to synchronize the organizational units hierarchy including employees in Zammd via REST API.
+
+Prepare Zammad before first start. Technical documentation can be found here [docs/Readme](https://github.com/it-at-m/zammad-ldap-sync/blob/dev/docs/README.md)
+
+application.yaml:
+- Connect zammad-ldap-snyc with Zammad REST-API (Url, Token).
+- Connect zammad-ldap-snyc with your LDAP.
+
+Start Zammad-Ldap synchronisation.
+
+Request Openapi documentation http(s)://[url:port]/swagger-ui/index.html.
+
+Start synchronisation with correct rest ressource.
 
 ## Documentation
-*what insights do you have to tell*
+More technical documentation can be found here [docs/Readme](https://github.com/it-at-m/zammad-ldap-sync/blob/dev/docs/README.md)
 
 ## Contributing
 
