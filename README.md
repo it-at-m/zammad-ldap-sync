@@ -1,41 +1,55 @@
-## Customize this file after creating the new REPO and remove this lines.
-What to adjust:  
-* Add the your project or repo name direct under the logo.
-* Add a short and long desciption.
-* Add links for your final repo to report a bug or request a feature.
-* Add list of used technologies.
-* If you have, add a roadmap or remove this section.
-* Fill up the section for set up and documentation.
- * Start in this file only with documentation and link to the docs folder.
-* Add project shields. Use [shields.io](https://shields.io/)
+# Zammad-Ldap-Synchronsiation
+In order to assign an owner to Zammad tickets for processing, we need a structured representation of our LDAP entries in Zammad. 
 
-## ------- end to remove -------
-<!-- add Project Logo, if existing -->
+Zammad tickets holders must be mapped to our LDAP users.
 
-# repo or project name
+The project enables the transfer of our LDAP *organizational units* and *users* to Zammad *groups* and *users*.
 
-*Add a description from your project here.*
-
+Changes in LDAP must be able to be periodically synchronized in Zammad.
 
 ### Built With
 
-The documentation project is built with technologies we use in our projects:
-
-* *write here the list of used technologies*
+* Spring boot
+  * REST
+  * LDAP / [ezLDAP](https://github.com/it-at-m/ezLDAP)
+* Openapi
+* [Zammad REST API](https://docs.zammad.org/en/latest/api/intro.html)
 
 ## Roadmap
 
-*if you have a ROADMAP for your project add this here*
-
+*TODO...*
 
 See the [open issues](#) for a full list of proposed features (and known issues).
 
 
 ## Set up
-*how can i start and fly this project*
+For the LDAP-Zammad Synchronization we create an LDAP tree consisting of the organizational units and their employees. We call this a *shade tree*.
+To do this, the data must be read from LDAP. The implementation fits our LDAP structure. If the LDAP structure is different, appropriate adjustments are required, to build the shade tree.
+
+The shade tree is then used to synchronize the groups and users in Zammd via REST API.
+
+Prepare Zammad before first start. Technical documentation can be found here [docs/Readme](https://github.com/it-at-m/zammad-ldap-sync/blob/dev/docs/README.md)
+
+application.yaml:
+- Connect zammad-ldap-snyc with Zammad REST-API (Url, Token).
+- Connect zammad-ldap-snyc with your LDAP.
+
+Start Zammad-Ldap-Synchronisation application.
+
+Request Openapi documentation http(s)://[url:port]/swagger-ui/index.html.
+
+Start synchronisation process with correct rest ressource.
 
 ## Documentation
-*what insights do you have to tell*
+Why don't we use the [Zammad LDAP](https://admin-docs.zammad.org/en/latest/system/integrations/ldap/index.html) integration?
+
+The native Zammad LDAP integration is capable of importing LDAP users and adding them to existing Zammad roles depending on a group mapping in LDAP.
+However, not supported is to create and update the zammad group structure depending on a structure in LDAP. 
+
+In the LHM we have a separate object structure in our LDAP representing the organizational structure, starting from `o=Landeshauptstadt München`.
+Our users are located in the same LDAP tree but starting from `o=lhm`. The user objects are referencing the orga objects via the attribute `lhmObjectReference`.
+
+In the LDAP-Sync we iterate both the user structure (creating Zammad users) and the orga structure (creating Zammad groups) and also link the users to the groups corresponding to the user-to-orga-mapping in LDAP.
 
 ## Contributing
 
