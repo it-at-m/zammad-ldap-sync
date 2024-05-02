@@ -34,3 +34,13 @@ zammad:
 springdoc:
   api-docs:
     path: /api-docs
+
+spring:
+  security:
+    user:
+      name: ...
+      password: ...
+  quartz:
+    job-store-type: memory
+  lifecycle:
+    timeout-per-shutdown-phase: 1m
