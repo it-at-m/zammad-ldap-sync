@@ -18,7 +18,6 @@ sync:
   date-time-format: yyyyMMddHHmmss
   date-time-minus-day: 7
   ou-base: ...
-  cron-expression: '0 15 2 ? * *'
 
 zammad:
   assignment:
@@ -40,7 +39,3 @@ spring:
     user:
       name: ...
       password: ...
-  quartz:
-    job-store-type: memory
-  lifecycle:
-    timeout-per-shutdown-phase: 1m
