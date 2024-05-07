@@ -41,13 +41,15 @@ Request Openapi documentation http(s)://[url:port]/swagger-ui/index.html.
 Start synchronisation process with correct rest ressource.
 
 ## Documentation
-Why don't we use the [Zammad LDAP](https://admin-docs.zammad.org/en/latest/system/integrations/ldap/index.html#limitations) connection ? The main reasons are: 
-- Mapping / Synchronizing organizations is not possible
-- Nested groups are not supported.
-- The ticket owners can be found more quickly using nested groups.
-- When a user originates from an LDAP server, Zammad will try to verify the login credentials against LDAP first. No Single-Sign-On (SSO) integration is possible.
+Why don't we use the [Zammad LDAP](https://admin-docs.zammad.org/en/latest/system/integrations/ldap/index.html) integration?
 
-More technical documentation can be found here [docs/Readme](https://github.com/it-at-m/zammad-ldap-sync/blob/dev/docs/README.md)
+The native Zammad LDAP integration is capable of importing LDAP users and adding them to existing Zammad roles depending on a group mapping in LDAP.
+However, not supported is to create and update the zammad group structure depending on a structure in LDAP. 
+
+In the LHM we have a separate object structure in our LDAP representing the organizational structure, starting from `o=Landeshauptstadt München`.
+Our users are located in the same LDAP tree but starting from `o=lhm`. The user objects are referencing the orga objects via the attribute `lhmObjectReference`.
+
+In the LDAP-Sync we iterate both the user structure (creating Zammad users) and the orga structure (creating Zammad groups) and also link the users to the groups corresponding to the user-to-orga-mapping in LDAP.
 
 ## Contributing
 
