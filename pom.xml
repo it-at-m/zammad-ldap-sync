@@ -115,7 +115,7 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
-			<version>1.19.7</version>
+			<version>1.19.8</version>
 		</dependency>
 
 
