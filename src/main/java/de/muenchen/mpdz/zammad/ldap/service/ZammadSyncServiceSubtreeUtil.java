@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,11 +31,23 @@ public class ZammadSyncServiceSubtreeUtil {
 		this.zammadLdapService = zammadLdapService;
 		this.context = context;
 	}
-	
+
+    @Getter
+    private long ouSize;
+
+    @Getter
+    private long userSize;
+
+    @Getter
+    private AtomicLong currentOuCount = new AtomicLong() ;
+
+    @Getter
+    private AtomicLong currentUserCount = new AtomicLong();
+
     public ZammadService zammadService;
-    
+
     public ZammadLdapService zammadLdapService;
-   
+
     public ZammadSyncContext context;
 
     @Getter
@@ -49,10 +62,23 @@ public class ZammadSyncServiceSubtreeUtil {
 
             setZammadGroupsByLhmObjectId(getCurrentZammadGroups());
             setZammadUsersByLhmObjectId(getCurrentZammadUsers());
+
+            logStatistic(shadeLdapSubtree.entrySet().stream().findFirst().get().getValue());
+
             updateZammadGroupsWithUsers(shadeLdapSubtree, null, null);
+
+    }
+
+    private void logStatistic(LdapOuNode root) {
+
+    	ouSize = root.flatListLdapOuDTO().size();
+    	userSize = root.flatListLdapUserDTO().size();
+
+    	log.info(String.format("Start processing '%o' ldap ou with '%o' user.", getOuSize(), getUserSize()));
     }
 
     private void updateZammadGroupsWithUsers(Map<String, LdapOuNode> shadeLdapSubtree, String zammadGroupName, final String parentGroupID) {
+
 
         shadeLdapSubtree.forEach((ou, node) -> {
 
@@ -102,10 +128,16 @@ public class ZammadSyncServiceSubtreeUtil {
             		log.error("'{}' : GROUPID is NULL for user: '{}'", ldapOuDto.getLhmOULongname() ,node.getUsers().stream().map(n -> String.valueOf(n)).collect(Collectors.joining("; ")));
 
             	updateZammadGroupUsers(node.getUsers(), ongoingZammadGroupId);
+
+            	getCurrentUserCount().addAndGet(node.getUsers().size());
             }
 
             if (!node.getChildNodes().isEmpty())
                 updateZammadGroupsWithUsers(node.getChildNodes(), zammadCurrentGroupName, ongoingZammadGroupId);
+
+
+            getCurrentOuCount().getAndIncrement();
+         	log.info(String.format("Processed ou %o/%o. Processed user %o/%o", getCurrentOuCount().get(), getOuSize(), getCurrentUserCount().get(), getUserSize() ));
 
         });
     }

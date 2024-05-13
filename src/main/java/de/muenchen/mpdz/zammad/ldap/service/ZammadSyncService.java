@@ -1,5 +1,7 @@
 package de.muenchen.mpdz.zammad.ldap.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,12 @@ public class ZammadSyncService {
 		this.context = context;
 		this.subtreeUtil = subtreeUtil;
 	}
+
+    @Value("${sync.ou-base}")
+    private String ldapSyncDn;
+
+    @Value("${sync.date-time-minus-day:1}")
+    private Long dateTimeMinusDay;
 
 	@Value("${zammad.assignment.role.id}")
     private String assignment_role_id;
@@ -73,12 +81,15 @@ public class ZammadSyncService {
      */
     public String syncSubtreeByDn(String distinguishedName, String modifyTimeStamp) {
 
-        var dn = distinguishedName;
+        var dn = distinguishedName == null ? ldapSyncDn : distinguishedName;
+        var dateTime = modifyTimeStamp != null ? modifyTimeStamp : calculateLdapUserSearchTimeStamp();
+
         log.info("*****************************************");
+        log.info(String.format("Searching for user with ldap modifyTimeStamp > '%s'. 'null' means no restriction.",  dateTime));
         log.info("START synchronize Zammad groups and users with LDAP DN : " + dn);
 
         log.debug("Calculate LDAP Subtree with DN ... " + dn);
-        var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, modifyTimeStamp);
+        var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, dateTime);
 
         var treeView = shadeDnSubtree.get().values().iterator().next().toString();
         log.debug(treeView);
@@ -93,6 +104,16 @@ public class ZammadSyncService {
 
         return treeView;
     }
+
+	private String calculateLdapUserSearchTimeStamp() {
+		String calculatedTimeStamp =  null;
+        if (dateTimeMinusDay > 0) {
+        	var ldapUserSearchDate = LocalDateTime.now().minusDays(dateTimeMinusDay);
+        	var ldapFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        	calculatedTimeStamp = ldapFormatter.format(ldapUserSearchDate) + "Z";
+        }
+		return calculatedTimeStamp;
+	}
 
     /**
      *

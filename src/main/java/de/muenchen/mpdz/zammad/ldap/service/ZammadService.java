@@ -38,7 +38,7 @@ public class ZammadService {
 		List<ZammadGroupDTO> result = new ArrayList<>();
 		while (found) {
 			i = i + 1;
-			log.info("Fetching groups page " + i);
+			log.debug("Fetching groups page " + i);
 			ResponseEntity<ZammadGroupDTO[]> entity = restTemplate.exchange(
 					zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "?page=" + i + "&per_page=500", HttpMethod.GET,
 					new HttpEntity<Object>(headers), ZammadGroupDTO[].class);
@@ -100,7 +100,7 @@ public class ZammadService {
 		List<ZammadUserDTO> result = new ArrayList<>();
 		while (found) {
 			i = i + 1;
-			log.info("Fetching users page " + i);
+			log.debug("Fetching users page " + i);
 			ResponseEntity<ZammadUserDTO[]> entity = restTemplate.exchange(
 					zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers()  + "?page=" + i + "&per_page=500", HttpMethod.GET,
 					new HttpEntity<Object>(headers), ZammadUserDTO[].class);

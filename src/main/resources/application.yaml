@@ -7,7 +7,7 @@ logging:
       springframework:
         web:
           client:
-            RestTemplate: DEBUG
+            RestTemplate: INFO
 
 ldap:
   url: ...
@@ -15,7 +15,7 @@ ldap:
   ou-search-base: ...
 
 sync:
-  date-time-format: yyyyMMddHHmmss
+# Every date-time-minus-day > 0 is converted to 'startDateTime - date-time-minus-day' to restrict ldap user search.
   date-time-minus-day: 7
   ou-base: ...
 
