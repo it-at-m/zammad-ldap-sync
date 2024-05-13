@@ -1,14 +1,6 @@
 server:
   port: 8080
 
-logging:
-  level:
-    org:
-      springframework:
-        web:
-          client:
-            RestTemplate: INFO
-
 ldap:
   url: ...
   user-search-base: ...
@@ -29,13 +21,3 @@ zammad:
     groups: groups
     users: users
     roles: roles
-
-springdoc:
-  api-docs:
-    path: /api-docs
-
-spring:
-  security:
-    user:
-      name: ...
-      password: ...
