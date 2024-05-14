@@ -13,4 +13,10 @@ public class ZammadProperties {
 	private String token;
 	private ZammadUrlProperties url;
 
+
+	  public String getToken() {
+		  return "Token token=" + this.token;
+	  }
+
+
 }
