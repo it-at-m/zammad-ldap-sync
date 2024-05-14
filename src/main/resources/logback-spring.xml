@@ -30,7 +30,7 @@
 
     <springProperty scope="context" name="springAppName" source="spring.application.name"/>
 
-    <springProfile name="local,test">
+    <springProfile name="dev,local,test">
 
         <!-- Log appender -->
         <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -43,7 +43,7 @@
 
         <!-- Logger -->
         <logger name="de.muenchen"
-                level="info"
+                level="debug"
                 additivity="false">
             <appender-ref ref="STDOUT" />
         </logger>
@@ -56,7 +56,7 @@
     </springProfile>
 
 
-    <springProfile name="dev,kon,prod,openshift">
+    <springProfile name="kon,prod,openshift">
 
         <!-- Log appender -->
         <appender name="JSON_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -94,7 +94,7 @@
             <appender-ref ref="JSON_STDOUT" />
         </logger>
         <!-- Logger usage -->
-        <root level="info">
+        <root level="error">
             <appender-ref ref="JSON_STDOUT" />
         </root>
 
