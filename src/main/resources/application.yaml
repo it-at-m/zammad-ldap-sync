@@ -21,3 +21,7 @@ zammad:
     groups: groups
     users: users
     roles: roles
+
+spring:
+  main:
+    web-application-type: none
