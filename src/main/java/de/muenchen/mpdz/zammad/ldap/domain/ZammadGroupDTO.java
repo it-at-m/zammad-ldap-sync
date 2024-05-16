@@ -10,7 +10,7 @@ public class ZammadGroupDTO {
     private String id;
     private String parent_id;
     private String name;
-    private boolean donotupdate;
+    private boolean ldapsyncupdate;
     private boolean active;
     private String lhmobjectid;
     private String updated_at;

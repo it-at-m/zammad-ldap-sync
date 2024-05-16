@@ -11,7 +11,8 @@ public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
     private String id;
     private String firstname;
     private String lastname;
-    private boolean donotupdate;
+    private String login;
+    private boolean ldapsyncupdate;
     private String email;
     private String department;
     private String lhmobjectid;
@@ -19,7 +20,7 @@ public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
     private Map<String, List<String>> group_ids;
     private String updated_at;
     private boolean active;
-    private String ldapsync;
+    private String ldapsyncstate;
 
 
 	@Override

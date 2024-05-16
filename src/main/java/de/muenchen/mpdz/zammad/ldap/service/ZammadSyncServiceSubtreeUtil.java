@@ -102,7 +102,7 @@ public class ZammadSyncServiceSubtreeUtil {
                 if (zammadLdapSyncGroup != null) {
                     log.debug("Zammad group found with ldap id : " + lhmObjectIdToFind);
                     ongoingZammadGroupId = zammadLdapSyncGroup.getId();
-                    if (!zammadLdapSyncGroup.isDonotupdate()) {
+                    if (zammadLdapSyncGroup.isLdapsyncupdate()) {
                         log.debug("Attribute doNotUpdate=false --> check for update.");
                         // To compare add Id and updated_at
                         zammadGroupCompareDTO.setId(zammadLdapSyncGroup.getId());
@@ -162,7 +162,7 @@ public class ZammadSyncServiceSubtreeUtil {
                 if (zammadLdapSyncUser != null) {
                     log.debug("Zammad user found with ldap id : " + lhmObjectIdToFind);
 
-                    if (!zammadLdapSyncUser.isDonotupdate()) {
+                    if (zammadLdapSyncUser.isLdapsyncupdate()) {
                         log.debug("Attribute doNotUpdate=false --> check for update.");
                         //Update Id, updated_at und role_ids in case updateZammadUser
                         prepareUserForComparison(zammadUserCompareDTO, zammadLdapSyncUser);
@@ -204,7 +204,7 @@ public class ZammadSyncServiceSubtreeUtil {
             log.debug("---------------------------");
             log.debug("Checking ZammadUser " + zammadUser.getFirstname() + " " + zammadUser.getLastname());
 
-            if (!zammadUser.isDonotupdate()) {
+            if (zammadUser.isLdapsyncupdate()) {
 
                 if (lhmObjectId == null || lhmObjectId.isEmpty()) {
                     log.debug("No lhmObjectId - skipping.");
@@ -215,7 +215,7 @@ public class ZammadSyncServiceSubtreeUtil {
                         if (zammadUser.isActive()) {
                             log.debug("User in Zammad is active - setting to inactive as a first step.");
                             zammadUser.setActive(false);
-                            zammadUser.setLdapsync("delete");
+                            zammadUser.setLdapsyncstate("delete");
                             zammadService.updateZammadUser(zammadUser);
                         }
                     } else {
@@ -241,7 +241,7 @@ public class ZammadSyncServiceSubtreeUtil {
         zammadGroupDTO.setName(groupName);
         zammadGroupDTO.setParent_id(parentGroupId);
         zammadGroupDTO.setActive(true);
-        zammadGroupDTO.setDonotupdate(false);
+        zammadGroupDTO.setLdapsyncupdate(true);
         zammadGroupDTO.setLhmobjectid(ldapOuSearchResultDTO.getLhmObjectId());
         return zammadGroupDTO;
     }
@@ -259,6 +259,7 @@ public class ZammadSyncServiceSubtreeUtil {
         ZammadUserDTO zammadUserDTO = new ZammadUserDTO();
         zammadUserDTO.setDepartment(ldapBaseUserDTO.getOu());
         zammadUserDTO.setLhmobjectid(ldapBaseUserDTO.getLhmObjectId());
+        zammadUserDTO.setLogin(ldapBaseUserDTO.getLhmObjectId());
         zammadUserDTO.setEmail(ldapBaseUserDTO.getMail());
         zammadUserDTO.setFirstname(ldapBaseUserDTO.getVorname());
         zammadUserDTO.setLastname(ldapBaseUserDTO.getNachname());
@@ -276,7 +277,7 @@ public class ZammadSyncServiceSubtreeUtil {
         zammadUserCompareDTO.setRole_ids(foundZammadUser.getRole_ids());
  //       zammadUserCompareDTO.getGroup_ids().put("1", List.of("full")); // Users add group
         zammadUserCompareDTO.setActive(foundZammadUser.isActive());
-        zammadUserCompareDTO.setDonotupdate(false); // Must be false
+        zammadUserCompareDTO.setLdapsyncupdate(true);
     }
 
     private void prepareUserForCreation(ZammadUserDTO zammadUserDTO) {
@@ -288,7 +289,7 @@ public class ZammadSyncServiceSubtreeUtil {
 //        Map<String, List<String>> group_ids = zammadUserDTO.getGroup_ids() == null ? new HashMap<>() : zammadUserDTO.getGroup_ids();
 //        group_ids.put("1", List.of("full")); //Users
 //        zammadUserDTO.setGroup_ids(group_ids);
-        zammadUserDTO.setDonotupdate(false);
+        zammadUserDTO.setLdapsyncupdate(true);
     }
 
 
