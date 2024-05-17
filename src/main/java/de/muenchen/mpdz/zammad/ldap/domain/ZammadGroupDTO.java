@@ -2,9 +2,11 @@ package de.muenchen.mpdz.zammad.ldap.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @EqualsAndHashCode
+@ToString
 public class ZammadGroupDTO {
 
     private String id;

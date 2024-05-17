@@ -89,6 +89,7 @@ public class ZammadSyncServiceSubtreeUtil {
             var ldapOuDto = node.getNode();
             var zammadCurrentGroupName = zammadGroupName != null ? zammadGroupName + "::" + ldapOuDto.getLhmOUShortname() : ldapOuDto.getLhmOUShortname();
             var zammadGroupCompareDTO = mapToZammadGroup(node.getNode(), zammadCurrentGroupName, parentGroupID);
+            log.debug(zammadGroupCompareDTO.toString());
 
             //Find zammad group with lhmObjectID
             var lhmObjectIdToFind = ldapOuDto.getLhmObjectId();
@@ -147,10 +148,11 @@ public class ZammadSyncServiceSubtreeUtil {
         ldapBaseUserDTOs.forEach(user -> {
 
             log.debug("------------------------");
-            log.debug("Processing: '{}' lhmObjectId: '{}'" , user.getUid(), user.getLhmObjectId());
+            log.debug("Processing: lhmObjectId: '{}'" , user.getLhmObjectId());
 
             //Create new LdapBaseUserDTO out of LDAP-OU and create zammadGroupId
             var zammadUserCompareDTO = mapToZammadUser(user, zammadUserGroupId);
+            log.trace(zammadUserCompareDTO.toString());
 
             //Find zammad-user with lhmObjectID
             String lhmObjectIdToFind = user.getLhmObjectId();

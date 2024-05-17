@@ -135,7 +135,7 @@ public class LdapService {
 
 		var subtree = new TreeMap<String, LdapOuNode>();
 		try {
-			log.debug("Searching for dn='{} & objectClass='{}' ...", distinguishedName, LHM_ORGANIZATIONAL_UNIT);
+			log.trace("Searching for dn='{} & objectClass='{}' ...", distinguishedName, LHM_ORGANIZATIONAL_UNIT);
 			final LdapQuery ouObjectReferenceQuery = query().searchScope(SearchScope.OBJECT).base(distinguishedName)
 					.attributes(ATTRIBUTE_MODIFY_TIMESTAMP, "*").where(ATTRIBUTE_OBJECT_CLASS)
 					.is(LHM_ORGANIZATIONAL_UNIT);
@@ -177,7 +177,7 @@ public class LdapService {
 
 		try {
 
-			log.debug("Searching for dn='{}' & objectClass='{}' ...", distinguishedName, LHM_ORGANIZATIONAL_UNIT);
+			log.trace("Searching for dn='{}' & objectClass='{}' ...", distinguishedName, LHM_ORGANIZATIONAL_UNIT);
 			final LdapQuery ouObjectReferenceQuery = getOuObjectReferenceQuery(distinguishedName, null);
 
 			final List<EnhancedLdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
