@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
 
     private String id;

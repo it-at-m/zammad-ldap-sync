@@ -87,6 +87,8 @@ public class ZammadService {
 		ResponseEntity<ZammadGroupDTO> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() ,
 				HttpMethod.POST, requestEntity, ZammadGroupDTO.class);
 
+		log.trace(responseEntity.toString());
+
 		if (! responseEntity.hasBody())
 			log.error("Create Zammad Group failed. Response code : " + responseEntity.getStatusCode());
 

@@ -88,11 +88,11 @@ public class ZammadSyncService {
         log.info(String.format("Searching for user with ldap modifyTimeStamp > '%s'. 'null' means no restriction.",  dateTime));
         log.info("START synchronize Zammad groups and users with LDAP DN : " + dn);
 
-        log.debug("Calculate LDAP Subtree with DN ... " + dn);
+        log.debug("Calculate LDAP Subtree with DN : " + dn);
         var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, dateTime);
 
         var treeView = shadeDnSubtree.get().values().iterator().next().toString();
-        log.debug(treeView);
+        log.trace(treeView);
 
         log.debug("Update zammad groups and users ...");
         subtreeUtil.updateZammadGroupsWithUsers(shadeDnSubtree.get());
