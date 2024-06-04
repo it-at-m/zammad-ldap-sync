@@ -14,27 +14,52 @@ The synchronisation needs some adjustments in the Zammad database structure. It 
 
 ### Interface
 In `Einstellungen --> Objekte`:
-- for `Benutzer` und `Gruppen`:
+- for `Benutzer`:
     - create Attribut:
         - NAME: `lhmobjectid`
         - ANZEIGE: `LHM Object ID`
         - FORMAT: `Textfeld`
     - create Attribut:
-        - NAME: `donotupdate`
-        - ANZEIGE: `Do Not Update (aus LDAP)`
+        - NAME: `ldapsyncupate`
+        - ANZEIGE: `Ldap Synchronisation anwenden`
         - FORMAT: `Boolean-Feld`
-        - STANDARD: `false`
+        - STANDARD: `true`
   - create Attribut:
-      - NAME: `ldapsync`
+      - NAME: `ldapsyncstate`
       - ANZEIGE: `LDAP Synchronisation (delete etc.)`
       - FORMAT: `Textfeld`
-- Restart Zammad to apply the changes. 
+
+- for `Gruppen`:
+    - create Attribut:
+        - NAME: `lhmobjectid_group`
+        - ANZEIGE: `LHM Object ID`
+        - FORMAT: `Textfeld`
+    - create Attribut:
+        - NAME: `ldapsyncupate_group`
+        - ANZEIGE: `Ldap Synchronisation anwenden`
+        - FORMAT: `Boolean-Feld`
+        - STANDARD: `true`
+
+- Restart Zammad to apply the changes.
 
 In `Einstellungen --> Rollen`:
 - create new Role:
-    - NAME: `Zuweisungsrolle`
+    - NAME: `Erstellen`
     - Check: `ticket->agent`
 
+- create new Role:
+    - NAME: `Vollzugriff`
+    - Check: `ticket->agent`
+
+Update role id 'Erstellen' and 'Vollzugriff' in application.yaml
+ ```
+zammad:
+  assignment:
+    role:
+      id-agent: 2
+      id-erstellen: 4
+      id-vollzugriff: 5
+ ```
 # Configuration properties
 Where possible, the **application.yaml** is pre-filled.
 However, some properties still need to be added.
@@ -48,19 +73,4 @@ zammad:
   token: Token token= [Zammad user profil generated access token]
   url:
     base: [Zammad REST API url]
-``` 
-
-# REST API
-The productive synchronization is started via the scheduler. For testing purposes, it can also be triggered manually via REST API. 
-
-The Rest API is accessible via Basic Auth. User and password can be configured in the configuration properties via spring security.
-
-````
-spring:
-  security:
-    user:
-    name: [user]
-    password: [changeit]
-````
-**Openapi documentation** of the REST API is available with 
-http(s)://[url:port]/swagger-ui/index.html
+```

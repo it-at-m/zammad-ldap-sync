@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
@@ -31,6 +32,12 @@ public class ZammadSyncServiceSubtreeUtil {
 		this.zammadLdapService = zammadLdapService;
 		this.context = context;
 	}
+
+    @Value("${zammad.assignment.role.id-agent}")
+	private String assignmentRoleIdAgent;
+
+	@Value("${zammad.assignment.role.id-erstellen}")
+	private String assignmentRoleIdErstellen;
 
     @Getter
     private long ouSize;
@@ -107,7 +114,7 @@ public class ZammadSyncServiceSubtreeUtil {
                         log.debug("Attribute doNotUpdate=false --> check for update.");
                         // To compare add Id and updated_at
                         zammadGroupCompareDTO.setId(zammadLdapSyncGroup.getId());
-                        zammadGroupCompareDTO.setUpdated_at(zammadLdapSyncGroup.getUpdated_at());
+                        zammadGroupCompareDTO.setUpdatedAt(zammadLdapSyncGroup.getUpdatedAt());
                         if (!zammadLdapSyncGroup.equals(zammadGroupCompareDTO)) {
                             log.debug("Something has changed --> updating.");
                             zammadService.updateZammadGroup(zammadGroupCompareDTO);
@@ -241,7 +248,7 @@ public class ZammadSyncServiceSubtreeUtil {
     private ZammadGroupDTO mapToZammadGroup(LdapOuSearchResultDTO ldapOuSearchResultDTO, String groupName, String parentGroupId) {
         ZammadGroupDTO zammadGroupDTO = new ZammadGroupDTO();
         zammadGroupDTO.setName(groupName);
-        zammadGroupDTO.setParent_id(parentGroupId);
+        zammadGroupDTO.setParentId(parentGroupId);
         zammadGroupDTO.setActive(true);
         zammadGroupDTO.setLdapsyncupdate(true);
         zammadGroupDTO.setLhmobjectid(ldapOuSearchResultDTO.getLhmObjectId());
@@ -266,31 +273,30 @@ public class ZammadSyncServiceSubtreeUtil {
         zammadUserDTO.setFirstname(ldapBaseUserDTO.getVorname());
         zammadUserDTO.setLastname(ldapBaseUserDTO.getNachname());
 
-        Map<String, List<String>> new_group_ids = new HashMap<>();
-        new_group_ids.put(zammadGroupId, List.of("full"));
-        zammadUserDTO.setGroup_ids(new_group_ids);
+        Map<String, List<String>> newGroupIds = new HashMap<>();
+        newGroupIds.put(zammadGroupId, List.of("full"));
+        zammadUserDTO.setGroupIds(newGroupIds);
 
         return zammadUserDTO;
     }
 
     private void prepareUserForComparison(ZammadUserDTO zammadUserCompareDTO, ZammadUserDTO foundZammadUser) {
         zammadUserCompareDTO.setId(foundZammadUser.getId());
-        zammadUserCompareDTO.setUpdated_at(foundZammadUser.getUpdated_at());
-        zammadUserCompareDTO.setRole_ids(foundZammadUser.getRole_ids());
- //       zammadUserCompareDTO.getGroup_ids().put("1", List.of("full")); // Users add group
+        zammadUserCompareDTO.setUpdatedAt(foundZammadUser.getUpdatedAt());
+        zammadUserCompareDTO.setRoleIds(foundZammadUser.getRoleIds());
         zammadUserCompareDTO.setActive(foundZammadUser.isActive());
         zammadUserCompareDTO.setLdapsyncupdate(true);
     }
 
     private void prepareUserForCreation(ZammadUserDTO zammadUserDTO) {
         zammadUserDTO.setActive(true);
-        List<String> role_ids = new ArrayList<>();
-        role_ids.add("2"); // Agent
-        role_ids.add("4"); // Assignment role
-        zammadUserDTO.setRole_ids(role_ids);
-//        Map<String, List<String>> group_ids = zammadUserDTO.getGroup_ids() == null ? new HashMap<>() : zammadUserDTO.getGroup_ids();
-//        group_ids.put("1", List.of("full")); //Users
-//        zammadUserDTO.setGroup_ids(group_ids);
+        List<String> roleIds = new ArrayList<>();
+        roleIds.add(assignmentRoleIdAgent);
+        roleIds.add(assignmentRoleIdErstellen);
+        zammadUserDTO.setRoleIds(roleIds);
+//        Map<String, List<String>> groupIds = zammadUserDTO.getGroupIds() == null ? new HashMap<>() : zammadUserDTO.getGroupIds();
+//        groupIds.put("1", List.of("full")); //Users
+//        zammadUserDTO.setGroup_ids(groupIds);
         zammadUserDTO.setLdapsyncupdate(true);
     }
 

@@ -6,10 +6,13 @@ import lombok.EqualsAndHashCode;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Data
 @EqualsAndHashCode
 public class ZammadRoleDTO {
     private String id;
     private String name;
-    private Map<String, List<String>> group_ids;
+    @JsonProperty("group_ids")
+    private Map<String, List<String>> groupIds;
 }

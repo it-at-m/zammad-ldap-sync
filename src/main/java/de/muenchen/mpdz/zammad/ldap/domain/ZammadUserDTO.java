@@ -3,6 +3,8 @@ package de.muenchen.mpdz.zammad.ldap.domain;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -18,9 +20,12 @@ public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
     private String email;
     private String department;
     private String lhmobjectid;
-    private List<String> role_ids;
-    private Map<String, List<String>> group_ids;
-    private String updated_at;
+    @JsonProperty("role_ids")
+    private List<String> roleIds;
+    @JsonProperty("group_ids")
+    private Map<String, List<String>> groupIds;
+    @JsonProperty("updated_at")
+    private String updatedAt;
     private boolean active;
     private String ldapsyncstate;
 

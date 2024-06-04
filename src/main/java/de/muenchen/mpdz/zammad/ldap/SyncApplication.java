@@ -14,7 +14,7 @@ public class SyncApplication {
 
 		var context = SpringApplication.run(SyncApplication.class, args);
 		var syncService = context.getBean(ZammadSyncService.class);
-		syncService.syncSubtreeByDn(null, null);
+		syncService.syncSubtreeByDn();
 
 	}
 

@@ -9,12 +9,16 @@ ldap:
 sync:
 # Every date-time-minus-day > 0 is converted to 'startDateTime - date-time-minus-day' to restrict ldap user search.
   date-time-minus-day: 7
-  ou-base: ...
+  ou-bases:
+    - dn_1
+    - dn_2
 
 zammad:
   assignment:
     role:
-      id: 4
+      id-agent: 2
+      id-erstellen: 4
+      id-vollzugriff: 5
   token: ...
   url:
     base: http://...

@@ -130,7 +130,7 @@ public class LdapService {
 	 * @param modifyTimeStamp   Optional ldap search attribute
 	 * @return OU Tree
 	 */
-	public Optional<Map<String, LdapOuNode>> calculateSubtreeWithUsers(String distinguishedName,
+	public Optional<Map<String, LdapOuNode>> createSubtreeWithUsers(String distinguishedName,
 			String modifyTimeStamp) {
 
 		var subtree = new TreeMap<String, LdapOuNode>();
@@ -149,6 +149,7 @@ public class LdapService {
 				var rootNode = new LdapOuNode();
 				rootNode.setNode(object);
 				rootNode.setDistinguishedName(distinguishedName);
+				addUsers(this.userSearchBase, rootNode, modifyTimeStamp);
 				subtree.put(distinguishedName, rootNode);
 
 				searchResults.forEach(o -> addSubtree(distinguishedName, rootNode, modifyTimeStamp));

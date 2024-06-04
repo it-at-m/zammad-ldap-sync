@@ -19,7 +19,7 @@ public class ZammadLdapService {
 
     public Optional<Map<String, LdapOuNode>> calculateOuSubtreeWithUsersByDn(String distinguishedName, String modifyTimeStamp) {
 
-        var subtree =  ldapService.calculateSubtreeWithUsers(distinguishedName, modifyTimeStamp);
+        var subtree =  ldapService.createSubtreeWithUsers(distinguishedName, modifyTimeStamp);
 
         if (subtree.isEmpty()) {
             return Optional.empty();

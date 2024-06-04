@@ -97,7 +97,7 @@ public class LdapServiceIntegrationTest {
     @Test
     void calculate_shade_tree() {
 
-        var shadetree = this.sut.calculateSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
+        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
         Assertions.assertEquals("o=oubase,dc=example,dc=org", rootNode.getDistinguishedName());
@@ -116,7 +116,7 @@ public class LdapServiceIntegrationTest {
     @Test
     void calculate_shade_tree_select_user_with_modifyTimestamp() {
 
-        var shadetree = this.sut.calculateSubtreeWithUsers("o=oubase,dc=example,dc=org", "20240226083627Z");
+        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", "20240226083627Z");
         Assertions.assertTrue(shadetree.isPresent());
         Assertions.assertEquals(1, shadetree.get().size());
         var rootNode = shadetree.get().values().iterator().next();
@@ -125,7 +125,7 @@ public class LdapServiceIntegrationTest {
         Assertions.assertEquals(1, rbs.getUsers().size(), "User expected. All users were created after the timestamp");
         Assertions.assertNotNull(rbs.getUsers().get(0).getModifyTimeStamp(), "Operational ldap user attribute modifyTimestamp not selected.");
 
-        shadetree = this.sut.calculateSubtreeWithUsers("o=oubase,dc=example,dc=org", "30000000000000Z");
+        shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", "30000000000000Z");
         Assertions.assertTrue(shadetree.isPresent());
         Assertions.assertEquals(1, shadetree.get().size());
         rootNode = shadetree.get().values().iterator().next();
@@ -137,7 +137,7 @@ public class LdapServiceIntegrationTest {
     @Test
     void shade_tree_override_toString() {
 
-        var shadetree = this.sut.calculateSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
+        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
 
@@ -149,7 +149,7 @@ public class LdapServiceIntegrationTest {
     @Test
     void shade_tree_flat_list_user() {
 
-        var shadetree = this.sut.calculateSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
+        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
 
@@ -160,7 +160,7 @@ public class LdapServiceIntegrationTest {
     @Test
     void shade_tree_flat_list_ou() {
 
-        var shadetree = this.sut.calculateSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
+        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
 
