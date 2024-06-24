@@ -45,44 +45,6 @@ public class ZammadSyncService {
 
 	private ZammadSyncServiceSubtreeUtil subtreeUtil;
 
-	public void syncAssignmentRoles() {
-		log.debug("*****************************************");
-		log.debug("Starting AssignmentRole Sync.");
-		// Fetch all zammad groups
-		log.debug("Getting all zammad groups");
-		List<ZammadGroupDTO> zammadGroupDTOs = zammadService.getZammadGroups();
-
-		// Fetch asignmentrole Erstellen
-		log.debug("Getting assignment role Erstellen");
-		ZammadRoleDTO zammadRoleDTOErstellen = zammadService.getZammadRole(assignmentRoleIdErstellen);
-
-		// Create group-map
-		Map<String, List<String>> newGroupIdsErstellen = new HashMap<>();
-		for (ZammadGroupDTO zammadGroupDTO : zammadGroupDTOs) {
-			newGroupIdsErstellen.put(zammadGroupDTO.getId(), List.of("create"));
-		}
-
-		// Update AssignmentRole Erstellen
-		log.debug("Updating assignment role Zweisung with \"create\" for all groups");
-		zammadRoleDTOErstellen.setGroupIds(newGroupIdsErstellen);
-		zammadService.updateZammadRole(zammadRoleDTOErstellen);
-
-		// Fetch asignmentrole Vollzugriff
-		log.debug("Getting assignment role Vollzugriff");
-		ZammadRoleDTO zammadRoleDTOVollzugriff = zammadService.getZammadRole(assignmentRoleIdVollzugriff);
-
-		// Create group-map
-		Map<String, List<String>> newGroupIdsVollzugriff = new HashMap<>();
-		for (ZammadGroupDTO zammadGroupDTO : zammadGroupDTOs) {
-			newGroupIdsVollzugriff.put(zammadGroupDTO.getId(), List.of("full"));
-		}
-
-		// Update AssignmentRole
-		log.debug("Updating assignment role Vollzugriff with \"create\" for all groups");
-		zammadRoleDTOVollzugriff.setGroupIds(newGroupIdsVollzugriff);
-		zammadService.updateZammadRole(zammadRoleDTOVollzugriff);
-
-	}
 
 	/**
 	 * Calculate ldap subtree with users based on distinguished name. Add/update
@@ -137,6 +99,46 @@ public class ZammadSyncService {
 		return calculatedTimeStamp;
 	}
 
+	public void syncAssignmentRoles() {
+		log.debug("*****************************************");
+		log.debug("Starting AssignmentRole Sync.");
+		// Fetch all zammad groups
+		log.debug("Getting all zammad groups");
+		List<ZammadGroupDTO> zammadGroupDTOs = zammadService.getZammadGroups();
+
+		// Fetch asignmentrole Erstellen
+		log.debug("Getting assignment role Erstellen");
+		ZammadRoleDTO zammadRoleDTOErstellen = zammadService.getZammadRole(assignmentRoleIdErstellen);
+
+		// Create group-map
+		Map<String, List<String>> newGroupIdsErstellen = new HashMap<>();
+		for (ZammadGroupDTO zammadGroupDTO : zammadGroupDTOs) {
+			newGroupIdsErstellen.put(zammadGroupDTO.getId(), List.of("create"));
+		}
+
+		// Update AssignmentRole Erstellen
+		log.debug("Updating assignment role Zweisung with \"create\" for all groups");
+		zammadRoleDTOErstellen.setGroupIds(newGroupIdsErstellen);
+		zammadService.updateZammadRole(zammadRoleDTOErstellen);
+
+		// Fetch asignmentrole Vollzugriff
+		log.debug("Getting assignment role Vollzugriff");
+		ZammadRoleDTO zammadRoleDTOVollzugriff = zammadService.getZammadRole(assignmentRoleIdVollzugriff);
+
+		// Create group-map
+		Map<String, List<String>> newGroupIdsVollzugriff = new HashMap<>();
+		for (ZammadGroupDTO zammadGroupDTO : zammadGroupDTOs) {
+			newGroupIdsVollzugriff.put(zammadGroupDTO.getId(), List.of("full"));
+		}
+
+		// Update AssignmentRole
+		log.debug("Updating assignment role Vollzugriff with \"create\" for all groups");
+		zammadRoleDTOVollzugriff.setGroupIds(newGroupIdsVollzugriff);
+		zammadService.updateZammadRole(zammadRoleDTOVollzugriff);
+
+	}
+
+
 	/**
 	 * Calculate ldap subtree with users based on distinguished name.
 	 *
@@ -158,6 +160,18 @@ public class ZammadSyncService {
 		log.debug(json);
 
 		return json;
+	}
+
+	public boolean isRoleIdErstellen() {
+
+		var erstellen = zammadService.getZammadRole(assignmentRoleIdErstellen);
+		return erstellen.getName().trim().compareToIgnoreCase("erstellen") == 0;
+	}
+
+	public boolean isRoleIdVollzugriff() {
+
+		var vollzugriff = zammadService.getZammadRole(assignmentRoleIdVollzugriff);
+		return vollzugriff.getName().trim().compareToIgnoreCase("vollzugriff") == 0 ;
 	}
 
 }
