@@ -112,6 +112,10 @@ public class ZammadSyncService {
 			log.debug("Update zammad groups and users ...");
 			subtreeUtil.updateZammadGroupsWithUsers(shadeDnSubtree.get());
 
+			log.debug("Mark user for deletion ...");
+			var deleteEntry = shadeDnSubtree.get().entrySet().iterator().next();
+			subtreeUtil.assignDeletionFlagZammadUser(deleteEntry.getValue());
+
 			log.info("END sychronize Zammad groups and users with LDAP DN : " + dn);
 
 		}
@@ -131,43 +135,6 @@ public class ZammadSyncService {
 			calculatedTimeStamp = ldapFormatter.format(ldapUserSearchDate) + "Z";
 		}
 		return calculatedTimeStamp;
-	}
-
-	/**
-	 *
-	 * In Zammad it is recommended to delete users for privacy issues only
-	 * (https://admin-docs.zammad.org/en/latest/system/data-privacy.html).
-	 *
-	 * Be careful using this option. Every zammad user not found in DN subtree will
-	 * be marked for deletion. Use only with DN as short as possible (or as close at
-	 * DN root as possible) to fetch all user you need in Zammad ! Do not use with
-	 * DNs selecting limited subtrees only !
-	 *
-	 * To delete users finally use Zammad automation with condition : user.ldapsync
-	 * = "delete" (https://admin-docs.zammad.org/en/latest/manage/scheduler.html).
-	 *
-	 * @param distinguishedName
-	 * @return ldapTreeView
-	 */
-	public String markZammadUserToDelete(String distinguishedName) {
-
-		var dn = distinguishedName;
-		log.info("*****************************************");
-		log.info("START assign deletion flag Zammad to users with LDAP DN : " + dn);
-
-		log.debug("Calculate LDAP Subtree with DN ... " + dn);
-		var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, null);
-
-		var rootEntry = shadeDnSubtree.get().entrySet().iterator().next();
-		subtreeUtil.assignDeletionFlagZammadUser(rootEntry.getValue());
-
-		var treeView = rootEntry.getValue().toString();
-		log.debug(treeView);
-
-		log.info("END assign deletion flag with LDAP DN : " + dn);
-
-		return treeView;
-
 	}
 
 	/**

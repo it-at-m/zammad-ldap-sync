@@ -200,9 +200,11 @@ public class ZammadSyncServiceSubtreeUtil {
 
         log.debug("=============================");
         log.debug("Full-Sync requested - Checking for update and deletions of users ...");
-        var ldapUserMap = rootNode.flatListLdapUserDTO().stream().collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity()));
 
-        getCurrentZammadUsers().forEach((lhmObjectId, list) -> {
+        var ldapUserMap = rootNode.flatListLdapUserDTO().stream().collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity()));
+        var zammadBranchGroupUsers = findAllZammadBranchGroupUsers(rootNode.getNode().getLhmObjectId());
+
+        zammadBranchGroupUsers.forEach((lhmObjectId, list) -> {
 
             if (list.size() > 1) {
                 log.error("Inconsistent Zammad state. More than one zammad user found for lhmObjectId '{}'.", lhmObjectId);
@@ -300,5 +302,43 @@ public class ZammadSyncServiceSubtreeUtil {
         zammadUserDTO.setLdapsyncupdate(true);
     }
 
+    private Map<String, List<ZammadUserDTO>> findAllZammadBranchGroupUsers(String ldapOuRootLhmObjectId) {
+
+        var zammadGroups = new ArrayList<ZammadGroupDTO>();
+        zammadGroups.addAll(findRootZammadGroup(ldapOuRootLhmObjectId));
+
+        findChildGroups(zammadService.getZammadGroups(), zammadGroups.get(0).getId(), zammadGroups );
+
+        var zammadBranchUsers = new ArrayList<ZammadUserDTO>();
+        var zammadUsers = zammadService.getZammadUsers();
+        zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
+
+       	return zammadBranchUsers.stream().filter(u -> u.getLhmobjectid() != null).collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
+
+    }
+
+    private List<ZammadGroupDTO> findRootZammadGroup(String ldapOuRootLhmObjectId) {
+
+       	var rootZammadGroups = getCurrentZammadGroups().get(ldapOuRootLhmObjectId);
+    	if (rootZammadGroups.size() > 1) {
+            log.error("Inconsistent Zammad state. More than one zammad group found for lhmObjectId '{}'.", ldapOuRootLhmObjectId);
+            return new ArrayList<ZammadGroupDTO>();
+        }
+    	return rootZammadGroups;
+
+    }
+
+    private void findChildGroups(List<ZammadGroupDTO> zammadServiceGroups, String zammadGroupId, List<ZammadGroupDTO>allZammadBranchGroups) {
+
+    	var childGroups = zammadServiceGroups.stream().filter(g -> (g.getParentId() != null && g.getParentId().equals(zammadGroupId))).collect(Collectors.toList());
+    	if ( ! childGroups.isEmpty()) {
+	    	allZammadBranchGroups.addAll(childGroups);
+	    	childGroups.forEach(g -> findChildGroups(zammadServiceGroups, g.getId(), allZammadBranchGroups));
+    	}
+    }
+
+    private List<ZammadUserDTO> findUsers(List<ZammadUserDTO> zammadServiceUsers, String zammadGroupId) {
+    	return zammadServiceUsers.stream().filter(u -> u.getGroupIds().containsKey(zammadGroupId)).collect(Collectors.toList());
+    }
 
 }
