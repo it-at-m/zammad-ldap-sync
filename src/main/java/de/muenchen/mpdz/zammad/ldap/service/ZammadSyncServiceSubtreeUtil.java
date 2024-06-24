@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -72,7 +73,12 @@ public class ZammadSyncServiceSubtreeUtil {
 
             logStatistic(shadeLdapSubtree.entrySet().stream().findFirst().get().getValue());
 
-            updateZammadGroupsWithUsers(shadeLdapSubtree, null, null);
+            var zammadParentGroup = findZammadParentGroupIfExists(shadeLdapSubtree);
+    		if (zammadParentGroup.isPresent()) {
+    			updateZammadGroupsWithUsers(shadeLdapSubtree, zammadParentGroup.get().getName(), zammadParentGroup.get().getId());
+    		}
+    		else
+    			updateZammadGroupsWithUsers(shadeLdapSubtree, null, null);
 
     }
 
@@ -83,6 +89,17 @@ public class ZammadSyncServiceSubtreeUtil {
 
     	log.info(String.format("Start processing '%o' ldap ou with '%o' user.", getOuSize(), getUserSize()));
     }
+
+    private Optional<ZammadGroupDTO> findZammadParentGroupIfExists(Map<String, LdapOuNode> shadeLdapSubtree) {
+		var rootNode = shadeLdapSubtree.entrySet().iterator().next();
+		var ldapOuRootLhmObjectId = rootNode.getValue().getNode().getLhmObjectId();
+		var zammadGroup = findRootZammadGroup(ldapOuRootLhmObjectId).get(0);
+		if (zammadGroup == null)
+			return Optional.empty();
+		else {
+			return zammadService.getZammadGroups().stream().filter(g -> g.getId().equals(zammadGroup.getParentId())).findFirst();
+		}
+	}
 
     private void updateZammadGroupsWithUsers(Map<String, LdapOuNode> shadeLdapSubtree, String zammadGroupName, final String parentGroupID) {
 
