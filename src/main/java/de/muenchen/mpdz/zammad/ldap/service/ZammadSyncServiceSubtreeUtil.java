@@ -212,7 +212,6 @@ public class ZammadSyncServiceSubtreeUtil {
         });
     }
 
-
     public void assignDeletionFlagZammadUser(LdapOuNode rootNode) {
 
         log.debug("=============================");
@@ -324,20 +323,27 @@ public class ZammadSyncServiceSubtreeUtil {
         var zammadGroups = new ArrayList<ZammadGroupDTO>();
         zammadGroups.addAll(findRootZammadGroup(ldapOuRootLhmObjectId));
 
-        findChildGroups(zammadService.getZammadGroups(), zammadGroups.get(0).getId(), zammadGroups );
+        if (zammadGroups.isEmpty())
+        	return new HashMap<String, List<ZammadUserDTO>>();
+        else {
 
-        var zammadBranchUsers = new ArrayList<ZammadUserDTO>();
-        var zammadUsers = zammadService.getZammadUsers();
-        zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
+        	findChildGroups(zammadService.getZammadGroups(), zammadGroups.get(0).getId(), zammadGroups );
 
-       	return zammadBranchUsers.stream().filter(u -> u.getLhmobjectid() != null).collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
+	        var zammadBranchUsers = new ArrayList<ZammadUserDTO>();
+	        var zammadUsers = zammadService.getZammadUsers();
+	        zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
 
+	       	return zammadBranchUsers.stream().filter(u -> u.getLhmobjectid() != null).collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
+        }
     }
 
     private List<ZammadGroupDTO> findRootZammadGroup(String ldapOuRootLhmObjectId) {
 
        	var rootZammadGroups = getCurrentZammadGroups().get(ldapOuRootLhmObjectId);
-    	if (rootZammadGroups.size() > 1) {
+       	if (rootZammadGroups == null) {
+            log.debug("No zammad root group found '{}'.", ldapOuRootLhmObjectId);
+            return new ArrayList<ZammadGroupDTO>();
+        } else if (rootZammadGroups.size() > 1) {
             log.error("Inconsistent Zammad state. More than one zammad group found for lhmObjectId '{}'.", ldapOuRootLhmObjectId);
             return new ArrayList<ZammadGroupDTO>();
         }
