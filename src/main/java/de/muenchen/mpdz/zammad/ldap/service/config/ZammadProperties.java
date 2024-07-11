@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldap.service;
+package de.muenchen.mpdz.zammad.ldap.service.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -12,7 +12,7 @@ public class ZammadProperties {
 
 	private String token;
 	private ZammadUrlProperties url;
-
+	private Assignment assignment;
 
 	  public String getToken() {
 		  return "Token token=" + this.token;

@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadRoleDTO;
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.mpdz.zammad.ldap.service.config.ZammadProperties;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -156,7 +157,7 @@ public class ZammadService {
 		return responseEntity.getBody();
 	}
 
-	public ZammadRoleDTO getZammadRole(String id) {
+	public ZammadRoleDTO getZammadRole(int id) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", zammadProperties.getToken());
 
@@ -166,6 +167,18 @@ public class ZammadService {
 				HttpMethod.GET, requestEntity, ZammadRoleDTO.class);
 
 		return responseEntity.getBody();
+	}
+
+	public List<ZammadRoleDTO> getZammadRoles() {
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("Authorization", zammadProperties.getToken());
+
+		HttpEntity<ZammadRoleDTO> requestEntity = new HttpEntity<>(headers);
+
+		ResponseEntity<ZammadRoleDTO[]> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getRoles(),
+				HttpMethod.GET, requestEntity, ZammadRoleDTO[].class);
+
+		return Arrays.asList(responseEntity.getBody());
 	}
 
 	public ZammadRoleDTO updateZammadRole(ZammadRoleDTO zammadRoleDTO) {

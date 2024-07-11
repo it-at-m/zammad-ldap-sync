@@ -13,9 +13,9 @@ sync:
 zammad:
   assignment:
     role:
-      id-agent: 2
-      id-erstellen: 4
-      id-vollzugriff: 5
+      name-agent: Agent
+      name-erstellen: Erstellen
+      name-vollzugriff: Vollzugriff
   token: ...
   url:
     base: http://...

@@ -6,44 +6,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.mpdz.zammad.ldap.domain.ZammadRoleDTO;
+import de.muenchen.mpdz.zammad.ldap.service.config.SyncProperties;
+import de.muenchen.mpdz.zammad.ldap.service.config.ZammadProperties;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@Getter
 public class ZammadSyncService {
 
-	public ZammadSyncService(ZammadService zammadService, ZammadLdapService zammadLdapService,
-			ZammadSyncContext context, ZammadSyncServiceSubtreeUtil subtreeUtil) {
-		this.zammadService = zammadService;
-		this.zammadLdapService = zammadLdapService;
-		this.context = context;
-		this.subtreeUtil = subtreeUtil;
-	}
-
-	@Autowired
 	private SyncProperties syncProperties;
 
-	@Value("${zammad.assignment.role.id-erstellen}")
-	private String assignmentRoleIdErstellen;
-
-	@Value("${zammad.assignment.role.id-vollzugriff}")
-	private String assignmentRoleIdVollzugriff;
+	private ZammadProperties zammadProperties;
 
 	public ZammadService zammadService;
 
 	public ZammadLdapService zammadLdapService;
 
-	public ZammadSyncContext context;
-
 	private ZammadSyncServiceSubtreeUtil subtreeUtil;
+
+	public ZammadSyncService(ZammadService zammadService, ZammadLdapService zammadLdapService,
+			ZammadProperties zammadProperties, SyncProperties syncProperties, ZammadSyncServiceSubtreeUtil subtreeUtil) {
+
+		this.zammadService = zammadService;
+		this.zammadLdapService = zammadLdapService;
+		this.subtreeUtil = subtreeUtil;
+		this.zammadProperties = zammadProperties;
+		this.syncProperties = syncProperties;
+
+	}
 
 
 	/**
@@ -56,9 +54,9 @@ public class ZammadSyncService {
 		// String distinguishedName, String modifyTimeStamp
 		var dateTime = calculateLdapUserSearchTimeStamp();
 
-		var ldapSyncDns = syncProperties.ouBases;
+		var ldapSyncDistinguishedNames = syncProperties.getOuBases();
 
-		for (String dn : ldapSyncDns) {
+		for (String dn : ldapSyncDistinguishedNames) {
 
 			log.info("*****************************************");
 			log.info(String.format("Searching for user with ldap modifyTimeStamp > '%s'. 'null' means no restriction.",
@@ -66,17 +64,17 @@ public class ZammadSyncService {
 			log.info("START synchronize Zammad groups and users with LDAP DN : " + dn);
 
 			log.debug("Calculate LDAP Subtree with DN : " + dn);
-			var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, dateTime);
+			var shadeDnSubtree = getZammadLdapService().calculateOuSubtreeWithUsersByDn(dn, dateTime);
 
 			var treeView = shadeDnSubtree.get().values().iterator().next().toString();
 			log.trace(treeView);
 
 			log.debug("Update zammad groups and users ...");
-			subtreeUtil.updateZammadGroupsWithUsers(shadeDnSubtree.get());
+			getSubtreeUtil().updateZammadGroupsWithUsers(shadeDnSubtree.get());
 
 			log.debug("Mark user for deletion ...");
 			var deleteEntry = shadeDnSubtree.get().entrySet().iterator().next();
-			subtreeUtil.assignDeletionFlagZammadUser(deleteEntry.getValue());
+			getSubtreeUtil().assignDeletionFlagZammadUser(deleteEntry.getValue());
 
 			log.info("END sychronize Zammad groups and users with LDAP DN : " + dn);
 
@@ -91,8 +89,8 @@ public class ZammadSyncService {
 
 	private String calculateLdapUserSearchTimeStamp() {
 		String calculatedTimeStamp = null;
-		if (syncProperties.dateTimeMinusDay > 0) {
-			var ldapUserSearchDate = LocalDateTime.now().minusDays(syncProperties.dateTimeMinusDay);
+		if (getSyncProperties().getDateTimeMinusDay() > 0) {
+			var ldapUserSearchDate = LocalDateTime.now().minusDays(getSyncProperties().getDateTimeMinusDay());
 			var ldapFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 			calculatedTimeStamp = ldapFormatter.format(ldapUserSearchDate) + "Z";
 		}
@@ -104,11 +102,11 @@ public class ZammadSyncService {
 		log.debug("Starting AssignmentRole Sync.");
 		// Fetch all zammad groups
 		log.debug("Getting all zammad groups");
-		List<ZammadGroupDTO> zammadGroupDTOs = zammadService.getZammadGroups();
+		List<ZammadGroupDTO> zammadGroupDTOs = getZammadService().getZammadGroups();
 
 		// Fetch asignmentrole Erstellen
 		log.debug("Getting assignment role Erstellen");
-		ZammadRoleDTO zammadRoleDTOErstellen = zammadService.getZammadRole(assignmentRoleIdErstellen);
+		ZammadRoleDTO zammadRoleDTOErstellen = getZammadService().getZammadRole(getZammadProperties().getAssignment().getRole().getIdErstellen());
 
 		// Create group-map
 		Map<String, List<String>> newGroupIdsErstellen = new HashMap<>();
@@ -123,7 +121,7 @@ public class ZammadSyncService {
 
 		// Fetch asignmentrole Vollzugriff
 		log.debug("Getting assignment role Vollzugriff");
-		ZammadRoleDTO zammadRoleDTOVollzugriff = zammadService.getZammadRole(assignmentRoleIdVollzugriff);
+		ZammadRoleDTO zammadRoleDTOVollzugriff = getZammadService().getZammadRole(getZammadProperties().getAssignment().getRole().getIdVollzugriff());
 
 		// Create group-map
 		Map<String, List<String>> newGroupIdsVollzugriff = new HashMap<>();
@@ -134,7 +132,7 @@ public class ZammadSyncService {
 		// Update AssignmentRole
 		log.debug("Updating assignment role Vollzugriff with \"create\" for all groups");
 		zammadRoleDTOVollzugriff.setGroupIds(newGroupIdsVollzugriff);
-		zammadService.updateZammadRole(zammadRoleDTOVollzugriff);
+		getZammadService().updateZammadRole(zammadRoleDTOVollzugriff);
 
 	}
 
@@ -154,7 +152,7 @@ public class ZammadSyncService {
 		log.info("START sychronize Zammad groups and users with LDAP DN : " + dn);
 
 		log.debug("Calculate LDAP Subtree with DN ... " + dn);
-		var shadeDnSubtree = zammadLdapService.calculateOuSubtreeWithUsersByDn(dn, modifyTimeStamp);
+		var shadeDnSubtree = getZammadLdapService().calculateOuSubtreeWithUsersByDn(dn, modifyTimeStamp);
 
 		var json = shadeDnSubtree.get().values().iterator().next().json();
 		log.debug(json);
@@ -162,16 +160,33 @@ public class ZammadSyncService {
 		return json;
 	}
 
-	public boolean isRoleIdErstellen() {
+	public boolean checkRoleAssignments() {
 
-		var erstellen = zammadService.getZammadRole(assignmentRoleIdErstellen);
-		return erstellen.getName().trim().compareToIgnoreCase("erstellen") == 0;
-	}
+			var roleProperty = getZammadProperties().getAssignment().getRole();
+			var zammadRoles = getZammadService().getZammadRoles();
 
-	public boolean isRoleIdVollzugriff() {
+			var agentRole =  zammadRoles.stream().filter(role -> roleProperty.getNameAgent().strip().compareToIgnoreCase(role.getName().strip()) == 0).findAny();
+			if (agentRole.isEmpty())
+				return false;
 
-		var vollzugriff = zammadService.getZammadRole(assignmentRoleIdVollzugriff);
-		return vollzugriff.getName().trim().compareToIgnoreCase("vollzugriff") == 0 ;
+			roleProperty.setIdAgent(Integer.valueOf(agentRole.get().getId()));
+
+			var erstellenRole =  zammadRoles.stream().filter(role -> roleProperty.getNameErstellen().strip().compareToIgnoreCase(role.getName().strip()) == 0).findAny();
+			if (erstellenRole.isEmpty())
+				return false;
+
+			roleProperty.setIdErstellen(Integer.valueOf(erstellenRole.get().getId()));
+
+			var vollzugriffRole =  zammadRoles.stream().filter(role -> roleProperty.getNameVollzugriff().strip().compareToIgnoreCase(role.getName().strip()) == 0).findAny();
+			if (vollzugriffRole.isEmpty())
+				return false;
+
+			roleProperty.setIdVollzugriff(Integer.valueOf(vollzugriffRole.get().getId()));
+
+			log.info("Zammad role ids found : {} .", roleProperty.toString());
+
+			return true;
+
 	}
 
 }

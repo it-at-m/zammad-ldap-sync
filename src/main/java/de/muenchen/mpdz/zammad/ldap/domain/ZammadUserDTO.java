@@ -21,7 +21,7 @@ public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
     private String department;
     private String lhmobjectid;
     @JsonProperty("role_ids")
-    private List<String> roleIds;
+    private List<Integer> roleIds;
     @JsonProperty("group_ids")
     private Map<String, List<String>> groupIds;
     @JsonProperty("updated_at")

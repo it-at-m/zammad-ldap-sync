@@ -16,10 +16,10 @@ public class SyncApplication {
 
 		var context = SpringApplication.run(SyncApplication.class, args);
 		var syncService = context.getBean(ZammadSyncService.class);
-		if (syncService.isRoleIdErstellen() && syncService.isRoleIdVollzugriff())
+		if (syncService.checkRoleAssignments())
 			syncService.syncSubtreeByDn();
 		else
-			log.error("Does zammad role id 'id-erstellen' / 'id-vollzugriff' contain role name 'Erstellen' / 'Vollzugriff' ?");
+			log.error("Roles not found. Check if roles referenced in application properties exist in Zammad (e.g. Agent, Erstellen, Vollzugriff).");
 	}
 
 }

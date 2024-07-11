@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldap.service;
+package de.muenchen.mpdz.zammad.ldap.service.config;
 
 
 import lombok.Getter;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import de.muenchen.mpdz.zammad.ldap.tree.LdapService;
 
 @Configuration
-public class ZammadSyncContext {
+public class LdapProperties {
 
     @Getter
     @Value("${ldap.url}")
