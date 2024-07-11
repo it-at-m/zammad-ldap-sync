@@ -26,3 +26,5 @@ zammad:
 spring:
   main:
     web-application-type: none
+  application:
+    name: zammad-ldap-sync
