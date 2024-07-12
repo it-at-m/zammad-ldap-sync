@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldap.domain;
+package de.muenchen.zammad.ldap.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

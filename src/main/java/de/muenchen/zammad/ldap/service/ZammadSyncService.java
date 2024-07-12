@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldap.service;
+package de.muenchen.zammad.ldap.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.mpdz.zammad.ldap.domain.ZammadRoleDTO;
-import de.muenchen.mpdz.zammad.ldap.service.config.SyncProperties;
-import de.muenchen.mpdz.zammad.ldap.service.config.ZammadProperties;
+import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
+import de.muenchen.zammad.ldap.domain.ZammadRoleDTO;
+import de.muenchen.zammad.ldap.service.config.SyncProperties;
+import de.muenchen.zammad.ldap.service.config.ZammadProperties;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,9 +59,8 @@ public class ZammadSyncService {
 		for (String dn : ldapSyncDistinguishedNames) {
 
 			log.info("*****************************************");
-			log.info(String.format("Searching for user with ldap modifyTimeStamp > '%s'. 'null' means no restriction.",
-					dateTime));
-			log.info("START synchronize Zammad groups and users with LDAP DN : " + dn);
+			log.info("Searching for user with ldap modifyTimeStamp > '{}'. 'null' means no restriction.", dateTime);
+			log.info("START synchronize Zammad groups and users with LDAP DN : {}. ", dn);
 
 			log.debug("Calculate LDAP Subtree with DN : " + dn);
 			var shadeDnSubtree = getZammadLdapService().calculateOuSubtreeWithUsersByDn(dn, dateTime);
@@ -76,7 +75,7 @@ public class ZammadSyncService {
 			var deleteEntry = shadeDnSubtree.get().entrySet().iterator().next();
 			getSubtreeUtil().assignDeletionFlagZammadUser(deleteEntry.getValue());
 
-			log.info("END sychronize Zammad groups and users with LDAP DN : " + dn);
+			log.info("END sychronize Zammad groups and users with LDAP DN : {}.", dn);
 
 		}
 
@@ -166,20 +165,26 @@ public class ZammadSyncService {
 			var zammadRoles = getZammadService().getZammadRoles();
 
 			var agentRole =  zammadRoles.stream().filter(role -> roleProperty.getNameAgent().strip().compareToIgnoreCase(role.getName().strip()) == 0).findAny();
-			if (agentRole.isEmpty())
+			if (agentRole.isEmpty()) {
+				log.error("Zammad role 'Agent' not found with property value '{}'.", roleProperty.getNameAgent());
 				return false;
+			}
 
 			roleProperty.setIdAgent(Integer.valueOf(agentRole.get().getId()));
 
 			var erstellenRole =  zammadRoles.stream().filter(role -> roleProperty.getNameErstellen().strip().compareToIgnoreCase(role.getName().strip()) == 0).findAny();
-			if (erstellenRole.isEmpty())
+			if (erstellenRole.isEmpty()) {
+				log.error("Zammad role 'Erstellen' not found with property value '{}'.", roleProperty.getNameErstellen());
 				return false;
+			}
 
 			roleProperty.setIdErstellen(Integer.valueOf(erstellenRole.get().getId()));
 
 			var vollzugriffRole =  zammadRoles.stream().filter(role -> roleProperty.getNameVollzugriff().strip().compareToIgnoreCase(role.getName().strip()) == 0).findAny();
-			if (vollzugriffRole.isEmpty())
+			if (vollzugriffRole.isEmpty()) {
+				log.error("Zammad role 'Vollzugriff' not found with property value '{}'.", roleProperty.getNameVollzugriff());
 				return false;
+			}
 
 			roleProperty.setIdVollzugriff(Integer.valueOf(vollzugriffRole.get().getId()));
 

@@ -1,10 +1,10 @@
-package de.muenchen.mpdz.zammad.ldap;
+package de.muenchen.zammad.ldap;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
-import de.muenchen.mpdz.zammad.ldap.service.ZammadSyncService;
+import de.muenchen.zammad.ldap.service.ZammadSyncService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

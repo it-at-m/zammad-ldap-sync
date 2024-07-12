@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldap.service;
+package de.muenchen.zammad.ldap.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,13 +11,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.mpdz.zammad.ldap.domain.ZammadUserDTO;
-import de.muenchen.mpdz.zammad.ldap.service.config.ZammadProperties;
-import de.muenchen.mpdz.zammad.ldap.tree.LdapOuNode;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
+import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
+import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.zammad.ldap.service.config.ZammadProperties;
+import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -115,32 +115,32 @@ public class ZammadSyncServiceSubtreeUtil {
             else if (zammadGroupList != null && zammadGroupList.size() == 1) {
                 ZammadGroupDTO zammadLdapSyncGroup = zammadGroupList.get(0);
                 if (zammadLdapSyncGroup != null) {
-                    log.debug("Zammad group found with ldap id : " + lhmObjectIdToFind);
+                    log.debug("Zammad group '{}' found with lhmObjectId '{}'.", zammadLdapSyncGroup.getName(), lhmObjectIdToFind);
                     ongoingZammadGroupId = zammadLdapSyncGroup.getId();
                     if (zammadLdapSyncGroup.isLdapsyncupdate()) {
-                        log.debug("Attribute doNotUpdate=false --> check for update.");
+                        log.debug("Zammad group isLdapsyncupdate={} - check for update.", zammadLdapSyncGroup.isLdapsyncupdate());
                         // To compare add Id and updated_at
                         zammadGroupCompareDTO.setId(zammadLdapSyncGroup.getId());
                         zammadGroupCompareDTO.setUpdatedAt(zammadLdapSyncGroup.getUpdatedAt());
                         if (!zammadLdapSyncGroup.equals(zammadGroupCompareDTO)) {
-                            log.debug("Something has changed --> updating.");
+                            log.debug("Something has changed - updating.");
                             getZammadService().updateZammadGroup(zammadGroupCompareDTO);
                         } else {
-                            log.debug("No change --> skipping.");
+                            log.debug("No change - skipping.");
                         }
                     }
                 }
             } else {
-                log.debug("Group not found in Zammad --> creating.");
-                //Not found: create new with doNotUpdate=false
+                log.debug("Group not found in Zammad with lhmObjectId '{}' - creating.", lhmObjectIdToFind);
+                //Not found: create new with isLdapsyncupdate=true
                 ZammadGroupDTO createdZammadGroupDTO = getZammadService().createZammadGroup(zammadGroupCompareDTO);
                 ongoingZammadGroupId = createdZammadGroupDTO.getId();
-                log.debug("Creating group with ID " + createdZammadGroupDTO.getId());
+                log.debug("Zammad group with ID '{}' created.", ongoingZammadGroupId);
             }
 
             if (node.getUsers() != null) {
             	if (ongoingZammadGroupId == null)
-            		log.error("'{}' : GROUPID is NULL for user: '{}'", ldapOuDto.getLhmOULongname() ,node.getUsers().stream().map(n -> String.valueOf(n)).collect(Collectors.joining("; ")));
+            		log.error("'{}' : GROUP_ID is NULL for user: '{}'.", ldapOuDto.getLhmOULongname() ,node.getUsers().stream().map(n -> String.valueOf(n)).collect(Collectors.joining("; ")));
 
             	updateZammadGroupUsers(node.getUsers(), ongoingZammadGroupId);
 
@@ -162,7 +162,7 @@ public class ZammadSyncServiceSubtreeUtil {
         ldapBaseUserDTOs.forEach(user -> {
 
             log.debug("------------------------");
-            log.debug("Processing: lhmObjectId: '{}'" , user.getLhmObjectId());
+            log.debug("Processing: lhmObjectId: '{}'." , user.getLhmObjectId());
 
             //Create new LdapBaseUserDTO out of LDAP-OU and create zammadGroupId
             var zammadUserCompareDTO = mapToZammadUser(user, zammadUserGroupId);
@@ -176,28 +176,30 @@ public class ZammadSyncServiceSubtreeUtil {
             else if (foundZammadUser != null && foundZammadUser.size() == 1) {
                 var zammadLdapSyncUser = foundZammadUser.get(0);
                 if (zammadLdapSyncUser != null) {
-                    log.debug("Zammad user found with ldap id : " + lhmObjectIdToFind);
+                    log.debug("Zammad user found with lhmObjectId '{}'.", lhmObjectIdToFind);
 
                     if (zammadLdapSyncUser.isLdapsyncupdate()) {
-                        log.debug("Attribute doNotUpdate=false --> check for update.");
+                        log.debug("User isLdapsyncupdate={} - check for update.", zammadLdapSyncUser.isLdapsyncupdate());
                         //Update Id, updated_at und role_ids in case updateZammadUser
                         prepareUserForComparison(zammadUserCompareDTO, zammadLdapSyncUser);
                         if (zammadLdapSyncUser.compareTo(zammadUserCompareDTO) != 0) {
-                            log.debug("Something has changed --> updating.");
-                            log.debug("zammadLdapSyncUser   '{}'" , zammadLdapSyncUser);
-                            log.debug("zammadUserCompareDTO '{}'" , zammadUserCompareDTO);
+                            log.debug("Something has changed - updating.");
+                            log.debug("zammadLdapSyncUser   '{}'." , zammadLdapSyncUser.toString());
+                            log.debug("zammadUserCompareDTO '{}'." , zammadUserCompareDTO.toString());
                             getZammadService().updateZammadUser(zammadUserCompareDTO);
                         } else {
-                            log.debug("No change --> skipping.");
+                            log.debug("No change - skipping.");
                         }
+                    } else {
+                    	log.debug("isLdapsyncupdate={} - skipping.", zammadLdapSyncUser.isLdapsyncupdate());
                     }
                 }
             } else {
-                log.debug("User not found in Zammad --> creating.");
-                //Not found: create new with doNotUpdate=false
+                log.debug("User not found in Zammad with lhmObjectid '{}' - creating.", lhmObjectIdToFind );
+                //Not found: create new with isLdapsyncupdate=true
                 prepareUserForCreation(zammadUserCompareDTO);
                 ZammadUserDTO zammadUserDTO = getZammadService().createZammadUser(zammadUserCompareDTO);
-                log.debug("Creating user with ID " + zammadUserDTO.getId());
+                log.debug("Zammad user with ID '{}' created.", zammadUserDTO.getId());
             }
         });
     }
@@ -219,7 +221,7 @@ public class ZammadSyncServiceSubtreeUtil {
 
             var zammadUser = list.get(0);
             log.debug("---------------------------");
-            log.debug("Checking ZammadUser " + zammadUser.getFirstname() + " " + zammadUser.getLastname());
+            log.debug("Checking ZammadUser with lhmObjectId '{}'.", zammadUser.getLhmobjectid());
 
             if (zammadUser.isLdapsyncupdate()) {
 
@@ -228,19 +230,19 @@ public class ZammadSyncServiceSubtreeUtil {
                 } else {
                     var ldapBaseUserDTO = ldapUserMap.get(lhmObjectId);
                     if (ldapBaseUserDTO == null) {
-                        log.debug("Did not find ZammadUser in LDAP-Users.");
+                        log.debug("Do not find ZammadUser in LDAP-Users.");
                         if (zammadUser.isActive()) {
-                            log.debug("User in Zammad is active - setting to inactive as a first step.");
+                            log.debug("User in Zammad is active '{}' - setting to inactive as a first step.", zammadUser.isActive());
                             zammadUser.setActive(false);
                             zammadUser.setLdapsyncstate("delete");
                             getZammadService().updateZammadUser(zammadUser);
                         }
                     } else {
-                        log.debug("Found user in LDAP - not deleting.");
+                        log.debug("User exists in LDAP - not deleting.");
                     }
                 }
             } else {
-                log.debug("Found doNotUpdate Flag - skipping.");
+                log.debug("isLdapsyncupdate is '{}' - skipping.", zammadUser.isLdapsyncupdate());
             }
         });
     }

@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldap.service.config;
+package de.muenchen.zammad.ldap.service.config;
 
 import java.util.List;
 

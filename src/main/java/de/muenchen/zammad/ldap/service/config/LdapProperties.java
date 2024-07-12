@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldap.service.config;
+package de.muenchen.zammad.ldap.service.config;
 
 
 import lombok.Getter;
@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import de.muenchen.mpdz.zammad.ldap.tree.LdapService;
+import de.muenchen.zammad.ldap.tree.LdapService;
 
 @Configuration
 public class LdapProperties {

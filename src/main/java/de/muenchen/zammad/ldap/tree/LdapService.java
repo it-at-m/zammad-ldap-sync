@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.muenchen.mpdz.zammad.ldap.tree;
+package de.muenchen.zammad.ldap.tree;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
@@ -43,6 +43,7 @@ import org.springframework.ldap.query.SearchScope;
 import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
 import de.muenchen.oss.ezldap.core.LdapOuAttributesMapper;
 import de.muenchen.oss.ezldap.core.LdapUserAttributesMapper;
+import de.muenchen.zammad.ldap.tree.DtoMapperImpl;
 import lombok.extern.slf4j.Slf4j;
 
 

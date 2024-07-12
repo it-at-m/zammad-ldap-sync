@@ -1,4 +1,4 @@
-package de.muenchen.mpdz.zammad.ldap.service;
+package de.muenchen.zammad.ldap.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,10 +12,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import de.muenchen.mpdz.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.mpdz.zammad.ldap.domain.ZammadRoleDTO;
-import de.muenchen.mpdz.zammad.ldap.domain.ZammadUserDTO;
-import de.muenchen.mpdz.zammad.ldap.service.config.ZammadProperties;
+import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
+import de.muenchen.zammad.ldap.domain.ZammadRoleDTO;
+import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.zammad.ldap.service.config.ZammadProperties;
 import lombok.extern.slf4j.Slf4j;
 
 @Service

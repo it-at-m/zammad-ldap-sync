@@ -1,84 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+<!-- The MIT License Copyright © 2023 Landeshauptstadt München | it@M Permission
+	is hereby granted, free of charge, to any person obtaining a copy of this
+	software and associated documentation files (the "Software"), to deal in
+	the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is furnished
+	to do so, subject to the following conditions: The above copyright notice
+	and this permission notice shall be included in all copies or substantial
+	portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY
+	OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+	OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+	DEALINGS IN THE SOFTWARE. -->
 
-    The MIT License
-    Copyright © 2023 Landeshauptstadt München | it@M
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
-
--->
-
-<!-- The possibly existing properties concerning the "logging.level" in the application.yml
-     have priority over the log level maintained in this file.  -->
+<!-- The possibly existing properties concerning the "logging.level" in the
+	application.yml have priority over the log level maintained in this file. -->
 <configuration>
 
-    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+	<springProperty scope="context" name="springAppName" source="spring.application.name" />
 
-    <springProfile name="dev,local">
+	<!-- Insert the current time formatted as "yyyyMMdd'T'HHmmss" under
+       the key "bySecond" into the logger context. This value will be
+       available to all subsequent configuration elements. -->
+  	<timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+  	<property name="logFileName" value="log/zammadLdapSync-${bySecond}" />
 
-        <!-- Log appender -->
-        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>
-                    %date{yyyy.MM.dd HH:mm:ss.SSS} | ${springAppName} | TraceId: %X{traceId:-} | SpanId: %X{spanId:-}] | %level | [%thread] | %logger{0} | [%file : %line] - %msg%n
-                </pattern>
-            </encoder>
-        </appender>
+	<springProfile name="local">
 
-        <!-- Logger -->
-        <logger name="de.muenchen.mpdz"
-                level="debug"
-                additivity="false">
-            <appender-ref ref="STDOUT" />
-        </logger>
+		<!-- Log appender -->
+		<appender name="STDOUT"
+			class="ch.qos.logback.core.ConsoleAppender">
+			<encoder>
+				<pattern>
+					%date{yyyy.MM.dd HH:mm:ss.SSS} | ${springAppName} | TraceId: %X{traceId:-} | SpanId: %X{spanId:-}] | %level | [%thread] | %logger{0} | [%file :	%line] - %msg%n
+				</pattern>
+			</encoder>
+		</appender>
+		<appender name="FILE"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+ 			<file>${logFileName}.log</file>
+			<rollingPolicy
+				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+				<!-- daily rollover -->
+				<fileNamePattern>${logFileName}.%d.log</fileNamePattern>
 
-        <!-- Logger usage -->
-        <root level="error">
-            <appender-ref ref="STDOUT" />
-        </root>
+				<!-- keep 5 days' worth of history capped at 5MB total size -->
+				<maxHistory>3</maxHistory>
+				 <totalSizeCap>5MB</totalSizeCap>
+			</rollingPolicy>
 
-    </springProfile>
+			<encoder>
+				<pattern>
+					%date{yyyy.MM.dd HH:mm:ss.SSS} | ${springAppName} | %level | [%thread] | %logger{0} | [%file :	%line] - %msg%n
+				</pattern>
+			</encoder>
+		</appender>
+
+		<!-- Logger -->
+		<logger name="de.muenchen.zammad" level="debug"
+			additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="FILE" />
+		</logger>
+		<logger name="de.muenchen.oss" level="info" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="FILE" />
+		</logger>
+		<root level="error">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="FILE" />
+		</root>
+
+	</springProfile>
 
 
-    <springProfile name="test,prelive,prod">
+	<springProfile name="dev,test,prelive,prod">
 
-        <!-- Log appender -->
-         <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>
-                    %date{yyyy.MM.dd HH:mm:ss.SSS} | ${springAppName} | TraceId: %X{traceId:-} | SpanId: %X{spanId:-}] | %level | [%thread] | %logger{0} | [%file : %line] - %msg%n
-                </pattern>
-            </encoder>
-        </appender>
+		<!-- Log appender -->
+		<appender name="STDOUT"
+			class="ch.qos.logback.core.ConsoleAppender">
+			<encoder>
+				<pattern>
+					%date{yyyy.MM.dd HH:mm:ss.SSS} | ${springAppName} | TraceId: %X{traceId:-} | SpanId: %X{spanId:-}] | %level | [%thread] | %logger{0} | [%file :	%line] - %msg%n
+				</pattern>
+			</encoder>
+		</appender>
 
-        <!-- Logger -->
-        <logger name="de.muenchen.mpdz"
-                level="info"
-                additivity="false">
-            <appender-ref ref="STDOUT" />
-        </logger>
-        <!-- Logger usage -->
-        <root level="error">
-            <appender-ref ref="STDOUT" />
-        </root>
+		<!-- Logger -->
+		<logger name="de.muenchen.zammad" level="info"
+			additivity="false">
+			<appender-ref ref="STDOUT" />
+		</logger>
+		<logger name="de.muenchen.oss" level="error" additivity="false">
+			<appender-ref ref="STDOUT" />
+		</logger>
+		<root level="error">
+			<appender-ref ref="STDOUT" />
+		</root>
 
-    </springProfile>
+	</springProfile>
 
 
 </configuration>

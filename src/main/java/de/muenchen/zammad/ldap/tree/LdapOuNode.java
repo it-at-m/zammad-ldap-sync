@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.muenchen.mpdz.zammad.ldap.tree;
+package de.muenchen.zammad.ldap.tree;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;

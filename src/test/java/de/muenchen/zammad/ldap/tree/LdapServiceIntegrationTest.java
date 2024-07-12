@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.muenchen.mpdz.zammad.ldap.tree;
+package de.muenchen.zammad.ldap.tree;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuAttributesMapper;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserAttributesMapper;
@@ -39,6 +39,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
 import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
+import de.muenchen.zammad.ldap.tree.LdapService;
 
 @Testcontainers
 public class LdapServiceIntegrationTest {
