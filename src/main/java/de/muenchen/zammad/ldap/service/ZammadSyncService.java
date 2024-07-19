@@ -54,34 +54,41 @@ public class ZammadSyncService {
 		// String distinguishedName, String modifyTimeStamp
 		var dateTime = calculateLdapUserSearchTimeStamp();
 
+		log.info("Searching for user with ldap modifyTimeStamp > '{}'. 'null' means no restriction.", dateTime);
+
 		var ldapSyncDistinguishedNames = syncProperties.getOuBases();
+		log.info("OuBases :");
+		ldapSyncDistinguishedNames.forEach(dn -> log.info("   {}", dn));
+		log.info("");
 
 		for (String dn : ldapSyncDistinguishedNames) {
 
 			log.info("*****************************************");
-			log.info("Searching for user with ldap modifyTimeStamp > '{}'. 'null' means no restriction.", dateTime);
-			log.info("START synchronize Zammad groups and users with LDAP DN : {}. ", dn);
 
-			log.debug("Calculate LDAP Subtree with DN : " + dn);
+			log.info("START synchronize Zammad groups and users with OuBase : {}. ", dn);
+
+			log.debug("1/4 Calculate LDAP Subtree ...");
 			var shadeDnSubtree = getZammadLdapService().calculateOuSubtreeWithUsersByDn(dn, dateTime);
 
 			var treeView = shadeDnSubtree.get().values().iterator().next().toString();
 			log.trace(treeView);
 
-			log.debug("Update zammad groups and users ...");
+			log.debug("2/4 Update zammad groups and users ...");
 			getSubtreeUtil().updateZammadGroupsWithUsers(shadeDnSubtree.get());
 
-			log.debug("Mark user for deletion ...");
+			log.debug("3/4 Mark user for deletion ...");
 			var deleteEntry = shadeDnSubtree.get().entrySet().iterator().next();
 			getSubtreeUtil().assignDeletionFlagZammadUser(deleteEntry.getValue());
 
-			log.info("END sychronize Zammad groups and users with LDAP DN : {}.", dn);
+			log.info("END sychronize Zammad groups and users with OuBase : {}.", dn);
 
 		}
 
-		log.debug("Sync assignment roles ...");
+		log.info("");
+		log.debug("4/4 Sync assignment roles ...");
 		syncAssignmentRoles();
 
+		log.info("");
 		log.info("END sychronize Zammad groups, user and roles.");
 
 	}
@@ -97,8 +104,7 @@ public class ZammadSyncService {
 	}
 
 	public void syncAssignmentRoles() {
-		log.debug("*****************************************");
-		log.debug("Starting AssignmentRole Sync.");
+
 		// Fetch all zammad groups
 		log.debug("Getting all zammad groups");
 		List<ZammadGroupDTO> zammadGroupDTOs = getZammadService().getZammadGroups();

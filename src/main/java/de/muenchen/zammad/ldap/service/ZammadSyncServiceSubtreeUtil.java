@@ -159,9 +159,10 @@ public class ZammadSyncServiceSubtreeUtil {
 
     private void updateZammadGroupUsers(List<EnhancedLdapUserDto> ldapBaseUserDTOs, String zammadUserGroupId) {
 
+    	log.debug("------------------------");
+
         ldapBaseUserDTOs.forEach(user -> {
 
-            log.debug("------------------------");
             log.debug("Processing: lhmObjectId: '{}'." , user.getLhmObjectId());
 
             //Create new LdapBaseUserDTO out of LDAP-OU and create zammadGroupId
@@ -182,7 +183,7 @@ public class ZammadSyncServiceSubtreeUtil {
                         log.debug("User isLdapsyncupdate={} - check for update.", zammadLdapSyncUser.isLdapsyncupdate());
                         //Update Id, updated_at und role_ids in case updateZammadUser
                         prepareUserForComparison(zammadUserCompareDTO, zammadLdapSyncUser);
-                        if (zammadLdapSyncUser.compareTo(zammadUserCompareDTO) != 0) {
+                        if (zammadLdapSyncUser.compareTo(zammadUserCompareDTO) == 1) {
                             log.debug("Something has changed - updating.");
                             log.debug("zammadLdapSyncUser   '{}'." , zammadLdapSyncUser.toString());
                             log.debug("zammadUserCompareDTO '{}'." , zammadUserCompareDTO.toString());
@@ -201,13 +202,11 @@ public class ZammadSyncServiceSubtreeUtil {
                 ZammadUserDTO zammadUserDTO = getZammadService().createZammadUser(zammadUserCompareDTO);
                 log.debug("Zammad user with ID '{}' created.", zammadUserDTO.getId());
             }
+            log.debug("------------------------");
         });
     }
 
     public void assignDeletionFlagZammadUser(LdapOuNode rootNode) {
-
-        log.debug("=============================");
-        log.debug("Full-Sync requested - Checking for update and deletions of users ...");
 
         var ldapUserMap = rootNode.flatListLdapUserDTO().stream().collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity()));
         var zammadBranchGroupUsers = findAllZammadBranchGroupUsers(rootNode.getNode().getLhmObjectId());
