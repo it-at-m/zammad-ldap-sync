@@ -33,16 +33,18 @@ public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
 	@Override
 	public int compareTo(ZammadUserDTO o) {
 
-		if (getFirstname() != null && o.getFirstname() != null && getFirstname().compareTo(o.getFirstname()) != 0)
-			return getFirstname().compareTo(o.getFirstname());
-		if (getLastname() != null && o.getLastname() != null && getLastname().compareTo(o.getLastname()) != 0)
-			return getLastname().compareTo(o.getLastname());
-		if (getEmail() != null && o.getEmail() != null && getEmail().compareTo(o.getEmail()) != 0)
-			return getEmail().compareTo(o.getEmail());
-		if (getDepartment() != null && o.getDepartment() != null && getDepartment().compareTo(o.getDepartment()) != 0)
-			return getDepartment().compareTo(o.getDepartment());
-		if (getLhmobjectid() != null && o.getLhmobjectid() != null && getLhmobjectid().compareTo(o.getLhmobjectid()) != 0)
-			return getLhmobjectid().compareTo(o.getLhmobjectid());
+		if (getFirstname() != null && o.getFirstname() != null && ! getFirstname().equals(o.getFirstname()))
+			return 1;
+		if (getLastname() != null && o.getLastname() != null && ! getLastname().equals(o.getLastname()) )
+			return 1;
+		if (getEmail() != null && o.getEmail() != null && ! getEmail().equals(o.getEmail()) )
+			return 1;
+		if (getDepartment() != null && o.getDepartment() != null && ! getDepartment().equals(o.getDepartment()) )
+			return 1;
+		if (getLhmobjectid() != null && o.getLhmobjectid() != null && ! getLhmobjectid().equals(o.getLhmobjectid()))
+			return 1;
+		if (getGroupIds() != null && o.getGroupIds() != null && ! getGroupIds().equals(o.getGroupIds()))
+			return 1;
 
 		return 0;
 	}
