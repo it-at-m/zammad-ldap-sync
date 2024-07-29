@@ -56,9 +56,9 @@ Update role id 'Erstellen' and 'Vollzugriff' in application.yaml
 zammad:
   assignment:
     role:
-      id-agent: 2
-      id-erstellen: 4
-      id-vollzugriff: 5
+      name-agent: Agent
+      name-erstellen: Erstellen
+      name-vollzugriff: Vollzugriff
  ```
 # Configuration properties
 Where possible, the **application.yaml** is pre-filled.
