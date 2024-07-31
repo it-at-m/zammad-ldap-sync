@@ -5,15 +5,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadRoleDTO;
 import de.muenchen.zammad.ldap.service.config.SyncProperties;
 import de.muenchen.zammad.ldap.service.config.ZammadProperties;
+import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +39,8 @@ public class ZammadSyncService {
 	private ZammadSyncServiceSubtreeUtil subtreeUtil;
 
 	public ZammadSyncService(ZammadService zammadService, ZammadLdapService zammadLdapService,
-			ZammadProperties zammadProperties, SyncProperties syncProperties, ZammadSyncServiceSubtreeUtil subtreeUtil) {
+			ZammadProperties zammadProperties, SyncProperties syncProperties,
+			ZammadSyncServiceSubtreeUtil subtreeUtil) {
 
 		this.zammadService = zammadService;
 		this.zammadLdapService = zammadLdapService;
@@ -42,7 +49,6 @@ public class ZammadSyncService {
 		this.syncProperties = syncProperties;
 
 	}
-
 
 	/**
 	 * Calculate ldap subtree with users based on distinguished name. Add/update
@@ -59,37 +65,39 @@ public class ZammadSyncService {
 		var ldapSyncDistinguishedNames = syncProperties.getOuBases();
 		log.info("OuBases :");
 		ldapSyncDistinguishedNames.forEach(dn -> log.info("   {}", dn));
-		log.info("");
 
-		for (String dn : ldapSyncDistinguishedNames) {
+		log.debug("1/4 Start LDAP operations ...");
+		var ldapShadetrees = buildLdapTreesWithDistinguishedNames(dateTime, ldapSyncDistinguishedNames);
+		var allLdapUsers = allLdapUsersWithDistinguishedNames(ldapShadetrees);
+
+		log.info("");
+		for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
 
 			log.info("*****************************************");
 
-			log.info("START synchronize Zammad groups and users with OuBase : {}. ", dn);
+			log.info("START synchronize Zammad groups and users with ouBase : {}. ", entry.getKey());
 
-			log.debug("1/4 Calculate LDAP Subtree ...");
-			var shadeDnSubtree = getZammadLdapService().calculateOuSubtreeWithUsersByDn(dn, dateTime);
-
-			var treeView = shadeDnSubtree.get().values().iterator().next().toString();
+			var treeView = entry.getValue().toString();
 			log.trace(treeView);
 
 			log.debug("2/4 Update zammad groups and users ...");
-			getSubtreeUtil().updateZammadGroupsWithUsers(shadeDnSubtree.get());
+			var map = new HashMap<String, LdapOuNode>();
+			map.put(entry.getKey(), entry.getValue());
+			getSubtreeUtil().updateZammadGroupsWithUsers(map);
 
 			log.debug("3/4 Mark user for deletion ...");
-			var deleteEntry = shadeDnSubtree.get().entrySet().iterator().next();
-			getSubtreeUtil().assignDeletionFlagZammadUser(deleteEntry.getValue());
+			// var deleteEntry = shadeDnSubtree.get().entrySet().iterator().next();
+			getSubtreeUtil().assignDeletionFlagZammadUser(entry.getValue(), allLdapUsers);
 
-			log.info("END sychronize Zammad groups and users with OuBase : {}.", dn);
-
+			log.info("END sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
 		}
 
 		log.info("");
-		log.debug("4/4 Sync assignment roles ...");
+		log.debug("4/4 Sync assignment roles for all ouBases ...");
 		syncAssignmentRoles();
 
 		log.info("");
-		log.info("END sychronize Zammad groups, user and roles.");
+		log.info("END sychronize Zammad groups, user and roles all ouBases.");
 
 	}
 
@@ -111,7 +119,8 @@ public class ZammadSyncService {
 
 		// Fetch asignmentrole Erstellen
 		log.debug("Getting assignment role Erstellen");
-		ZammadRoleDTO zammadRoleDTOErstellen = getZammadService().getZammadRole(getZammadProperties().getAssignment().getRole().getIdErstellen());
+		ZammadRoleDTO zammadRoleDTOErstellen = getZammadService()
+				.getZammadRole(getZammadProperties().getAssignment().getRole().getIdErstellen());
 
 		// Create group-map
 		Map<String, List<String>> newGroupIdsErstellen = new HashMap<>();
@@ -126,7 +135,8 @@ public class ZammadSyncService {
 
 		// Fetch asignmentrole Vollzugriff
 		log.debug("Getting assignment role Vollzugriff");
-		ZammadRoleDTO zammadRoleDTOVollzugriff = getZammadService().getZammadRole(getZammadProperties().getAssignment().getRole().getIdVollzugriff());
+		ZammadRoleDTO zammadRoleDTOVollzugriff = getZammadService()
+				.getZammadRole(getZammadProperties().getAssignment().getRole().getIdVollzugriff());
 
 		// Create group-map
 		Map<String, List<String>> newGroupIdsVollzugriff = new HashMap<>();
@@ -140,7 +150,6 @@ public class ZammadSyncService {
 		getZammadService().updateZammadRole(zammadRoleDTOVollzugriff);
 
 	}
-
 
 	/**
 	 * Calculate ldap subtree with users based on distinguished name.
@@ -167,37 +176,65 @@ public class ZammadSyncService {
 
 	public boolean checkRoleAssignments() {
 
-			var roleProperty = getZammadProperties().getAssignment().getRole();
-			var zammadRoles = getZammadService().getZammadRoles();
+		var roleProperty = getZammadProperties().getAssignment().getRole();
+		var zammadRoles = getZammadService().getZammadRoles();
 
-			var agentRole =  zammadRoles.stream().filter(role -> roleProperty.getNameAgent().strip().compareToIgnoreCase(role.getName().strip()) == 0).findAny();
-			if (agentRole.isEmpty()) {
-				log.error("Zammad role 'Agent' not found with property value '{}'.", roleProperty.getNameAgent());
-				return false;
-			}
+		var agentRole = zammadRoles.stream()
+				.filter(role -> roleProperty.getNameAgent().strip().compareToIgnoreCase(role.getName().strip()) == 0)
+				.findAny();
+		if (agentRole.isEmpty()) {
+			log.error("Zammad role 'Agent' not found with property value '{}'.", roleProperty.getNameAgent());
+			return false;
+		}
 
-			roleProperty.setIdAgent(Integer.valueOf(agentRole.get().getId()));
+		roleProperty.setIdAgent(Integer.valueOf(agentRole.get().getId()));
 
-			var erstellenRole =  zammadRoles.stream().filter(role -> roleProperty.getNameErstellen().strip().compareToIgnoreCase(role.getName().strip()) == 0).findAny();
-			if (erstellenRole.isEmpty()) {
-				log.error("Zammad role 'Erstellen' not found with property value '{}'.", roleProperty.getNameErstellen());
-				return false;
-			}
+		var erstellenRole = zammadRoles.stream().filter(
+				role -> roleProperty.getNameErstellen().strip().compareToIgnoreCase(role.getName().strip()) == 0)
+				.findAny();
+		if (erstellenRole.isEmpty()) {
+			log.error("Zammad role 'Erstellen' not found with property value '{}'.", roleProperty.getNameErstellen());
+			return false;
+		}
 
-			roleProperty.setIdErstellen(Integer.valueOf(erstellenRole.get().getId()));
+		roleProperty.setIdErstellen(Integer.valueOf(erstellenRole.get().getId()));
 
-			var vollzugriffRole =  zammadRoles.stream().filter(role -> roleProperty.getNameVollzugriff().strip().compareToIgnoreCase(role.getName().strip()) == 0).findAny();
-			if (vollzugriffRole.isEmpty()) {
-				log.error("Zammad role 'Vollzugriff' not found with property value '{}'.", roleProperty.getNameVollzugriff());
-				return false;
-			}
+		var vollzugriffRole = zammadRoles.stream().filter(
+				role -> roleProperty.getNameVollzugriff().strip().compareToIgnoreCase(role.getName().strip()) == 0)
+				.findAny();
+		if (vollzugriffRole.isEmpty()) {
+			log.error("Zammad role 'Vollzugriff' not found with property value '{}'.",
+					roleProperty.getNameVollzugriff());
+			return false;
+		}
 
-			roleProperty.setIdVollzugriff(Integer.valueOf(vollzugriffRole.get().getId()));
+		roleProperty.setIdVollzugriff(Integer.valueOf(vollzugriffRole.get().getId()));
 
-			log.info("Zammad role ids found : {} .", roleProperty.toString());
+		log.info("Zammad role ids found : {} .", roleProperty.toString());
 
-			return true;
+		return true;
 
+	}
+
+	private Map<String, LdapOuNode> buildLdapTreesWithDistinguishedNames(String dateTime,	List<String> ldapSyncDistinguishedNames) {
+
+		Map<String, LdapOuNode> shadeTrees = new TreeMap<String, LdapOuNode>();
+		for (String dn : ldapSyncDistinguishedNames) {
+			var tree = getZammadLdapService().calculateOuSubtreeWithUsersByDn(dn, dateTime);
+			if (tree.isPresent())
+				shadeTrees.putAll(tree.get());
+		}
+		return shadeTrees;
+	}
+
+
+	private Map<String, EnhancedLdapUserDto> allLdapUsersWithDistinguishedNames(Map<String, LdapOuNode> ldapShadetrees ) {
+
+		 Map<String, EnhancedLdapUserDto> list = new TreeMap<String, EnhancedLdapUserDto>();
+		 for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
+			 list.putAll(entry.getValue().flatListLdapUserDTO().stream().collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity())));
+		 }
+		return list;
 	}
 
 }
