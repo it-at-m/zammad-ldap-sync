@@ -204,7 +204,6 @@ public class ZammadSyncServiceSubtreeUtil {
 
     public void assignDeletionFlagZammadUser(LdapOuNode rootNode, Map<String, EnhancedLdapUserDto> allLdapUsers) {
 
-
         var zammadBranchGroupUsers = findAllZammadBranchGroupUsers(rootNode.getNode().getLhmObjectId());
 
         zammadBranchGroupUsers.forEach((lhmObjectId, list) -> {
