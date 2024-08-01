@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -141,15 +140,12 @@ public class ZammadSyncServiceSubtreeUtil {
             if (node.getUsers() != null) {
             	if (ongoingZammadGroupId == null)
             		log.error("'{}' : GROUP_ID is NULL for user: '{}'.", ldapOuDto.getLhmOULongname() ,node.getUsers().stream().map(n -> String.valueOf(n)).collect(Collectors.joining("; ")));
-
             	updateZammadGroupUsers(node.getUsers(), ongoingZammadGroupId);
-
             	getCurrentUserCount().addAndGet(node.getUsers().size());
             }
 
             if (!node.getChildNodes().isEmpty())
                 updateZammadGroupsWithUsers(node.getChildNodes(), zammadCurrentGroupName, ongoingZammadGroupId);
-
 
             getCurrentOuCount().getAndIncrement();
          	log.info(String.format("Processed ou %o/%o. Processed user %o/%o", getCurrentOuCount().get(), getOuSize(), getCurrentUserCount().get(), getUserSize() ));
@@ -206,9 +202,8 @@ public class ZammadSyncServiceSubtreeUtil {
         });
     }
 
-    public void assignDeletionFlagZammadUser(LdapOuNode rootNode) {
+    public void assignDeletionFlagZammadUser(LdapOuNode rootNode, Map<String, EnhancedLdapUserDto> allLdapUsers) {
 
-        var ldapUserMap = rootNode.flatListLdapUserDTO().stream().collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity()));
         var zammadBranchGroupUsers = findAllZammadBranchGroupUsers(rootNode.getNode().getLhmObjectId());
 
         zammadBranchGroupUsers.forEach((lhmObjectId, list) -> {
@@ -227,7 +222,7 @@ public class ZammadSyncServiceSubtreeUtil {
                 if (lhmObjectId == null || lhmObjectId.isEmpty()) {
                     log.debug("No lhmObjectId - skipping.");
                 } else {
-                    var ldapBaseUserDTO = ldapUserMap.get(lhmObjectId);
+                    var ldapBaseUserDTO = allLdapUsers.get(lhmObjectId);
                     if (ldapBaseUserDTO == null) {
                         log.debug("Do not find ZammadUser in LDAP-Users.");
                         if (zammadUser.isActive()) {
