@@ -109,8 +109,10 @@ public class ZammadSyncServiceSubtreeUtil {
             var zammadGroupList = getZammadGroupsByLhmObjectId().get(lhmObjectIdToFind);
 
             String ongoingZammadGroupId = null;
-            if (zammadGroupList != null && zammadGroupList.size() > 1)
-                log.error("Inconsistent Zammad state. More than one zammad group entry found for lhmObjectId '{}'.", lhmObjectIdToFind);
+            if (zammadGroupList != null && zammadGroupList.size() > 1) {
+                log.error("Inconsistent Zammad state. More than one zammad group entry found for lhmObjectId '{}' :", lhmObjectIdToFind);
+                zammadGroupList.forEach(item -> log.error(" - ID : {}", item.getId()));
+            }
             else if (zammadGroupList != null && zammadGroupList.size() == 1) {
                 ZammadGroupDTO zammadLdapSyncGroup = zammadGroupList.get(0);
                 if (zammadLdapSyncGroup != null) {
@@ -168,8 +170,10 @@ public class ZammadSyncServiceSubtreeUtil {
             //Find zammad-user with lhmObjectID
             String lhmObjectIdToFind = user.getLhmObjectId();
             var foundZammadUser = getZammadUsersByLhmObjectId().get(lhmObjectIdToFind);
-            if (foundZammadUser != null && foundZammadUser.size() > 1)
-                log.error("Inconsistent Zammad state. More than one zammad group entry found for lhmObjectId '{}'.", lhmObjectIdToFind);
+            if (foundZammadUser != null && foundZammadUser.size() > 1) {
+                log.error("Inconsistent Zammad state. More than one zammad group entry found for lhmObjectId '{}' :", lhmObjectIdToFind);
+                foundZammadUser.forEach(item -> log.error(" - ID : {}", item.getId()));
+            }
             else if (foundZammadUser != null && foundZammadUser.size() == 1) {
                 var zammadLdapSyncUser = foundZammadUser.get(0);
                 if (zammadLdapSyncUser != null) {
@@ -209,7 +213,8 @@ public class ZammadSyncServiceSubtreeUtil {
         zammadBranchGroupUsers.forEach((lhmObjectId, list) -> {
 
             if (list.size() > 1) {
-                log.error("Inconsistent Zammad state. More than one zammad user found for lhmObjectId '{}'.", lhmObjectId);
+                log.error("Inconsistent Zammad state. More than one zammad user found for lhmObjectId '{}' :", lhmObjectId);
+                list.forEach(item -> log.error(" - ID : {}", item.getId()));
                 return;
             }
 
@@ -246,7 +251,7 @@ public class ZammadSyncServiceSubtreeUtil {
     }
 
     private Map<String, List<ZammadGroupDTO>> generatelhmObjectIdZammadGroupMap(List<ZammadGroupDTO> zammadGroupDTOs) {
-        return zammadGroupDTOs.stream().filter(g -> g.getLhmobjectid() != null).collect(Collectors.groupingBy(ZammadGroupDTO::getLhmobjectid));
+        return zammadGroupDTOs.stream().filter(g -> g.getLhmobjectid() != null && ! g.getLhmobjectid().isBlank()).collect(Collectors.groupingBy(ZammadGroupDTO::getLhmobjectid));
     }
 
     private ZammadGroupDTO mapToZammadGroup(LdapOuSearchResultDTO ldapOuSearchResultDTO, String groupName, String parentGroupId) {
@@ -264,7 +269,7 @@ public class ZammadSyncServiceSubtreeUtil {
     }
 
     private Map<String, List<ZammadUserDTO>> generatelhmObjectIdZammadUserMap(List<ZammadUserDTO> zammadUserDTOs) {
-        return zammadUserDTOs.stream().filter(u -> u.getLhmobjectid() != null).collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
+        return zammadUserDTOs.stream().filter(u -> u.getLhmobjectid() != null && ! u.getLhmobjectid().isBlank()).collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
     }
 
     private ZammadUserDTO mapToZammadUser(LdapUserDTO ldapBaseUserDTO, String zammadGroupId) {
@@ -319,7 +324,7 @@ public class ZammadSyncServiceSubtreeUtil {
 	        var zammadUsers = getZammadService().getZammadUsers();
 	        zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
 
-	       	return zammadBranchUsers.stream().filter(u -> u.getLhmobjectid() != null).collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
+	       	return zammadBranchUsers.stream().filter(u -> u.getLhmobjectid() != null && ! u.getLhmobjectid().isBlank()).collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
         }
     }
 
@@ -330,7 +335,8 @@ public class ZammadSyncServiceSubtreeUtil {
             log.debug("No zammad root group found '{}'.", ldapOuRootLhmObjectId);
             return new ArrayList<ZammadGroupDTO>();
         } else if (rootZammadGroups.size() > 1) {
-            log.error("Inconsistent Zammad state. More than one zammad group found for lhmObjectId '{}'.", ldapOuRootLhmObjectId);
+            log.error("Inconsistent Zammad state. More than one zammad group found for lhmObjectId '{}' :", ldapOuRootLhmObjectId);
+            rootZammadGroups.forEach(item -> log.error(" - ID : {}", item.getId()));
             return new ArrayList<ZammadGroupDTO>();
         }
     	return rootZammadGroups;
