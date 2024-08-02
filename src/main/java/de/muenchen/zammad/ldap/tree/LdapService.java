@@ -160,7 +160,7 @@ public class LdapService {
 			}
 
 		} catch (final NameNotFoundException ex) {
-			log.warn("No LDAP entry found with DN = '{}'. Query failed with exception '{}'", distinguishedName,
+			log.error("No LDAP entry found with DN = '{}'. Query failed with exception '{}'", distinguishedName,
 					ex.getClass().getName());
 		}
 

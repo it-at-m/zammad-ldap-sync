@@ -2,6 +2,7 @@ package de.muenchen.zammad.ldap.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,6 @@ public class ZammadSyncService {
 	 */
 	public void syncSubtreeByDn() {
 
-		// String distinguishedName, String modifyTimeStamp
 		var dateTime = calculateLdapUserSearchTimeStamp();
 
 		log.info("Searching for user with ldap modifyTimeStamp > '{}'. 'null' means no restriction.", dateTime);
@@ -66,16 +66,17 @@ public class ZammadSyncService {
 		log.info("OuBases :");
 		ldapSyncDistinguishedNames.forEach(dn -> log.info("   {}", dn));
 
+		log.info("Start sychronize Zammad groups, user and roles ...");
+
 		log.debug("1/4 Start LDAP operations ...");
 		var ldapShadetrees = buildLdapTreesWithDistinguishedNames(dateTime, ldapSyncDistinguishedNames);
 		var allLdapUsers = allLdapUsersWithDistinguishedNames(ldapShadetrees);
 
-		log.info("");
+		checkValidityOuBases(ldapSyncDistinguishedNames, ldapShadetrees);
+
 		for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
 
-			log.info("*****************************************");
-
-			log.info("START synchronize Zammad groups and users with ouBase : {}. ", entry.getKey());
+			log.info("Begin synchronize Zammad groups and users with ouBase : {}. ", entry.getKey());
 
 			var treeView = entry.getValue().toString();
 			log.trace(treeView);
@@ -86,19 +87,27 @@ public class ZammadSyncService {
 			getSubtreeUtil().updateZammadGroupsWithUsers(map);
 
 			log.debug("3/4 Mark user for deletion ...");
-			// var deleteEntry = shadeDnSubtree.get().entrySet().iterator().next();
 			getSubtreeUtil().assignDeletionFlagZammadUser(entry.getValue(), allLdapUsers);
 
-			log.info("END sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
+			log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
 		}
 
-		log.info("");
-		log.debug("4/4 Sync assignment roles for all ouBases ...");
-		syncAssignmentRoles();
+		if (! ldapShadetrees.isEmpty()) {
+			log.debug("4/4 Sync assignment roles for all ouBases ...");
+			syncAssignmentRoles();
+		}
 
-		log.info("");
-		log.info("END sychronize Zammad groups, user and roles all ouBases.");
+		log.info("End sychronize Zammad groups, user and roles all ouBases.");
 
+	}
+
+	private void checkValidityOuBases(List<String> ldapSyncDistinguishedNames, Map<String, LdapOuNode> ldapShadetrees) {
+		if (ldapShadetrees.size() != ldapSyncDistinguishedNames.size()) {
+			log.error(" !!!  No ldap nodes for all ouBases found. Please check the ouBase(s) (ldap distinguished name) availability. Maybe part of a distinguished name was renamed in ldap :");
+			var trees = Arrays.asList(ldapShadetrees.keySet().toArray());
+			var differences = ldapSyncDistinguishedNames.stream().filter(element -> !trees.contains(element)).collect(Collectors.toList());
+			differences.forEach(dn -> log.error(" !!!    - {} ", dn));
+		}
 	}
 
 	private String calculateLdapUserSearchTimeStamp() {
