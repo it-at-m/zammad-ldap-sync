@@ -1,14 +1,19 @@
 ldap:
-  url: ...
-  user-search-base: ...
-  ou-search-base: ...
+  url:
 
 sync:
 # Every date-time-minus-day > 0 is converted to 'startDateTime - date-time-minus-day' to restrict ldap user search.
-  date-time-minus-day: 7
-  ou-bases:
-    - dn_1
-    - dn_2
+  organizational-units:
+    identifier-1:
+      distinguished-names:
+        -
+      user-search-base:
+      ou-search-base:
+    identifier-2:
+      distinguished-name:
+        -
+      user-search-base:
+      ou-search-base:
 
 zammad:
   assignment:
@@ -16,9 +21,9 @@ zammad:
       name-agent: Agent
       name-erstellen: Erstellen
       name-vollzugriff: Vollzugriff
-  token: ...
+  token: <token>
   url:
-    base: http://...
+    base: http://<url>
     groups: groups
     users: users
     roles: roles

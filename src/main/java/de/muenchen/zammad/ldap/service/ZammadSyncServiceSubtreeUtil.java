@@ -57,6 +57,9 @@ public class ZammadSyncServiceSubtreeUtil {
 
     public void updateZammadGroupsWithUsers(Map<String, LdapOuNode> shadeLdapSubtree) {
 
+    		getCurrentOuCount().set(0);
+    		getCurrentUserCount().set(0);
+
             setZammadGroupsByLhmObjectId(getCurrentZammadGroups());
             setZammadUsersByLhmObjectId(getCurrentZammadUsers());
 
