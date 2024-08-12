@@ -12,13 +12,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadRoleDTO;
-import de.muenchen.zammad.ldap.service.config.SyncProperties;
+import de.muenchen.zammad.ldap.service.config.LdapSearch;
 import de.muenchen.zammad.ldap.service.config.ZammadProperties;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.Getter;
@@ -29,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 public class ZammadSyncService {
 
-	private SyncProperties syncProperties;
+	private LdapSearch organizationalUnits;
 
 	private ZammadProperties zammadProperties;
 
@@ -40,15 +38,14 @@ public class ZammadSyncService {
 	private ZammadSyncServiceSubtreeUtil subtreeUtil;
 
 	public ZammadSyncService(ZammadService zammadService, ZammadLdapService zammadLdapService,
-			ZammadProperties zammadProperties, SyncProperties syncProperties,
+			ZammadProperties zammadProperties, LdapSearch organizationalUnits,
 			ZammadSyncServiceSubtreeUtil subtreeUtil) {
 
 		this.zammadService = zammadService;
 		this.zammadLdapService = zammadLdapService;
 		this.subtreeUtil = subtreeUtil;
 		this.zammadProperties = zammadProperties;
-		this.syncProperties = syncProperties;
-
+		this.organizationalUnits = organizationalUnits;
 	}
 
 	/**
@@ -58,18 +55,19 @@ public class ZammadSyncService {
 	 */
 	public void syncSubtreeByDn() {
 
-		var dateTime = calculateLdapUserSearchTimeStamp();
+//		var dateTime = calculateLdapUserSearchTimeStamp();
+//
+//		log.info("Searching for user with ldap modifyTimeStamp > '{}'. 'null' means no restriction.", dateTime);
 
-		log.info("Searching for user with ldap modifyTimeStamp > '{}'. 'null' means no restriction.", dateTime);
-
-		var ldapSyncDistinguishedNames = syncProperties.getOuBases();
+		var ldapSyncDistinguishedNames = getOrganizationalUnits().listDistinguishedNames();
 		log.info("OuBases :");
 		ldapSyncDistinguishedNames.forEach(dn -> log.info("   {}", dn));
 
 		log.info("Start sychronize Zammad groups, user and roles ...");
 
 		log.debug("1/4 Start LDAP operations ...");
-		var ldapShadetrees = buildLdapTreesWithDistinguishedNames(dateTime, ldapSyncDistinguishedNames);
+//		var ldapShadetrees = zammadLdapService.buildLdapTreesWithDistinguishedNames(dateTime, organizationalUnits);
+		var ldapShadetrees = zammadLdapService.buildLdapTreesWithDistinguishedNames(null, organizationalUnits);
 		var allLdapUsers = allLdapUsersWithDistinguishedNames(ldapShadetrees);
 
 		checkValidityOuBases(ldapSyncDistinguishedNames, ldapShadetrees);
@@ -92,7 +90,7 @@ public class ZammadSyncService {
 			log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
 		}
 
-		if (! ldapShadetrees.isEmpty()) {
+		if (!ldapShadetrees.isEmpty()) {
 			log.debug("4/4 Sync assignment roles for all ouBases ...");
 			syncAssignmentRoles();
 		}
@@ -103,22 +101,24 @@ public class ZammadSyncService {
 
 	private void checkValidityOuBases(List<String> ldapSyncDistinguishedNames, Map<String, LdapOuNode> ldapShadetrees) {
 		if (ldapShadetrees.size() != ldapSyncDistinguishedNames.size()) {
-			log.error(" !!!  No ldap nodes for all ouBases found. Please check the ouBase(s) (ldap distinguished name) availability. Maybe part of a distinguished name was renamed in ldap :");
+			log.error(
+					" !!!  No ldap nodes for all ouBases found. Please check the ouBase(s) (ldap distinguished name) availability. Maybe part of a distinguished name was renamed in ldap :");
 			var trees = Arrays.asList(ldapShadetrees.keySet().toArray());
-			var differences = ldapSyncDistinguishedNames.stream().filter(element -> !trees.contains(element)).collect(Collectors.toList());
+			var differences = ldapSyncDistinguishedNames.stream().filter(element -> !trees.contains(element))
+					.collect(Collectors.toList());
 			differences.forEach(dn -> log.error(" !!!    - {} ", dn));
 		}
 	}
 
-	private String calculateLdapUserSearchTimeStamp() {
-		String calculatedTimeStamp = null;
-		if (getSyncProperties().getDateTimeMinusDay() > 0) {
-			var ldapUserSearchDate = LocalDateTime.now().minusDays(getSyncProperties().getDateTimeMinusDay());
-			var ldapFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-			calculatedTimeStamp = ldapFormatter.format(ldapUserSearchDate) + "Z";
-		}
-		return calculatedTimeStamp;
-	}
+//	private String calculateLdapUserSearchTimeStamp() {
+//		String calculatedTimeStamp = null;
+//		if (getOrganizationalUnits().getDateTimeMinusDay() > 0) {
+//			var ldapUserSearchDate = LocalDateTime.now().minusDays(getOrganizationalUnits().getDateTimeMinusDay());
+//			var ldapFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+//			calculatedTimeStamp = ldapFormatter.format(ldapUserSearchDate) + "Z";
+//		}
+//		return calculatedTimeStamp;
+//	}
 
 	public void syncAssignmentRoles() {
 
@@ -158,29 +158,6 @@ public class ZammadSyncService {
 		zammadRoleDTOVollzugriff.setGroupIds(newGroupIdsVollzugriff);
 		getZammadService().updateZammadRole(zammadRoleDTOVollzugriff);
 
-	}
-
-	/**
-	 * Calculate ldap subtree with users based on distinguished name.
-	 *
-	 * @param distinguishedName
-	 * @param modifyTimeStamp   Optional search attribute for ldap ou und user
-	 * @return ldap tree as json
-	 * @throws JsonProcessingException
-	 */
-	public String subtreeAsJson(String distinguishedName, String modifyTimeStamp) throws JsonProcessingException {
-
-		var dn = distinguishedName;
-		log.info("*****************************************");
-		log.info("START sychronize Zammad groups and users with LDAP DN : " + dn);
-
-		log.debug("Calculate LDAP Subtree with DN ... " + dn);
-		var shadeDnSubtree = getZammadLdapService().calculateOuSubtreeWithUsersByDn(dn, modifyTimeStamp);
-
-		var json = shadeDnSubtree.get().values().iterator().next().json();
-		log.debug(json);
-
-		return json;
 	}
 
 	public boolean checkRoleAssignments() {
@@ -225,24 +202,14 @@ public class ZammadSyncService {
 
 	}
 
-	private Map<String, LdapOuNode> buildLdapTreesWithDistinguishedNames(String dateTime,	List<String> ldapSyncDistinguishedNames) {
+	private Map<String, EnhancedLdapUserDto> allLdapUsersWithDistinguishedNames(
+			Map<String, LdapOuNode> ldapShadetrees) {
 
-		Map<String, LdapOuNode> shadeTrees = new TreeMap<String, LdapOuNode>();
-		for (String dn : ldapSyncDistinguishedNames) {
-			var tree = getZammadLdapService().calculateOuSubtreeWithUsersByDn(dn, dateTime);
-			if (tree.isPresent())
-				shadeTrees.putAll(tree.get());
+		Map<String, EnhancedLdapUserDto> list = new TreeMap<String, EnhancedLdapUserDto>();
+		for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
+			list.putAll(entry.getValue().flatListLdapUserDTO().stream()
+					.collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity())));
 		}
-		return shadeTrees;
-	}
-
-
-	private Map<String, EnhancedLdapUserDto> allLdapUsersWithDistinguishedNames(Map<String, LdapOuNode> ldapShadetrees ) {
-
-		 Map<String, EnhancedLdapUserDto> list = new TreeMap<String, EnhancedLdapUserDto>();
-		 for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
-			 list.putAll(entry.getValue().flatListLdapUserDTO().stream().collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity())));
-		 }
 		return list;
 	}
 
