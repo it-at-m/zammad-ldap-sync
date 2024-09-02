@@ -186,7 +186,7 @@ public class ZammadSyncServiceSubtreeUtil {
                         log.debug("User isLdapsyncupdate={} - check for update.", zammadLdapSyncUser.isLdapsyncupdate());
                         //Update Id, updated_at und role_ids in case updateZammadUser
                         prepareUserForComparison(zammadUserCompareDTO, zammadLdapSyncUser);
-                        if (zammadLdapSyncUser.compareTo(zammadUserCompareDTO) == 1) {
+                        if (!zammadLdapSyncUser.equals(zammadUserCompareDTO)) {
                             log.debug("Something has changed - updating.");
                             log.debug("zammadLdapSyncUser   '{}'." , zammadLdapSyncUser);
                             log.debug("zammadUserCompareDTO '{}'." , zammadUserCompareDTO);
