@@ -1,15 +1,12 @@
 package de.muenchen.zammad.ldap.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.Data;
-import lombok.ToString;
-
 @Data
-@ToString
 public class ZammadUserDTO implements Comparable<ZammadUserDTO>{
 
     private String id;
