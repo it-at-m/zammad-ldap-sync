@@ -47,8 +47,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class LdapOuNode {
 
-    private static final long serialVersionUID = 1L;
-
     private String distinguishedName;
     private EnhancedLdapOuSearchResultDTO node;
     private Map<String, LdapOuNode> childNodes = new TreeMap<>();
@@ -67,16 +65,15 @@ public class LdapOuNode {
     private String formatTree(String tab) {
 
         var tree = new StringBuilder();
-        tree.append(tab + "***** New LDAP entry : " + getNode().getLhmOUShortname() + " " + getNode().getOu() + " *****" + System.lineSeparator());
-        tree.append(tab + getDistinguishedName() + System.lineSeparator());
-        tree.append(tab + getNode().toString() + System.lineSeparator());
+        tree.append(tab).append("***** New LDAP entry : ").append(getNode().getLhmOUShortname()).append(" ").append(getNode().getOu()).append(" *****")
+                .append(System.lineSeparator());
+        tree.append(tab).append(getDistinguishedName()).append(System.lineSeparator());
+        tree.append(tab).append(getNode().toString()).append(System.lineSeparator());
 
         if (getUsers() != null)
-            getUsers().forEach(u -> tree.append(tab + u.toString() + System.lineSeparator()));
+            getUsers().forEach(u -> tree.append(tab).append(u.toString()).append(System.lineSeparator()));
 
-        getChildNodes().forEach((k, v) -> {
-            tree.append(v.formatTree(tab + "     "));
-        });
+        getChildNodes().forEach((k, v) -> tree.append(v.formatTree(tab + "     ")));
 
         return tree.toString();
     }
@@ -87,25 +84,25 @@ public class LdapOuNode {
      * @return list
      */
     public List<EnhancedLdapUserDto> flatListLdapUserDTO() {
-        var users = new ArrayList<EnhancedLdapUserDto>();
+        var enhancedLdapUsers = new ArrayList<EnhancedLdapUserDto>();
         if (this.getUsers() != null)
-            users.addAll(this.getUsers());
+            enhancedLdapUsers.addAll(this.getUsers());
 
-        users.addAll(flatListLdapUserDTO(this.getChildNodes()));
+        enhancedLdapUsers.addAll(flatListLdapUserDTO(this.getChildNodes()));
 
-        return users;
+        return enhancedLdapUsers;
     }
 
     private List<EnhancedLdapUserDto> flatListLdapUserDTO(Map<String, LdapOuNode> subtree) {
 
-        var users = new ArrayList<EnhancedLdapUserDto>();
-        subtree.forEach((key, node) -> {
-            if (node.getUsers() != null)
-                users.addAll(node.getUsers());
+        var enhancedLdapUsers = new ArrayList<EnhancedLdapUserDto>();
+        subtree.forEach((key, nodeEntry) -> {
+            if (nodeEntry.getUsers() != null)
+                enhancedLdapUsers.addAll(nodeEntry.getUsers());
 
-            users.addAll(flatListLdapUserDTO(node.getChildNodes()));
+            enhancedLdapUsers.addAll(flatListLdapUserDTO(nodeEntry.getChildNodes()));
         });
-        return users;
+        return enhancedLdapUsers;
     }
 
     /**
@@ -125,9 +122,9 @@ public class LdapOuNode {
     private List<LdapOuSearchResultDTO> flatListLdapOuDTO(Map<String, LdapOuNode> subtree) {
 
         var ous = new ArrayList<LdapOuSearchResultDTO>();
-        subtree.forEach((key, node) -> {
-            ous.add(node.getNode());
-            ous.addAll(flatListLdapOuDTO(node.getChildNodes()));
+        subtree.forEach((key, nodeEntry) -> {
+            ous.add(nodeEntry.getNode());
+            ous.addAll(flatListLdapOuDTO(nodeEntry.getChildNodes()));
         });
         return ous;
     }
