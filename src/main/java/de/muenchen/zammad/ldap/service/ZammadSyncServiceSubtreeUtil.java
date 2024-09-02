@@ -45,9 +45,9 @@ public class ZammadSyncServiceSubtreeUtil {
     @Getter
     private AtomicLong currentUserCount = new AtomicLong();
 
-    private ZammadService zammadService;
+    private final ZammadService zammadService;
 
-    private ZammadProperties zammadProperties;
+    private final ZammadProperties zammadProperties;
 
     @Setter
     Map<String, List<ZammadGroupDTO>> zammadGroupsByLhmObjectId;
@@ -63,7 +63,7 @@ public class ZammadSyncServiceSubtreeUtil {
             setZammadGroupsByLhmObjectId(getCurrentZammadGroups());
             setZammadUsersByLhmObjectId(getCurrentZammadUsers());
 
-            logStatistic(shadeLdapSubtree.entrySet().stream().findFirst().get().getValue());
+            shadeLdapSubtree.entrySet().stream().findFirst().ifPresent(finding -> logStatistic(finding.getValue()));
 
             var zammadParentGroup = findZammadParentGroupIfExists(shadeLdapSubtree);
     		if (zammadParentGroup.isPresent()) {
@@ -86,7 +86,7 @@ public class ZammadSyncServiceSubtreeUtil {
 		var rootNode = shadeLdapSubtree.entrySet().iterator().next();
 		var ldapOuRootLhmObjectId = rootNode.getValue().getNode().getLhmObjectId();
 		var zammadGroup = findRootZammadGroup(ldapOuRootLhmObjectId);
-		if (zammadGroup == null || zammadGroup.isEmpty())
+		if (zammadGroup.isEmpty())
 			return Optional.empty();
 		else {
 			return getZammadService().getZammadGroups().stream().filter(g -> g.getId().equals(zammadGroup.get(0).getParentId())).findFirst();
@@ -144,7 +144,7 @@ public class ZammadSyncServiceSubtreeUtil {
 
             if (node.getUsers() != null) {
             	if (ongoingZammadGroupId == null)
-            		log.error("'{}' : GROUP_ID is NULL for user: '{}'.", ldapOuDto.getLhmOULongname() ,node.getUsers().stream().map(n -> String.valueOf(n)).collect(Collectors.joining("; ")));
+            		log.error("'{}' : GROUP_ID is NULL for user: '{}'.", ldapOuDto.getLhmOULongname() ,node.getUsers().stream().map(String::valueOf).collect(Collectors.joining("; ")));
             	updateZammadGroupUsers(node.getUsers(), ongoingZammadGroupId);
             	getCurrentUserCount().addAndGet(node.getUsers().size());
             }
@@ -188,8 +188,8 @@ public class ZammadSyncServiceSubtreeUtil {
                         prepareUserForComparison(zammadUserCompareDTO, zammadLdapSyncUser);
                         if (zammadLdapSyncUser.compareTo(zammadUserCompareDTO) == 1) {
                             log.debug("Something has changed - updating.");
-                            log.debug("zammadLdapSyncUser   '{}'." , zammadLdapSyncUser.toString());
-                            log.debug("zammadUserCompareDTO '{}'." , zammadUserCompareDTO.toString());
+                            log.debug("zammadLdapSyncUser   '{}'." , zammadLdapSyncUser);
+                            log.debug("zammadUserCompareDTO '{}'." , zammadUserCompareDTO);
                             getZammadService().updateZammadUser(zammadUserCompareDTO);
                         } else {
                             log.debug("No change - skipping.");
@@ -314,11 +314,10 @@ public class ZammadSyncServiceSubtreeUtil {
 
     private Map<String, List<ZammadUserDTO>> findAllZammadBranchGroupUsers(String ldapOuRootLhmObjectId) {
 
-        var zammadGroups = new ArrayList<ZammadGroupDTO>();
-        zammadGroups.addAll(findRootZammadGroup(ldapOuRootLhmObjectId));
+        var zammadGroups = new ArrayList<>(findRootZammadGroup(ldapOuRootLhmObjectId));
 
         if (zammadGroups.isEmpty())
-        	return new HashMap<String, List<ZammadUserDTO>>();
+        	return new HashMap<>();
         else {
 
         	findChildGroups(getZammadService().getZammadGroups(), zammadGroups.get(0).getId(), zammadGroups );
@@ -336,11 +335,11 @@ public class ZammadSyncServiceSubtreeUtil {
        	var rootZammadGroups = getCurrentZammadGroups().get(ldapOuRootLhmObjectId);
        	if (rootZammadGroups == null) {
             log.debug("No zammad root group found '{}'.", ldapOuRootLhmObjectId);
-            return new ArrayList<ZammadGroupDTO>();
+            return new ArrayList<>();
         } else if (rootZammadGroups.size() > 1) {
             log.error("Inconsistent Zammad state. More than one zammad group found for lhmObjectId '{}' :", ldapOuRootLhmObjectId);
             rootZammadGroups.forEach(item -> log.error(" - ID : {}", item.getId()));
-            return new ArrayList<ZammadGroupDTO>();
+            return new ArrayList<>();
         }
     	return rootZammadGroups;
 
@@ -348,7 +347,7 @@ public class ZammadSyncServiceSubtreeUtil {
 
     private void findChildGroups(List<ZammadGroupDTO> zammadServiceGroups, String zammadGroupId, List<ZammadGroupDTO>allZammadBranchGroups) {
 
-    	var childGroups = zammadServiceGroups.stream().filter(g -> (g.getParentId() != null && g.getParentId().equals(zammadGroupId))).collect(Collectors.toList());
+    	var childGroups = zammadServiceGroups.stream().filter(g -> (g.getParentId() != null && g.getParentId().equals(zammadGroupId))).toList();
     	if ( ! childGroups.isEmpty()) {
 	    	allZammadBranchGroups.addAll(childGroups);
 	    	childGroups.forEach(g -> findChildGroups(zammadServiceGroups, g.getId(), allZammadBranchGroups));
@@ -356,7 +355,7 @@ public class ZammadSyncServiceSubtreeUtil {
     }
 
     private List<ZammadUserDTO> findUsers(List<ZammadUserDTO> zammadServiceUsers, String zammadGroupId) {
-    	return zammadServiceUsers.stream().filter(u -> u.getGroupIds().containsKey(zammadGroupId)).collect(Collectors.toList());
+    	return zammadServiceUsers.stream().filter(u -> u.getGroupIds().containsKey(zammadGroupId)).toList();
     }
 
 }
