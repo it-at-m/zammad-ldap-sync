@@ -8,7 +8,7 @@ import org.springframework.ldap.core.AttributesMapper;
 
 public class EnhancedLdapUserAttributesMapper implements AttributesMapper<EnhancedLdapUserDto> {
 
-    private LdapUserAttributesMapper ldapUserAttributesMapper;
+    private final LdapUserAttributesMapper ldapUserAttributesMapper;
 
     public EnhancedLdapUserAttributesMapper(LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper) {
         this.ldapUserAttributesMapper = new LdapUserAttributesMapper(ldapBaseUserAttributesMapper);
