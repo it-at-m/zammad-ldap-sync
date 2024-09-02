@@ -22,13 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ZammadService {
 
+	private final RestTemplate restTemplate = new RestTemplate();
+
+	private final ZammadProperties zammadProperties;
+
 	public ZammadService(ZammadProperties zammadProperties) {
 		this.zammadProperties = zammadProperties;
 	}
-
-	private RestTemplate restTemplate = new RestTemplate();
-
-	private ZammadProperties zammadProperties;
 
 	public List<ZammadGroupDTO> getZammadGroups() {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
@@ -39,10 +39,10 @@ public class ZammadService {
 		List<ZammadGroupDTO> result = new ArrayList<>();
 		while (found) {
 			i = i + 1;
-			log.debug("Fetching groups page " + i);
+			log.debug("Fetching groups page {}", i);
 			ResponseEntity<ZammadGroupDTO[]> entity = restTemplate.exchange(
 					zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "?page=" + i + "&per_page=500", HttpMethod.GET,
-					new HttpEntity<Object>(headers), ZammadGroupDTO[].class);
+					new HttpEntity<>(headers), ZammadGroupDTO[].class);
 
 			if (entity.hasBody() && entity.getBody().length > 0) {
 				result.addAll(Arrays.asList(entity.getBody()));
@@ -91,7 +91,7 @@ public class ZammadService {
 		log.trace(responseEntity.toString());
 
 		if (! responseEntity.hasBody())
-			log.error("Create Zammad Group failed. Response code : " + responseEntity.getStatusCode());
+			log.error("Create Zammad Group failed. Response code : {}", responseEntity.getStatusCode());
 
 		return responseEntity.getBody();
 
@@ -106,10 +106,10 @@ public class ZammadService {
 		List<ZammadUserDTO> result = new ArrayList<>();
 		while (found) {
 			i = i + 1;
-			log.debug("Fetching users page " + i);
+			log.debug("Fetching users page {}", i);
 			ResponseEntity<ZammadUserDTO[]> entity = restTemplate.exchange(
 					zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers()  + "?page=" + i + "&per_page=500", HttpMethod.GET,
-					new HttpEntity<Object>(headers), ZammadUserDTO[].class);
+					new HttpEntity<>(headers), ZammadUserDTO[].class);
 			if (entity.hasBody() && entity.getBody().length > 0) {
 				result.addAll(Arrays.asList(entity.getBody()));
 			} else {
