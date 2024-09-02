@@ -1,17 +1,5 @@
 package de.muenchen.zammad.ldap.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
@@ -21,21 +9,26 @@ import de.muenchen.zammad.ldap.service.config.ZammadProperties;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @Getter
 public class ZammadSyncService {
 
-	private LdapSearch organizationalUnits;
+	private final LdapSearch organizationalUnits;
 
-	private ZammadProperties zammadProperties;
+	private final ZammadProperties zammadProperties;
 
-	public ZammadService zammadService;
+	private final ZammadService zammadService;
 
-	public ZammadLdapService zammadLdapService;
+	private final ZammadLdapService zammadLdapService;
 
-	private ZammadSyncServiceSubtreeUtil subtreeUtil;
+	private final ZammadSyncServiceSubtreeUtil subtreeUtil;
 
 	public ZammadSyncService(ZammadService zammadService, ZammadLdapService zammadLdapService,
 			ZammadProperties zammadProperties, LdapSearch organizationalUnits,
@@ -105,7 +98,7 @@ public class ZammadSyncService {
 					" !!!  No ldap nodes for all ouBases found. Please check the ouBase(s) (ldap distinguished name) availability. Maybe part of a distinguished name was renamed in ldap :");
 			var trees = Arrays.asList(ldapShadetrees.keySet().toArray());
 			var differences = ldapSyncDistinguishedNames.stream().filter(element -> !trees.contains(element))
-					.collect(Collectors.toList());
+					.toList();
 			differences.forEach(dn -> log.error(" !!!    - {} ", dn));
 		}
 	}
@@ -196,7 +189,7 @@ public class ZammadSyncService {
 
 		roleProperty.setIdVollzugriff(Integer.valueOf(vollzugriffRole.get().getId()));
 
-		log.info("Zammad role ids found : {} .", roleProperty.toString());
+		log.info("Zammad role ids found : {} .", roleProperty);
 
 		return true;
 
@@ -205,7 +198,7 @@ public class ZammadSyncService {
 	private Map<String, EnhancedLdapUserDto> allLdapUsersWithDistinguishedNames(
 			Map<String, LdapOuNode> ldapShadetrees) {
 
-		Map<String, EnhancedLdapUserDto> list = new TreeMap<String, EnhancedLdapUserDto>();
+		Map<String, EnhancedLdapUserDto> list = new TreeMap<>();
 		for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
 			list.putAll(entry.getValue().flatListLdapUserDTO().stream()
 					.collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity())));
