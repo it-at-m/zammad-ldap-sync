@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class Assignment {
 
-	ZammadRoleProperties role;
+	private ZammadRoleProperties role;
 
 }

@@ -16,19 +16,20 @@ import lombok.Setter;
 @Setter
 public class LdapSearch {
 
-//	Integer dateTimeMinusDay;
-	private Map<String, OrganizationalUnit> organizationalUnits;
+    //	Integer dateTimeMinusDay;
+    private Map<String, OrganizationalUnit> organizationalUnits;
 
-	public List<String> listDistinguishedNames() {
+    public List<String> listDistinguishedNames() {
 
-		var dns = new ArrayList<String>();
-		if ( getOrganizationalUnits() != null ) {
-			getOrganizationalUnits().forEach((k,v) -> {
-				if (! v.getOuSearchBase().trim().isEmpty())
-					dns.addAll(v.distinguishedNames);});
-		}
+        var dns = new ArrayList<String>();
+        if (getOrganizationalUnits() != null) {
+            getOrganizationalUnits().forEach((k, v) -> {
+                if (!v.getOuSearchBase().trim().isEmpty())
+                    dns.addAll(v.getDistinguishedNames());
+            });
+        }
 
-		return dns;
-	}
+        return dns;
+    }
 
 }

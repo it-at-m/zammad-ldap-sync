@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 public class OrganizationalUnit {
 
-		List<String> distinguishedNames;
-		String userSearchBase;
-		String ouSearchBase;
+		private List<String> distinguishedNames;
+		private String userSearchBase;
+		private String ouSearchBase;
 
 }
