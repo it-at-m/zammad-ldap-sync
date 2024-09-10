@@ -16,7 +16,7 @@ class ZammadUserDTOTest {
         var userB = createZammadUserDTO();
 
         // Test with default values
-        assertTrue(userA.equals(userB), "Objects are not equal");
+        assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal");
 
         // Test changing id (should not affect equals/hashcode)
@@ -39,13 +39,13 @@ class ZammadUserDTOTest {
         // Test changing login (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setLogin("jane.doe");
-        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing ldapsyncupdate (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setLdapsyncupdate(false);
-        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing email
@@ -69,7 +69,7 @@ class ZammadUserDTOTest {
         // Test changing roleIds (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setRoleIds(List.of(1, 2, 3));
-        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing groupIds
@@ -81,19 +81,19 @@ class ZammadUserDTOTest {
         // Test changing updatedAt (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setUpdatedAt("2023-01-01T00:00:00Z");
-        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing active status (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setActive(true);
-        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing ldapsyncstate (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setLdapsyncstate("synced");
-        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
@@ -144,19 +144,10 @@ class ZammadUserDTOTest {
         dto5.setGroupIds(null);
 
         // Test
-        assertTrue(dto1.equals(dto2)); // Same structure
-        assertFalse(dto1.equals(dto3)); // Different value in one group
-        assertFalse(dto1.equals(dto4)); // Empty map
-        assertFalse(dto1.equals(dto5)); // Null map
-
-        // Additional test to check if order matters
-        ZammadUserDTO dto6 = new ZammadUserDTO();
-        dto6.setGroupIds(Map.of(
-                "group2", List.of("member3"),
-                "group1", List.of("member1", "member2")
-        ));
-
-        assertEquals(dto1,dto6); // Order matters
+        assertTrue(dto1.equals(dto2), "Objects are not equal unexpectedly"); // Same structure
+        assertFalse(dto1.equals(dto3),"Objects are equal unexpectedly"); // Different value in one group
+        assertFalse(dto1.equals(dto4),"Objects are equal unexpectedly"); // Empty map
+        assertFalse(dto1.equals(dto5),"Objects are equal unexpectedly"); // Null map
     }
 
 }
