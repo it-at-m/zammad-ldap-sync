@@ -6,3 +6,4 @@
 /.classpath
 /.factorypath
 *.iml
+application-local.yaml
