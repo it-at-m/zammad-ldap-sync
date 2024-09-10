@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ZammadUserDTO {
 
     private String id;
