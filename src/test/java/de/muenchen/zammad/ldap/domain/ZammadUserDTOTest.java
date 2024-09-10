@@ -17,7 +17,7 @@ class ZammadUserDTOTest {
 
         // Test with default values
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
-        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal");
+        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
 
         // Test changing id (should not affect equals/hashcode)
         userB.setId("newId");
@@ -40,13 +40,13 @@ class ZammadUserDTOTest {
         userB = createZammadUserDTO();
         userB.setLogin("jane.doe");
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
-        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
+        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
 
         // Test changing ldapsyncupdate (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setLdapsyncupdate(false);
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
-        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
+        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
 
         // Test changing email
         userB = createZammadUserDTO();
@@ -70,7 +70,7 @@ class ZammadUserDTOTest {
         userB = createZammadUserDTO();
         userB.setRoleIds(List.of(1, 2, 3));
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
-        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
+        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
 
         // Test changing groupIds
         userB = createZammadUserDTO();
@@ -82,7 +82,7 @@ class ZammadUserDTOTest {
         userB = createZammadUserDTO();
         userB.setUpdatedAt("2023-01-01T00:00:00Z");
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
-        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
+        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
 
         // Test changing active status (should not affect equals/hashcode)
         userB = createZammadUserDTO();
