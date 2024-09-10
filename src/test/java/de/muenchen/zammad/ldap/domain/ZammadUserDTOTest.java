@@ -6,96 +6,94 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ZammadUserDTOTest {
 
     @Test
     void testEqualsAndHashCode() {
-        // Create base DTOs
         val userA = createZammadUserDTO();
         var userB = createZammadUserDTO();
 
         // Test with default values
-        assertEquals(userA, userB, "Objects are not equal");
+        assertTrue(userA.equals(userB), "Objects are not equal");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal");
 
         // Test changing id (should not affect equals/hashcode)
         userB.setId("newId");
-        assertEquals(userA, userB, "Objects are not equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
 
         // Test changing firstname
         userB = createZammadUserDTO();
         userB.setFirstname("Jane");
-        assertNotEquals(userA, userB, "Objects are equal unexpectedly");
+        assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing lastname
         userB = createZammadUserDTO();
         userB.setLastname("Smith");
-        assertNotEquals(userA, userB, "Objects are equal unexpectedly");
+        assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing login (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setLogin("jane.doe");
-        assertEquals(userA, userB, "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing ldapsyncupdate (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setLdapsyncupdate(false);
-        assertEquals(userA, userB, "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing email
         userB = createZammadUserDTO();
         userB.setEmail("jane.smith@example.com");
-        assertNotEquals(userA, userB, "Objects are equal unexpectedly");
+        assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing department
         userB = createZammadUserDTO();
         userB.setDepartment("HR");
-        assertNotEquals(userA, userB, "Objects are equal unexpectedly");
+        assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing lhmobjectid
         userB = createZammadUserDTO();
         userB.setLhmobjectid("789012");
-        assertNotEquals(userA, userB, "Objects are equal unexpectedly");
+        assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing roleIds (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setRoleIds(List.of(1, 2, 3));
-        assertEquals(userA, userB, "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing groupIds
         userB = createZammadUserDTO();
         userB.setGroupIds(Map.of("group1", List.of("member1")));
-        assertNotEquals(userA, userB, "Objects are equal unexpectedly");
+        assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing updatedAt (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setUpdatedAt("2023-01-01T00:00:00Z");
-        assertEquals(userA, userB, "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing active status (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setActive(true);
-        assertEquals(userA, userB, "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing ldapsyncstate (should not affect equals/hashcode)
         userB = createZammadUserDTO();
         userB.setLdapsyncstate("synced");
-        assertEquals(userA, userB, "Objects are equal unexpectedly");
+        assertTrue(userA.equals(userB), "Objects are equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
@@ -146,10 +144,10 @@ class ZammadUserDTOTest {
         dto5.setGroupIds(null);
 
         // Test
-        assertEquals(dto1,dto2); // Same structure
-        assertNotEquals(dto1,dto3); // Different value in one group
-        assertNotEquals(dto1,dto4); // Empty map
-        assertNotEquals(dto1,dto5); // Null map
+        assertTrue(dto1.equals(dto2)); // Same structure
+        assertFalse(dto1.equals(dto3)); // Different value in one group
+        assertFalse(dto1.equals(dto4)); // Empty map
+        assertFalse(dto1.equals(dto5)); // Null map
 
         // Additional test to check if order matters
         ZammadUserDTO dto6 = new ZammadUserDTO();
