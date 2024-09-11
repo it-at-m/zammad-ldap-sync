@@ -22,17 +22,8 @@
  */
 package de.muenchen.zammad.ldap.tree;
 
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
-
-import de.muenchen.oss.ezldap.core.EnhancedLdapOuAttributesMapper;
-import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserAttributesMapper;
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-
+import de.muenchen.oss.ezldap.core.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ldap.NameNotFoundException;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -40,17 +31,16 @@ import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.SearchScope;
 
-import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
-import de.muenchen.oss.ezldap.core.LdapOuAttributesMapper;
-import de.muenchen.oss.ezldap.core.LdapUserAttributesMapper;
-import de.muenchen.zammad.ldap.tree.DtoMapperImpl;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 
 @Slf4j
 public class LdapService {
-
-	public static final int MAX_SEARCH_RESULTS = 100;
 
 	private static final String ATTRIBUTE_OBJECT_CLASS = "objectClass";
 
@@ -58,21 +48,21 @@ public class LdapService {
 	private static final String LHM_ORGANIZATIONAL_UNIT = "lhmOrganizationalUnit";
 	private static final String LHM_OBJECT_PATH = "lhmObjectPath";
 
-	private String ouSearchBase;
+	private final String ouSearchBase;
 	private final String userSearchBase;
 
 	private final LdapTemplate ldapTemplate;
 	private final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper;
 	private final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper;
-	private LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper;
-	private DtoMapper mapper;
+	private final LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper;
+	private final DtoMapper mapper;
 
 
 	 /**
      * Erzeugt eine neue Instanz.
      *
      * @param ldapTemplate ein {@link LdapTemplate} für LDAP
-     * @param enhancedLdapOuAttributesMapper ein {@link LdapUserAttributesMapper}
+     * @param enhancedLdapUserAttributesMapper ein {@link LdapUserAttributesMapper}
      * @param ldapBaseUserAttributesMapper ein {@link LdapBaseUserAttributesMapper}
      * @param enhancedLdapOuAttributesMapper ein {@link LdapOuAttributesMapper}
      * @param modelMapper ein {@link DtoMapper}

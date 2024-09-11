@@ -10,7 +10,7 @@ sync:
       user-search-base:
       ou-search-base:
     identifier-2:
-      distinguished-name:
+      distinguished-names:
         -
       user-search-base:
       ou-search-base:

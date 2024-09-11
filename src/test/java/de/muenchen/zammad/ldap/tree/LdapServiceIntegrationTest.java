@@ -24,6 +24,7 @@ package de.muenchen.zammad.ldap.tree;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuAttributesMapper;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserAttributesMapper;
+import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,11 +39,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
-import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
-import de.muenchen.zammad.ldap.tree.LdapService;
-
 @Testcontainers
-public class LdapServiceIntegrationTest {
+class LdapServiceIntegrationTest {
 
     private LdapService sut;
 
@@ -83,7 +81,7 @@ public class LdapServiceIntegrationTest {
     }
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         Integer exposedPort = openldapContainer.getMappedPort(OPENLDAP_EXPOSED_PORT);
         System.out.println(exposedPort);
         final LdapContextSource contextSource = this.contextSource(exposedPort);

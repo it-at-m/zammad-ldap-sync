@@ -1,4 +1,4 @@
-# Zammad-Ldap-Synchronsiation
+# Zammad-Ldap-Synchronization
 In order to assign an owner to Zammad tickets for processing, we need a structured representation of our LDAP entries in Zammad. 
 
 Zammad tickets holders must be mapped to our LDAP users.
@@ -26,13 +26,13 @@ See the [open issues](#) for a full list of proposed features (and known issues)
 For the LDAP-Zammad Synchronization we create an LDAP tree consisting of the organizational units and their employees. We call this a *shade tree*.
 To do this, the data must be read from LDAP. The implementation fits our LDAP structure. If the LDAP structure is different, appropriate adjustments are required, to build the shade tree.
 
-The shade tree is then used to synchronize the groups and users in Zammd via REST API.
+The shade tree is then used to synchronize the groups and users in Zammad via REST API.
 
 Prepare Zammad before first start. Technical documentation can be found here [docs/Readme](https://github.com/it-at-m/zammad-ldap-sync/blob/dev/docs/README.md)
 
 application.yaml:
-- Connect zammad-ldap-snyc with Zammad REST-API (Url, Token).
-- Connect zammad-ldap-snyc with your LDAP.
+- Connect zammad-ldap-sync with Zammad REST-API (Url, Token).
+- Connect zammad-ldap-sync with your LDAP.
 
 Start Zammad-Ldap-Synchronisation application.
 

@@ -8,7 +8,7 @@ import org.springframework.ldap.core.AttributesMapper;
 
 public class EnhancedLdapOuAttributesMapper implements AttributesMapper<EnhancedLdapOuSearchResultDTO> {
 
-    private LdapOuAttributesMapper ldapOuAttributesMapper;
+    private final LdapOuAttributesMapper ldapOuAttributesMapper;
 
     public EnhancedLdapOuAttributesMapper() {
         this.ldapOuAttributesMapper = new LdapOuAttributesMapper();

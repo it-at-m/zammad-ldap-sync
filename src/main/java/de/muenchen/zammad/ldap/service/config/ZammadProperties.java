@@ -10,13 +10,12 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "zammad")
 public class ZammadProperties {
 
-	private String token;
-	private ZammadUrlProperties url;
-	private Assignment assignment;
+    private String token;
+    private ZammadUrlProperties url;
+    private Assignment assignment;
 
-	  public String getToken() {
-		  return "Token token=" + this.token;
-	  }
-
+    public String getToken() {
+        return "Token token=" + this.token;
+    }
 
 }
