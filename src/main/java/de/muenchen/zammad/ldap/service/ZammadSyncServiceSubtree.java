@@ -24,9 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @Getter
-public class ZammadSyncServiceSubtreeUtil {
+public class ZammadSyncServiceSubtree {
 
-    public ZammadSyncServiceSubtreeUtil(ZammadService zammadService, ZammadProperties zammadProperties) {
+    public ZammadSyncServiceSubtree(ZammadService zammadService, ZammadProperties zammadProperties) {
         super();
         this.zammadService = zammadService;
         this.zammadProperties = zammadProperties;

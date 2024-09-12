@@ -34,7 +34,7 @@ public class ZammadSyncService {
 
     private ZammadLdapService zammadLdapService;
 
-    private ZammadSyncServiceSubtreeUtil subtreeUtil;
+    private ZammadSyncServiceSubtree subtree;
 
     private Validation validation;
 
@@ -66,10 +66,10 @@ public class ZammadSyncService {
             log.debug("2/4 Update zammad groups and users ...");
             var map = new HashMap<String, LdapOuNode>();
             map.put(entry.getKey(), entry.getValue());
-            getSubtreeUtil().updateZammadGroupsWithUsers(map);
+            getSubtree().updateZammadGroupsWithUsers(map);
 
             log.debug("3/4 Mark user for deletion ...");
-            getSubtreeUtil().assignDeletionFlagZammadUser(entry.getValue(), allLdapUsers);
+            getSubtree().assignDeletionFlagZammadUser(entry.getValue(), allLdapUsers);
 
             log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
         }
