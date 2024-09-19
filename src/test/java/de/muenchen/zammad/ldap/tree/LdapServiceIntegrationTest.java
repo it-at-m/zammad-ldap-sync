@@ -74,8 +74,6 @@ class LdapServiceIntegrationTest {
         ldapContextSource.setUrl("ldap://localhost:" + port);
         ldapContextSource.setUserDn("cn=admin,dc=example,dc=org");
         ldapContextSource.setPassword("admin");
-        //        ldapContextSource.setAnonymousReadOnly(true);
-        // we need to call this manually if no Spring context present
         ldapContextSource.afterPropertiesSet();
         return ldapContextSource;
     }
