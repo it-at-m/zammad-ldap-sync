@@ -69,4 +69,38 @@ class CreateUpdateGroupAndUserTest extends PrepareTestEnvironment {
 
 	}
 
+	@Test
+    void updateUserCreatedByZammadLoginTest() {
+
+        var zammadService = mock(ZammadService.class);
+        when(zammadService.getZammadGroups()).thenReturn(List.of());
+
+        var modifiedUserList = zammdUsers();
+        modifiedUserList.remove(17);
+        modifiedUserList.add(zamadUser_lhmobjectId_2_2_3_reset());
+        when(zammadService.getZammadUsers()).thenReturn(modifiedUserList);
+
+        userAndGroupMocks(zammadService);
+
+        var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+
+        var ldapTree = createLdapTree();
+
+        zammadSyncService.updateZammadGroupsWithUsers(ldapTree);
+
+        assertEquals(0, zammadService.getZammadGroups().size());
+        assertEquals(21, zammadService.getZammadUsers().size());
+
+        verify(zammadService, times(4)).updateZammadUser(updateUserCaptor.capture());
+        assertEquals("lhmobjectId_0_0_1", updateUserCaptor.getAllValues().get(0).getLhmobjectid());
+        assertEquals("nachname_0_0_1", updateUserCaptor.getAllValues().get(0).getLastname());
+        assertEquals("lhmobjectId_1_1_2", updateUserCaptor.getAllValues().get(1).getLhmobjectid());
+        assertEquals("nachname_1_1_2", updateUserCaptor.getAllValues().get(1).getLastname());
+        assertEquals("lhmobjectId_2_1_1", updateUserCaptor.getAllValues().get(2).getLhmobjectid());
+        assertEquals("nachname_2_1_1", updateUserCaptor.getAllValues().get(2).getLastname());
+        assertEquals("lhmobjectId_2_2_3", updateUserCaptor.getAllValues().get(3).getLhmobjectid());
+        assertEquals("nachname_2_2_3", updateUserCaptor.getAllValues().get(3).getLastname());
+
+    }
+
 }

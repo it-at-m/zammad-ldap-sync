@@ -293,7 +293,10 @@ public class ZammadSyncServiceSubtree {
     }
 
     private Map<String, List<ZammadUserDTO>> generatelhmObjectIdZammadUserMap(List<ZammadUserDTO> zammadUserDTOs) {
-        return zammadUserDTOs.stream().filter(u -> u.getLhmobjectid() != null && !u.getLhmobjectid().isBlank()).collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
+        var listLhmobjectid = zammadUserDTOs.stream().filter(u -> u.getLhmobjectid() != null && !u.getLhmobjectid().isBlank()).collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
+        var listLogin = zammadUserDTOs.stream().filter(u -> u.getLhmobjectid() == null && u.getLogin() != null && !u.getLogin().isBlank()).collect(Collectors.groupingBy(ZammadUserDTO::getLogin));
+        listLhmobjectid.putAll(listLogin);
+        return listLhmobjectid;
     }
 
     private ZammadUserDTO mapToZammadUser(LdapUserDTO ldapBaseUserDTO, String zammadGroupId) {
