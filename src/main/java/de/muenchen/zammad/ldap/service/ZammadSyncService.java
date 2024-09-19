@@ -166,7 +166,7 @@ public class ZammadSyncService {
 
     }
 
-    private Map<String, EnhancedLdapUserDto> allLdapUsersWithDistinguishedNames(
+    public static Map<String, EnhancedLdapUserDto> allLdapUsersWithDistinguishedNames(
             Map<String, LdapOuNode> ldapShadetrees) {
 
         Map<String, EnhancedLdapUserDto> list = new TreeMap<>();

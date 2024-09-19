@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
@@ -16,6 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class Validation {
 
+	@Value(value = "${sync.message.from}")
+	private String from = "noreply@test.com";
+
+	@Value(value = "${sync.message.to}")
+	private String to = "test@test.com";
+
+	@Value(value = "${sync.message.subject}")
+	private String subject = "Ooops ... test error occurred.";
+
+	private final JavaMailSender javaMailSender;
+
 	void checkOuBases(List<String> ldapSyncDistinguishedNames, Map<String, LdapOuNode> ldapShadetrees) {
 
 		try {
@@ -23,8 +37,7 @@ public class Validation {
 			if (ldapShadetrees.size() != ldapSyncDistinguishedNames.size()) {
 
 				var trees = Arrays.asList(ldapShadetrees.keySet().toArray());
-				var differences = ldapSyncDistinguishedNames.stream().filter(element -> !trees.contains(element))
-						.collect(Collectors.toList());
+				var differences = ldapSyncDistinguishedNames.stream().filter(element -> !trees.contains(element)).toList();
 
 				var sb = new StringBuilder();
 				sb.append(System.lineSeparator() + System.lineSeparator());
@@ -38,6 +51,15 @@ public class Validation {
 				});
 
 				log.error(sb.toString());
+
+				var message = new SimpleMailMessage();
+				message.setFrom(from);
+				message.setSubject(subject);
+				message.setTo(to);
+				message.setText(sb.toString());
+
+				javaMailSender.send(message);
+
 			}
 
 		} catch (Exception ex) {

@@ -2,12 +2,16 @@ package de.muenchen.zammad.ldap.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
 @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class ZammadGroupDTO {
 
@@ -22,6 +26,6 @@ public class ZammadGroupDTO {
     private String lhmobjectid;
     @JsonProperty("updated_at")
     private String updatedAt;
-    
+
 
 }

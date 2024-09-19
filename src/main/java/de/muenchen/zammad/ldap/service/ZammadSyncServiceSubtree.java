@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+
 @Service
 @Slf4j
 @Getter
@@ -140,6 +141,7 @@ public class ZammadSyncServiceSubtree {
                     log.debug("Group not found in Zammad with lhmObjectId '{}' - creating.", lhmObjectIdToFind);
                     // Not found: create new with isLdapsyncupdate=true
                     ZammadGroupDTO createdZammadGroupDTO = getZammadService().createZammadGroup(zammadGroupCompareDTO);
+                    log.trace("Zammad group created : '{}'", createdZammadGroupDTO);
                     ongoingZammadGroupId = createdZammadGroupDTO.getId();
                     log.debug("Zammad group with ID '{}' created.", ongoingZammadGroupId);
                 }
@@ -211,6 +213,7 @@ public class ZammadSyncServiceSubtree {
                     // Not found: create new with isLdapsyncupdate=true
                     prepareUserForCreation(zammadUserCompareDTO);
                     ZammadUserDTO zammadUserDTO = getZammadService().createZammadUser(zammadUserCompareDTO);
+                    log.trace("Zammad user created : '{}'", zammadUserDTO);
                     log.debug("Zammad user with ID '{}' created.", zammadUserDTO.getId());
                 }
                 log.debug(LOG_DIVIDER);
