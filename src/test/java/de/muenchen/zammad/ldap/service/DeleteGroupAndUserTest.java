@@ -19,6 +19,12 @@ import org.mockito.quality.Strictness;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
 
+
+/*
+ * For reasons of data consistency, it is difficult to delete groups or users in zammad.
+ * Therefore, the zammad-ldap-sync only marks groups or users when they have disappeared from the ldap.
+ * The actual deletion is carried out by zammad in a second step.
+ */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DeleteGroupAndUserTest extends PrepareTestEnvironment {
@@ -27,6 +33,11 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
     @Captor
     private ArgumentCaptor<ZammadUserDTO> updateUserCaptor;
 
+    /*
+     * In case you do not want to synchronize the entire ldap hierarchy, the zammad-ldap-sync allows you to synchronize only branches.
+     * In this case each branch must be considered individually.
+     * Test consider branch individually when mark for deletion.
+     */
 	@Test
 	void deleteOneGroupTest() {
 

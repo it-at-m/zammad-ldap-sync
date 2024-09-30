@@ -26,6 +26,10 @@ class DistinguishedNameEMailTest {
     private ArgumentCaptor<SimpleMailMessage> mailCaptor;
 
 
+    /*
+     * The zammad-ldap-sync stops after each run. Errors are only logged.
+     * Test send an simple email message when an ldap distinguished name cannot be resolved correctly.
+     */
 	@Test
 	void notFoundTest() {
 

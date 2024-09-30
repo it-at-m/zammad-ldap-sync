@@ -37,6 +37,9 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
     @Captor
     private ArgumentCaptor<ZammadUserDTO> userUserCaptor;
 
+    /*
+     * Test create zammad rest representations for a given ldap shadow tree (see tree dump) in an empty zammad group/user manager.
+     */
 	@Test
 	void createTest() {
 
@@ -61,7 +64,9 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
 
 	}
 
-
+	 /*
+     * Test update zammad group.name hierarchy entries when adding new ldap parent groups for an already existing zammad group entry.
+     */
 	@Test
     void createParentNodeTest() {
 

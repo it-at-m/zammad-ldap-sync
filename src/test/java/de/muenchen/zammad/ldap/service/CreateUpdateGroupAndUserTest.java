@@ -35,6 +35,9 @@ class CreateUpdateGroupAndUserTest extends PrepareTestEnvironment {
     @Captor
     private ArgumentCaptor<ZammadUserDTO> updateUserCaptor;
 
+    /*
+     * Test update manually changed zammad group entries. Reset manually changed zammad values to ldap values.
+     */
 	@Test
 	void createUpdateTest() {
 
@@ -69,6 +72,12 @@ class CreateUpdateGroupAndUserTest extends PrepareTestEnvironment {
 
 	}
 
+	/*
+	 * The zammad-ldap-sync uses the data model attribute extension 'lhmobjectid' to merge zammad and ldap groups and users.
+	 * When a user logs in to zammad without having been synchronized by the zammad-ldap-sync beforehand,
+	 * he will be automatically recreated by zammad. In this case, zammad will store the lhmobjectid in the attribute 'login'.
+	 * Test merge an already existing user and do not create a new duplicate.
+	 */
 	@Test
     void updateUserCreatedByZammadLoginTest() {
 
