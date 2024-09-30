@@ -1,7 +1,7 @@
 package de.muenchen.zammad.ldap.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -49,9 +49,9 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
 
         userAndGroupMocks(zammadService);
 
-		var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
 
-		zammadSyncService.updateZammadGroupsWithUsers(createLdapTree());
+		zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createLdapTree());
 
 		assertEquals(0, zammadService.getZammadGroups().size());
 		assertEquals(0, zammadService.getZammadUsers().size());

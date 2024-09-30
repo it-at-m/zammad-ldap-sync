@@ -1,6 +1,7 @@
 package de.muenchen.zammad.ldap.service;
 
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,14 +44,14 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
 
 		var zammadService = mock(ZammadService.class);
 		when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null)));
-        when(zammadService.getZammadUsers()).thenReturn(zammdUsers());
+        when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
 
         userAndGroupMocks(zammadService);
 
         assertEquals(1, zammadService.getZammadGroups().size());
         assertEquals(21, zammadService.getZammadUsers().size());
 
-		var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
 
 		var reducedLdapTree = reducedLdapTree();
 		var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
@@ -58,7 +59,7 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
 
 		var reducedEnhancedLdapUserDTO = ZammadSyncService.allLdapUsersWithDistinguishedNames(reducedLdapTree);
 
-		zammadSyncService.assignDeletionFlagZammadUser(rootNode, reducedEnhancedLdapUserDTO);
+		zammadSyncServiceSubtree.assignDeletionFlagZammadUser(rootNode, reducedEnhancedLdapUserDTO);
 
 		verify(zammadService, times(1)).updateZammadUser(updateUserCaptor.capture());
 		assertEquals("delete", updateUserCaptor.getAllValues().get(0).getLdapsyncstate());
@@ -69,15 +70,15 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
     void deleteAllGroupsTest() {
 
         var zammadService = mock(ZammadService.class);
-        when(zammadService.getZammadGroups()).thenReturn(zammdGroups());
-        when(zammadService.getZammadUsers()).thenReturn(zammdUsers());
+        when(zammadService.getZammadGroups()).thenReturn(zammadGroups());
+        when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
 
         userAndGroupMocks(zammadService);
 
         assertEquals(7, zammadService.getZammadGroups().size());
         assertEquals(21, zammadService.getZammadUsers().size());
 
-        var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
 
         var reducedLdapTree = reducedLdapTree();
         var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
@@ -85,7 +86,7 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
 
         var reducedEnhancedLdapUserDTO = ZammadSyncService.allLdapUsersWithDistinguishedNames(reducedLdapTree);
 
-        zammadSyncService.assignDeletionFlagZammadUser(rootNode, reducedEnhancedLdapUserDTO);
+        zammadSyncServiceSubtree.assignDeletionFlagZammadUser(rootNode, reducedEnhancedLdapUserDTO);
 
         verify(zammadService, times(4)).updateZammadUser(updateUserCaptor.capture());
         assertEquals("delete", updateUserCaptor.getAllValues().get(0).getLdapsyncstate());

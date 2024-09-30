@@ -1,6 +1,7 @@
 package de.muenchen.zammad.ldap.service;
 
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,15 +44,15 @@ class CreateUpdateGroupAndUserTest extends PrepareTestEnvironment {
 
 		var zammadService = mock(ZammadService.class);
 		when(zammadService.getZammadGroups()).thenReturn(List.of(zammadGroup_lhmobjectId_1_1_reset(), zammadGroup_lhmobjectId_2_2_2_reset()));
-        when(zammadService.getZammadUsers()).thenReturn(List.of(zamadUser_lhmobjectId_2_2_3_reset()));
+        when(zammadService.getZammadUsers()).thenReturn(List.of(zammadUser_lhmobjectId_2_2_3_reset()));
 
         userAndGroupMocks(zammadService);
 
-		var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
 
 		var ldapTree = createLdapTree();
 
-		zammadSyncService.updateZammadGroupsWithUsers(ldapTree);
+		zammadSyncServiceSubtree.updateZammadGroupsWithUsers(ldapTree);
 
 		assertEquals(2, zammadService.getZammadGroups().size());
 		assertEquals(1, zammadService.getZammadUsers().size());
@@ -84,9 +85,9 @@ class CreateUpdateGroupAndUserTest extends PrepareTestEnvironment {
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
 
-        var modifiedUserList = zammdUsers();
+        var modifiedUserList = zammadUsers();
         modifiedUserList.remove(17);
-        modifiedUserList.add(zamadUser_lhmobjectId_2_2_3_reset());
+        modifiedUserList.add(zammadUser_lhmobjectId_2_2_3_reset());
         when(zammadService.getZammadUsers()).thenReturn(modifiedUserList);
 
         userAndGroupMocks(zammadService);

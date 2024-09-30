@@ -28,10 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ZammadSyncServiceSubtree {
 
     public ZammadSyncServiceSubtree(ZammadService zammadService, ZammadProperties zammadProperties) {
-        super();
         this.zammadService = zammadService;
         this.zammadProperties = zammadProperties;
-
     }
 
     private static final String LOG_ID = " - ID : {}";
@@ -129,6 +127,8 @@ public class ZammadSyncServiceSubtree {
                             // To compare add Id and updated_at
                             zammadGroupCompareDTO.setId(zammadLdapSyncGroup.getId());
                             zammadGroupCompareDTO.setUpdatedAt(zammadLdapSyncGroup.getUpdatedAt());
+                            log.trace("Zammad : {}.", zammadLdapSyncGroup);
+                            log.trace("LDAP   : {}.", zammadGroupCompareDTO);
                             if (!zammadLdapSyncGroup.equals(zammadGroupCompareDTO)) {
                                 log.debug("Something has changed - updating.");
                                 getZammadService().updateZammadGroup(zammadGroupCompareDTO);
@@ -196,10 +196,10 @@ public class ZammadSyncServiceSubtree {
                             log.debug("User isLdapsyncupdate={} - check for update.", zammadLdapSyncUser.isLdapsyncupdate());
                             // Update Id, updated_at und role_ids in case updateZammadUser
                             prepareUserForComparison(zammadUserCompareDTO, zammadLdapSyncUser);
+                            log.trace("Zammad : {}.", zammadLdapSyncUser);
+                            log.trace("LDAP   : {}.", zammadUserCompareDTO);
                             if (!zammadLdapSyncUser.equals(zammadUserCompareDTO)) {
                                 log.debug("Something has changed - updating.");
-                                log.debug("zammadLdapSyncUser   '{}'.", zammadLdapSyncUser);
-                                log.debug("zammadUserCompareDTO '{}'.", zammadUserCompareDTO);
                                 getZammadService().updateZammadUser(zammadUserCompareDTO);
                             } else {
                                 log.debug("No change - skipping.");

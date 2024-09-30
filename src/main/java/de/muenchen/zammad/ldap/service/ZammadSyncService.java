@@ -90,7 +90,7 @@ public class ZammadSyncService {
         log.debug("Getting all zammad groups");
         List<ZammadGroupDTO> zammadGroupDTOs = getZammadService().getZammadGroups();
 
-        // Fetch asignmentrole Erstellen
+        // Fetch Asignmentrole Erstellen
         log.debug("Getting assignment role Erstellen");
         ZammadRoleDTO zammadRoleDTOErstellen = getZammadService()
                 .getZammadRole(getZammadProperties().getAssignment().getRole().getIdErstellen());
@@ -106,7 +106,7 @@ public class ZammadSyncService {
         zammadRoleDTOErstellen.setGroupIds(newGroupIdsErstellen);
         zammadService.updateZammadRole(zammadRoleDTOErstellen);
 
-        // Fetch asignmentrole Vollzugriff
+        // Fetch Assignmentrole Vollzugriff
         log.debug("Getting assignment role Vollzugriff");
         ZammadRoleDTO zammadRoleDTOVollzugriff = getZammadService()
                 .getZammadRole(getZammadProperties().getAssignment().getRole().getIdVollzugriff());
@@ -160,7 +160,7 @@ public class ZammadSyncService {
 
         roleProperty.setIdVollzugriff(Integer.valueOf(vollzugriffRole.get().getId()));
 
-        log.info("Zammad role ids found : {} .", roleProperty.toString());
+        log.info("Zammad role ids found : {} .", roleProperty);
 
         return true;
 
