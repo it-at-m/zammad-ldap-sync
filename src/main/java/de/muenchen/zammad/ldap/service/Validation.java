@@ -22,7 +22,7 @@ public class Validation {
     private String from = "noreply@test.com";
 
     @Value(value = "${sync.message.to}")
-    private String to = "test@test.com";
+    private String[] to = new String[] {"test@test.com"};
 
     @Value(value = "${sync.message.subject}")
     private String subject = "Ooops ... test error occurred.";
