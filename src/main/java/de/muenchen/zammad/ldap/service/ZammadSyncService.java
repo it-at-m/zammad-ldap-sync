@@ -69,7 +69,7 @@ public class ZammadSyncService {
             getSubtree().updateZammadGroupsWithUsers(map);
 
             log.debug("3/4 Mark user for deletion ...");
-            getSubtree().assignDeletionFlagZammadUser(entry.getValue(), allLdapUsers);
+            getSubtree().assignDeletionFlagZammadUser(entry.getValue().findLdapOuNode(entry.getKey()), allLdapUsers);
 
             log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
         }

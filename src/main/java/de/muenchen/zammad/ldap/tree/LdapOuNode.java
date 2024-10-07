@@ -25,6 +25,8 @@ package de.muenchen.zammad.ldap.tree;
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
+import de.muenchen.zammad.ldap.service.ZammadLdapException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -128,6 +130,39 @@ public class LdapOuNode {
         });
         return ous;
     }
+
+    /**
+     * Creates a list of all LdapOuNode contained in the subtree
+     *
+     * @return list
+     */
+    public List<LdapOuNode> flatListLdapOuNode() {
+
+        var ous = new ArrayList<LdapOuNode>();
+        ous.add(this);
+
+        ous.addAll(flatListLdapOuNode(this.getChildNodes()));
+        return ous;
+    }
+
+    private List<LdapOuNode> flatListLdapOuNode(Map<String, LdapOuNode> subtree) {
+
+        var ous = new ArrayList<LdapOuNode>();
+        subtree.forEach((key, nodeEntry) -> {
+            ous.add(nodeEntry);
+            ous.addAll(flatListLdapOuNode(nodeEntry.getChildNodes()));
+        });
+        return ous;
+    }
+
+    /*
+     * Find ldap node by distinguished name
+     */
+    public LdapOuNode findLdapOuNode(String distinguishedName) {
+        var nodes = flatListLdapOuNode();
+        return nodes.stream().filter(node -> node.getDistinguishedName().equals(distinguishedName)).findFirst().orElseThrow();
+    }
+
 
     public String json() throws JsonProcessingException {
     	return new ObjectMapper().writeValueAsString(childNodes);
