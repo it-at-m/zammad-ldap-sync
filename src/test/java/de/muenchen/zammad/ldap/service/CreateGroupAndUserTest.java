@@ -71,7 +71,7 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
     void createParentNodeTest() {
 
         var zammadService = mock(ZammadService.class);
-        when(zammadService.getZammadGroups()).thenReturn(List.of( new ZammadGroupDTO("1", "1", "shortname_2_1", true, true, "lhmobjectId_2_1", null)));
+        when(zammadService.getZammadGroups()).thenReturn(List.of( new ZammadGroupDTO("1", "1", "shortname_2_1", true, true, "lhmobjectId_2_1", null, null)));
         when(zammadService.getZammadUsers()).thenReturn(List.of());
 
         assertEquals(1, zammadService.getZammadGroups().size());

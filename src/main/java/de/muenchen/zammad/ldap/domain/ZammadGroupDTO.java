@@ -26,6 +26,8 @@ public class ZammadGroupDTO {
     private String lhmobjectid;
     @JsonProperty("updated_at")
     private String updatedAt;
+    @JsonProperty("email_address_id")
+    private Integer emailAddressId;
 
 
 }

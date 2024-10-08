@@ -127,6 +127,8 @@ public class ZammadSyncServiceSubtree {
                             // To compare add Id and updated_at
                             zammadGroupCompareDTO.setId(zammadLdapSyncGroup.getId());
                             zammadGroupCompareDTO.setUpdatedAt(zammadLdapSyncGroup.getUpdatedAt());
+                            if (zammadGroupCompareDTO.getEmailAddressId() == null)
+                                zammadGroupCompareDTO.setEmailAddressId(1);
                             log.trace("Zammad : {}.", zammadLdapSyncGroup);
                             log.trace("LDAP   : {}.", zammadGroupCompareDTO);
                             if (!zammadLdapSyncGroup.equals(zammadGroupCompareDTO)) {
@@ -140,6 +142,7 @@ public class ZammadSyncServiceSubtree {
                 } else {
                     log.debug("Group not found in Zammad with lhmObjectId '{}' - creating.", lhmObjectIdToFind);
                     // Not found: create new with isLdapsyncupdate=true
+                    zammadGroupCompareDTO.setEmailAddressId(1);
                     ZammadGroupDTO createdZammadGroupDTO = getZammadService().createZammadGroup(zammadGroupCompareDTO);
                     log.trace("Zammad group created : '{}'", createdZammadGroupDTO);
                     ongoingZammadGroupId = createdZammadGroupDTO.getId();
