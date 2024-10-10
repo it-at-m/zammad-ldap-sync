@@ -22,7 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ZammadService {
 
-	private final RestTemplate restTemplate = new RestTemplate();
+	private static final String AUTHORIZATION = "Authorization";
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
 	private final ZammadProperties zammadProperties;
 
@@ -32,7 +34,7 @@ public class ZammadService {
 
 	public List<ZammadGroupDTO> getZammadGroups() {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		boolean found = true;
 		int i = 0;
@@ -55,7 +57,7 @@ public class ZammadService {
 
 	public ZammadGroupDTO updateZammadGroup(ZammadGroupDTO zammadGroupDTO) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		HttpEntity<ZammadGroupDTO> requestEntity = new HttpEntity<>(zammadGroupDTO, headers);
 
@@ -69,7 +71,7 @@ public class ZammadService {
 
 	public String deleteZammadGroup(String id) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		HttpEntity<ZammadGroupDTO> requestEntity = new HttpEntity<>(headers);
 
@@ -81,7 +83,7 @@ public class ZammadService {
 
 	public ZammadGroupDTO createZammadGroup(ZammadGroupDTO zammadGroupDTO) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		HttpEntity<ZammadGroupDTO> requestEntity = new HttpEntity<>(zammadGroupDTO, headers);
 
@@ -99,7 +101,7 @@ public class ZammadService {
 
 	public List<ZammadUserDTO> getZammadUsers() {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		boolean found = true;
 		int i = 0;
@@ -121,7 +123,7 @@ public class ZammadService {
 
 	public ZammadUserDTO updateZammadUser(ZammadUserDTO zammadUserDTO) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		HttpEntity<ZammadUserDTO> requestEntity = new HttpEntity<>(zammadUserDTO, headers);
 
@@ -135,7 +137,7 @@ public class ZammadService {
 
 	public ZammadUserDTO createZammadUser(ZammadUserDTO zammadUserDTO) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		HttpEntity<ZammadUserDTO> requestEntity = new HttpEntity<>(zammadUserDTO, headers);
 
@@ -147,7 +149,7 @@ public class ZammadService {
 
 	public String deleteZammadUser(String id) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		HttpEntity<ZammadUserDTO> requestEntity = new HttpEntity<>(headers);
 
@@ -159,7 +161,7 @@ public class ZammadService {
 
 	public ZammadRoleDTO getZammadRole(int id) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		HttpEntity<ZammadRoleDTO> requestEntity = new HttpEntity<>(headers);
 
@@ -171,7 +173,7 @@ public class ZammadService {
 
 	public List<ZammadRoleDTO> getZammadRoles() {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		HttpEntity<ZammadRoleDTO> requestEntity = new HttpEntity<>(headers);
 
@@ -183,7 +185,7 @@ public class ZammadService {
 
 	public ZammadRoleDTO updateZammadRole(ZammadRoleDTO zammadRoleDTO) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", zammadProperties.getToken());
+		headers.add(AUTHORIZATION, zammadProperties.getToken());
 
 		HttpEntity<ZammadRoleDTO> requestEntity = new HttpEntity<>(zammadRoleDTO, headers);
 
