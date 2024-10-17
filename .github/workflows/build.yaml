@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/workflow-build.yaml
     with:
       # tag 'test' if merged to dev branch
       publish: ${{ github.ref == 'refs/heads/dev' }}
