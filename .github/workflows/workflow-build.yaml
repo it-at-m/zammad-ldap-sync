@@ -75,7 +75,7 @@ jobs:
       # Install the cosign tool on main-branch
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
-        uses: sigstore/cosign-installer@v3.6.0
+        uses: sigstore/cosign-installer@v3.7.0
 
       # Set up BuildKit Docker container builder to be able to build
       # multi-platform images and export cache
