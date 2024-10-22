@@ -23,4 +23,4 @@ jobs:
     uses: ./.github/workflows/workflow-build.yaml
     with:
       tag-name: ${{ github.event.inputs.tag-name }}
-      publish: ${{ github.event.inputs.publish }}
+      publish: ${{ github.event.inputs.publish == 'true' }}
