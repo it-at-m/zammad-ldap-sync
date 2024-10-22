@@ -1,0 +1,26 @@
+name: Build Image on Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag-name:
+        description: 'tag the image should have'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - integration
+          - test
+      publish:
+        type: boolean
+        required: true
+        default: true
+        description: 'should the image be build'
+
+jobs:
+  build:
+    uses: ./.github/workflows/workflow-build.yaml
+    with:
+      tag-name: ${{ github.event.inputs.tag-name }}
+      publish: ${{ github.event.inputs.publish }}

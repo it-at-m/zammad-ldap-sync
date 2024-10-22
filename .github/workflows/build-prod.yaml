@@ -1,0 +1,17 @@
+name: Build Image for Prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        type: boolean
+        required: true
+        default: false
+        description: 'should the image for prod be build'
+
+jobs:
+  build:
+    uses: ./.github/workflows/workflow-build.yaml
+    with:
+      tag-name: 'prod'
+      publish: ${{ github.event.inputs.publish }}
