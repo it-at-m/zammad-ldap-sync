@@ -86,7 +86,7 @@ class LdapServiceIntegrationTest {
         final LdapBaseUserAttributesMapper baseUserAttributesMapper = new LdapBaseUserAttributesMapper();
         this.ldapService = new LdapService(this.ldapTemplate(contextSource),
                 new EnhancedLdapUserAttributesMapper(baseUserAttributesMapper),
-                baseUserAttributesMapper, new EnhancedLdapOuAttributesMapper(), new DtoMapperImpl(), USER_BASE,
+                baseUserAttributesMapper, new EnhancedLdapOuAttributesMapper(), USER_BASE,
                 ORG_BASE);
     }
 
@@ -109,7 +109,7 @@ class LdapServiceIntegrationTest {
         Assertions.assertEquals("ou=Abteilung 1,ou=Referat für Bildung und Sport,o=oubase,dc=example,dc=org", abt_1.getUsers().get(0).getLhmObjectPath());
 
     }
-    
+
     @Test
     void calculate_shade_tree_with_parent_node_path() {
 
@@ -128,8 +128,8 @@ class LdapServiceIntegrationTest {
         Assertions.assertEquals("ou=Abteilung 1,ou=Referat für Bildung und Sport,o=oubase,dc=example,dc=org", abt_1.getUsers().get(0).getLhmObjectPath());
 
     }
-    
-    
+
+
 
     @Test
     void calculate_shade_tree_select_user_with_modifyTimestamp() {

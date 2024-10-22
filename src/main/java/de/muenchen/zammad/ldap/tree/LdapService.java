@@ -57,7 +57,6 @@ public class LdapService {
     private final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper;
     private final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper;
     private final LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper;
-    private final DtoMapper mapper;
 
     /**
      * Erzeugt eine neue Instanz.
@@ -67,17 +66,15 @@ public class LdapService {
      * @param ldapBaseUserAttributesMapper     ein
      *                                         {@link LdapBaseUserAttributesMapper}
      * @param enhancedLdapOuAttributesMapper   ein {@link LdapOuAttributesMapper}
-     * @param modelMapper                      ein {@link DtoMapper}
      * @param userSearchBase                   Search-Base für User (DN)
      * @param ouSearchBase                     Search-Base für OUs (DN)
      */
     public LdapService(final LdapTemplate ldapTemplate, final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper, final LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper,
-            final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper, final DtoMapper modelMapper, final String userSearchBase, final String ouSearchBase) {
+            final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper, final String userSearchBase, final String ouSearchBase) {
         this.ldapTemplate = ldapTemplate;
         this.enhancedLdapUserAttributesMapper = enhancedLdapUserAttributesMapper;
         this.ldapBaseUserAttributesMapper = ldapBaseUserAttributesMapper;
         this.enhancedLdapOuAttributesMapper = enhancedLdapOuAttributesMapper;
-        this.mapper = modelMapper;
         this.userSearchBase = userSearchBase;
         this.ouSearchBase = ouSearchBase;
     }
@@ -102,7 +99,6 @@ public class LdapService {
         this.ldapBaseUserAttributesMapper = new LdapBaseUserAttributesMapper();
         this.enhancedLdapOuAttributesMapper = new EnhancedLdapOuAttributesMapper();
         this.enhancedLdapUserAttributesMapper = new EnhancedLdapUserAttributesMapper(this.ldapBaseUserAttributesMapper);
-        this.mapper = new DtoMapperImpl();
         this.userSearchBase = userSearchBase;
         this.ouSearchBase = ouSearchBase;
     }
