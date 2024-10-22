@@ -2,7 +2,6 @@ ldap:
   url:
 
 sync:
-# Every date-time-minus-day > 0 is converted to 'startDateTime - date-time-minus-day' to restrict ldap user search.
   organizational-units:
     identifier-1:
       distinguished-names:
@@ -14,6 +13,10 @@ sync:
         -
       user-search-base:
       ou-search-base:
+  message:
+    from:
+    to:
+    subject:
 
 zammad:
   assignment:
@@ -33,3 +36,16 @@ spring:
     web-application-type: none
   application:
     name: '@project.artifactId@'
+  mail:
+    host:
+    port: 0
+    username:
+    password:
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
