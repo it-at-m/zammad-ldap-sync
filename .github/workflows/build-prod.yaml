@@ -13,5 +13,5 @@ jobs:
   build:
     uses: ./.github/workflows/workflow-build.yaml
     with:
-      tag-name: ${{ github.event.inputs.tag-name }}
+      tag-name: 'prod'
       publish: ${{ github.event.inputs.publish }}
