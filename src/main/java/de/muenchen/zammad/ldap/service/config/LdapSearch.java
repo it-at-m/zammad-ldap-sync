@@ -16,7 +16,6 @@ import lombok.Setter;
 @Setter
 public class LdapSearch {
 
-    //	Integer dateTimeMinusDay;
     private Map<String, OrganizationalUnit> organizationalUnits;
 
     public List<String> listDistinguishedNames() {
