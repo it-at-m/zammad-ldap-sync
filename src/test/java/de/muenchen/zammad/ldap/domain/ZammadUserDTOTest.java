@@ -66,11 +66,11 @@ class ZammadUserDTOTest {
         assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
-        // Test changing roleIds (should not affect equals/hashcode)
+        // Test changing roleIds
         userB = createZammadUserDTO();
         userB.setRoleIds(List.of(1, 2, 3));
-        assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
-        assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
+        assertFalse(userA.equals(userB), "Objects are not equal unexpectedly");
+        assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
 
         // Test changing groupIds
         userB = createZammadUserDTO();
