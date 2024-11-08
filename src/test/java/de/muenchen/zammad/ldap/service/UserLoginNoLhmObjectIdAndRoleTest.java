@@ -40,42 +40,65 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
     private ArgumentCaptor<ZammadUserDTO> updateUserCaptor;
 
     /*
-     * Test update ZammadUser with own login in Zammad before the first synchronization.
-     * - In this case user has no valid lhmobjectid and is identified by lhmobjectid in loginid.
-     * - Reset roleid to default synchronisation roleid (Agent, Erstellen).
-     * - Reset groupid to ldap state.
+     * Test update ZammadUser with own login in Zammad before the first
+     * synchronization. - In this case user has no valid lhmobjectid and is
+     * identified by lhmobjectid in loginid. - Reset roleid to default
+     * synchronisation roleid (Agent, Erstellen). - Reset groupid to ldap state.
      */
-	@Test
-	void resetRoleAndGroupTest() {
+    @Test
+    void resetRoleAndGroupTest() {
 
-		var zammadService = mock(ZammadService.class);
+        var zammadService = mock(ZammadService.class);
 
         when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null)));
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
+        when(zammadService.getZammadUsers()).thenReturn(
+                List.of(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
-		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
 
-		zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createResetLdapTree());
+        zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createResetLdapTree());
 
-		assertEquals(1, zammadService.getZammadGroups().size());
-		assertEquals(1, zammadService.getZammadUsers().size());
+        assertEquals(1, zammadService.getZammadGroups().size());
+        assertEquals(1, zammadService.getZammadUsers().size());
 
-		verify(zammadService, times(0)).createZammadGroup(createGroupCaptor.capture());
-		verify(zammadService, times(0)).updateZammadGroup(updateGroupCaptor.capture());
+        verify(zammadService, times(0)).createZammadGroup(createGroupCaptor.capture());
+        verify(zammadService, times(0)).updateZammadGroup(updateGroupCaptor.capture());
 
-		verify(zammadService, times(1)).updateZammadUser(updateUserCaptor.capture());
-		var capturedUser = updateUserCaptor.getAllValues().get(0);
-		assertEquals("lhmobjectId_0_0_1", capturedUser.getLhmobjectid());
-		assertEquals(List.of(0, 1), capturedUser.getRoleIds());
-		assertEquals(Map.of("1", List.of("full")), capturedUser.getGroupIds());
+        verify(zammadService, times(1)).updateZammadUser(updateUserCaptor.capture());
+        var capturedUser = updateUserCaptor.getAllValues().get(0);
+        assertEquals("lhmobjectId_0_0_1", capturedUser.getLhmobjectid());
+        assertEquals(List.of(0, 1), capturedUser.getRoleIds());
+        assertEquals(Map.of("1", List.of("full")), capturedUser.getGroupIds());
 
-	}
+    }
 
+    @Test
+    void resetRoleAndGroupLdapsyncUpdateFalseTest() {
 
-	private  Map<String, LdapOuNode> createResetLdapTree() {
+        var zammadService = mock(ZammadService.class);
+
+        when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null)));
+        when(zammadService.getZammadUsers()).thenReturn(
+                List.of(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", false, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
+
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+
+        zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createResetLdapTree());
+
+        assertEquals(1, zammadService.getZammadGroups().size());
+        assertEquals(1, zammadService.getZammadUsers().size());
+
+        verify(zammadService, times(0)).createZammadGroup(createGroupCaptor.capture());
+        verify(zammadService, times(0)).updateZammadGroup(updateGroupCaptor.capture());
+
+        verify(zammadService, times(0)).updateZammadUser(updateUserCaptor.capture());
+
+    }
+
+    private Map<String, LdapOuNode> createResetLdapTree() {
 
         var dn = "dn_level_0_no_1";
-        var rootNode = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(0,1), null, createResetLdapOuUser(0, 0) );
+        var rootNode = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(0, 1), null, createResetLdapOuUser(0, 0));
 
         var root = new HashMap<String, LdapOuNode>();
         root.put(dn, rootNode);
@@ -87,12 +110,12 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
         return root;
     }
 
-	protected List<EnhancedLdapUserDto> createResetLdapOuUser(Integer level, Integer no) {
+    protected List<EnhancedLdapUserDto> createResetLdapOuUser(Integer level, Integer no) {
 
         var userNo = 0;
         var user = new ArrayList<EnhancedLdapUserDto>();
 
-        var user1 = new EnhancedLdapUserDto(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo );
+        var user1 = new EnhancedLdapUserDto(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo);
         user1.setLhmObjectId(String.format("lhmobjectId_%d_%d_%d", level, no, userNo));
         user1.setNachname(String.format("nachname_%d_%d_%d", level, no, userNo));
         user1.setVorname(String.format("vorname_%d_%d_%d", level, no, userNo));
@@ -100,6 +123,5 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
 
         return user;
     }
-
 
 }
