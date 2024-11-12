@@ -26,6 +26,9 @@ public class ZammadGroupDTO {
     private String lhmobjectid;
     @JsonProperty("updated_at")
     private String updatedAt;
+
+
+    TODO  MPDZ2-760 See also ZammadSyncServiceSubtree.
     @JsonProperty("email_address_id")
     private Integer emailAddressId;
 
