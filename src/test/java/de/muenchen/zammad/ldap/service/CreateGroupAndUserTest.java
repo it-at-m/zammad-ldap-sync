@@ -35,7 +35,7 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
     private ArgumentCaptor<ZammadGroupDTO> updateGroupCaptor;
 
     @Captor
-    private ArgumentCaptor<ZammadUserDTO> userUserCaptor;
+    private ArgumentCaptor<ZammadUserDTO> createUserCaptor;
 
     /*
      * Test create zammad rest representations for a given ldap shadow tree (see tree dump) in an empty zammad group/user manager.
@@ -59,8 +59,8 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
 		verify(zammadService, times(7)).createZammadGroup(createGroupCaptor.capture());
 		assertEquals("lhmobjectId_1_3", createGroupCaptor.getAllValues().get(6).getLhmobjectid());
 
-		verify(zammadService, times(21)).createZammadUser(userUserCaptor.capture());
-		assertEquals("lhmobjectId_2_2_1", userUserCaptor.getAllValues().get(12).getLhmobjectid());
+		verify(zammadService, times(21)).createZammadUser(createUserCaptor.capture());
+		assertEquals("lhmobjectId_2_2_1", createUserCaptor.getAllValues().get(12).getLhmobjectid());
 
 	}
 
