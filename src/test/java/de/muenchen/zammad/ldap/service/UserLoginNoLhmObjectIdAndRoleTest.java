@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.zammad.ldap.domain.ChannelsEmail;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
@@ -50,9 +51,12 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
 
         var zammadService = mock(ZammadService.class);
 
-        when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null)));
+        when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(
                 List.of(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
+
+        when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail());
+        when(zammadService.getZammadSignatures()).thenReturn(List.of());
 
         var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
 
@@ -77,7 +81,7 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
 
         var zammadService = mock(ZammadService.class);
 
-        when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null)));
+        when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(
                 List.of(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", false, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
@@ -98,7 +102,7 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
     private Map<String, LdapOuNode> createResetLdapTree() {
 
         var dn = "dn_level_0_no_1";
-        var rootNode = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(0, 1), null, createResetLdapOuUser(0, 0));
+        var rootNode = new LdapOuNode("orgUnit", dn, createEnhancedLdapOuSearchResultDTO(0, 1), null, createResetLdapOuUser(0, 0));
 
         var root = new HashMap<String, LdapOuNode>();
         root.put(dn, rootNode);
