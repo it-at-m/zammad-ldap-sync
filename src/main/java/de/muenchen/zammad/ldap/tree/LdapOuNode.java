@@ -76,7 +76,8 @@ public class LdapOuNode {
         if (getUsers() != null)
             getUsers().forEach(u -> tree.append(tab).append(u.toString()).append(System.lineSeparator()));
 
-        getChildNodes().forEach((k, v) -> tree.append(v.formatTree(tab + "     ")));
+        if (getChildNodes() != null)
+            getChildNodes().forEach((k, v) -> tree.append(v.formatTree(tab + "     ")));
 
         return tree.toString();
     }
@@ -99,6 +100,9 @@ public class LdapOuNode {
     private List<EnhancedLdapUserDto> flatListLdapUserDTO(Map<String, LdapOuNode> subtree) {
 
         var enhancedLdapUsers = new ArrayList<EnhancedLdapUserDto>();
+        if (subtree == null)
+            return enhancedLdapUsers;
+
         subtree.forEach((key, nodeEntry) -> {
             if (nodeEntry.getUsers() != null)
                 enhancedLdapUsers.addAll(nodeEntry.getUsers());
@@ -125,6 +129,9 @@ public class LdapOuNode {
     private List<LdapOuSearchResultDTO> flatListLdapOuDTO(Map<String, LdapOuNode> subtree) {
 
         var ous = new ArrayList<LdapOuSearchResultDTO>();
+        if (subtree == null)
+            return ous;
+
         subtree.forEach((key, nodeEntry) -> {
             ous.add(nodeEntry.getNode());
             ous.addAll(flatListLdapOuDTO(nodeEntry.getChildNodes()));
