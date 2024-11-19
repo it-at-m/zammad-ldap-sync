@@ -139,7 +139,8 @@ public class LdapService {
             LdapOuNode lastNode = rootNode;
 
             var zammadRootIdentifier = distinguishedName.replace("," + ouSearchBase, "");
-            var zammadRootIdentifiers = new ArrayList<>(Arrays.asList(zammadRootIdentifier.split(",")));
+            var zammadRootIdentifiers = new ArrayList<>(Arrays.asList(zammadRootIdentifier.split(",ou=")));
+            zammadRootIdentifiers.replaceAll(ou -> ou.startsWith("ou=") ? ou : "ou=" + ou);
             zammadRootIdentifiers.remove(0);
             Collections.reverse(zammadRootIdentifiers);
             String parentCollector = "";
