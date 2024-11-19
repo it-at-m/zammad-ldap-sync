@@ -43,7 +43,7 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
 	void deleteOneGroupTest() {
 
 		var zammadService = mock(ZammadService.class);
-		when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null)));
+		when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
 
         userAndGroupMocks(zammadService);

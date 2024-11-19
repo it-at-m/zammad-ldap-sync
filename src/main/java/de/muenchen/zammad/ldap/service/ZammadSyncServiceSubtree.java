@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
+import de.muenchen.zammad.ldap.domain.Signatures;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
 import de.muenchen.zammad.ldap.service.config.ZammadProperties;
@@ -20,7 +21,6 @@ import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
 
 @Service
 @Slf4j
@@ -50,6 +50,9 @@ public class ZammadSyncServiceSubtree {
     private final ZammadService zammadService;
 
     private final ZammadProperties zammadProperties;
+
+    private HashMap<String, Integer> emailAddressCache = new HashMap<String, Integer>();
+    private HashMap<String, Integer> signatureCache = new HashMap<String, Integer>();
 
     @Setter
     Map<String, List<ZammadGroupDTO>> zammadGroupsByLhmObjectId;
@@ -107,6 +110,8 @@ public class ZammadSyncServiceSubtree {
                 var ldapOuDto = node.getNode();
                 var zammadCurrentGroupName = zammadGroupName != null ? zammadGroupName + "::" + ldapOuDto.getLhmOUShortname() : ldapOuDto.getLhmOUShortname();
                 var zammadGroupCompareDTO = mapToZammadGroup(node.getNode(), zammadCurrentGroupName, parentGroupID);
+                zammadGroupCompareDTO.setEmailAddressId(findEmailAdressId(node.getOrganizationalUnit()));
+                zammadGroupCompareDTO.setSignatureId(findSignatureId(node.getOrganizationalUnit()));
                 log.debug(zammadGroupCompareDTO.toString());
 
                 // Find zammad group with lhmObjectID
@@ -381,6 +386,49 @@ public class ZammadSyncServiceSubtree {
 
     private List<ZammadUserDTO> findUsers(List<ZammadUserDTO> zammadServiceUsers, String zammadGroupId) {
         return zammadServiceUsers.stream().filter(u -> u.getGroupIds().containsKey(zammadGroupId)).toList();
+    }
+
+    public Integer findEmailAdressId(String emailAddressName) {
+
+        if (emailAddressName == null) {
+            log.warn("Find emailAdressId started with invalid identifier 'null'.");
+            return null;
+        }
+
+        if (getEmailAddressCache().containsKey(emailAddressName)) {
+            var emailAddressID = getEmailAddressCache().get(emailAddressName);
+            log.debug("Fetch emaildAddressId from cache : {}={}", emailAddressName, emailAddressID);
+            return emailAddressID;
+        } else {
+            getEmailAddressCache().put(emailAddressName, getZammadService().getZammadChannelsEmail().findEmailsAdressId(emailAddressName));
+            log.debug("EmaildAddressId account found in Zammad '{}={}' and added to cache.", emailAddressName, getEmailAddressCache().get(emailAddressName));
+            return getEmailAddressCache().get(emailAddressName);
+        }
+    }
+
+    public Integer findSignatureId(String signatureName) {
+
+        if (signatureName == null) {
+            log.warn("Find signatureName started with invalid identifier 'null'.");
+            return null;
+        }
+
+        if (getSignatureCache().containsKey(signatureName)) {
+            var signature = getSignatureCache().get(signatureName);
+            log.debug("Fetch signature from cache : {}={}", signatureName, signature);
+            return signature;
+        } else {
+            getSignatureCache().put(signatureName, findSignatureId(getZammadService().getZammadSignatures(), signatureName));
+            log.debug("EmaildAddressId account found in Zammad '{}={}' and added to cache.", signatureName, getSignatureCache().get(signatureName));
+            return getSignatureCache().get(signatureName);
+        }
+    }
+
+    private Integer findSignatureId(List<Signatures> signatures, String name) {
+
+        var signature = signatures.stream().filter(signat -> signat.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+        return signature == null ? null : signature.getId();
+
     }
 
 }

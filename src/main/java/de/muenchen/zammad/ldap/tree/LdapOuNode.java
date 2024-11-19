@@ -48,6 +48,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class LdapOuNode {
 
+    private String organizationalUnit;
     private String distinguishedName;
     private EnhancedLdapOuSearchResultDTO node;
     private Map<String, LdapOuNode> childNodes = new TreeMap<>();

@@ -103,25 +103,26 @@ public class LdapService {
         this.ouSearchBase = ouSearchBase;
     }
 
-    public Optional<Map<String, LdapOuNode>> buildSubtree(String distinguishedName, String modifyTimeStamp) {
+    public Optional<Map<String, LdapOuNode>> buildSubtree(String organizationalUnit, String distinguishedName, String modifyTimeStamp) {
 
         var distinguishedNameIsValid = ldapQuery(distinguishedName);
         if (distinguishedNameIsValid == null || distinguishedNameIsValid.size() == 0)
             return Optional.empty();
 
         if (distinguishedName.endsWith(ouSearchBase) && distinguishedName.trim().length() > ouSearchBase.trim().length()) {
-            var rootNode = buildParentCollectorTree(distinguishedName, null);
+            var rootNode = buildParentCollectorTree(organizationalUnit, distinguishedName, null);
+            rootNode.setOrganizationalUnit(organizationalUnit);
             var collectorTreeNodes = rootNode.flatListLdapOuNode();
             var lastCollectorTreeNode = collectorTreeNodes.get(collectorTreeNodes.size() - 1);
-            lastCollectorTreeNode.setChildNodes(buildSubtreeWithUsers(distinguishedName, modifyTimeStamp));
+            lastCollectorTreeNode.setChildNodes(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp));
             return Optional.of(Map.of(distinguishedName, rootNode));
         }
         else {
-            return Optional.of(buildSubtreeWithUsers(distinguishedName, modifyTimeStamp));
+            return Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp));
         }
     }
 
-    private LdapOuNode buildParentCollectorTree(String distinguishedName, LdapOuNode rootNode) {
+    private LdapOuNode buildParentCollectorTree(String organizationalUnit, String distinguishedName, LdapOuNode rootNode) {
 
         var searchResults = ldapQuery(ouSearchBase);
         if (searchResults != null && searchResults.size() == 1) {
@@ -129,11 +130,13 @@ public class LdapService {
             rootNode = new LdapOuNode();
             rootNode.setNode(searchResults.get(0));
             rootNode.setDistinguishedName(ouSearchBase);
+            rootNode.setOrganizationalUnit(organizationalUnit);
 
             LdapOuNode lastNode = rootNode;
 
             var zammadRootIdentifier = distinguishedName.replace("," + ouSearchBase, "");
-            var zammadRootIdentifiers = new ArrayList<>(Arrays.asList(zammadRootIdentifier.split(",")));
+            var zammadRootIdentifiers = new ArrayList<>(Arrays.asList(zammadRootIdentifier.split(",ou=")));
+            zammadRootIdentifiers.replaceAll(ou -> ou.startsWith("ou=") ? ou : "ou=" + ou);
             zammadRootIdentifiers.remove(0);
             Collections.reverse(zammadRootIdentifiers);
             String parentCollector = "";
@@ -146,6 +149,7 @@ public class LdapService {
                     var node = new LdapOuNode();
                     node.setNode(searchResults.get(0));
                     node.setDistinguishedName(distinguishedName);
+                    node.setOrganizationalUnit(organizationalUnit);
                     lastNode.setChildNodes(Map.of(identifier, node));
                     lastNode = node;
                 } else {
@@ -184,7 +188,7 @@ public class LdapService {
      * @param modifyTimeStamp   Optional ldap search attribute
      * @return OU Tree
      */
-    private Map<String, LdapOuNode> buildSubtreeWithUsers(String distinguishedName, String modifyTimeStamp) {
+    private Map<String, LdapOuNode> buildSubtreeWithUsers(String organizationalUnit, String distinguishedName, String modifyTimeStamp) {
 
         var subtree = new TreeMap<String, LdapOuNode>();
         try {
@@ -198,11 +202,12 @@ public class LdapService {
                 var object = searchResults.get(0);
                 var rootNode = new LdapOuNode();
                 rootNode.setNode(object);
+                rootNode.setOrganizationalUnit(organizationalUnit);
                 rootNode.setDistinguishedName(distinguishedName);
                 addUsers(this.userSearchBase, rootNode, modifyTimeStamp);
                 subtree.put(distinguishedName, rootNode);
 
-                searchResults.forEach(o -> addSubtree(distinguishedName, rootNode, modifyTimeStamp));
+                searchResults.forEach(o -> addSubtree(organizationalUnit, distinguishedName, rootNode, modifyTimeStamp));
 
             } else {
                 log.error("Ambiguous DN entries found : " + distinguishedName);
@@ -223,7 +228,7 @@ public class LdapService {
      * @param distinguishedName Ldap search base
      * @param modifyTimeStamp   Optional ldap search attribute
      */
-    private void addSubtree(String distinguishedName, LdapOuNode parent, String modifyTimeStamp) {
+    private void addSubtree(String organizationalUnit, String distinguishedName, LdapOuNode parent, String modifyTimeStamp) {
 
         try {
 
@@ -237,9 +242,10 @@ public class LdapService {
                 var node = new LdapOuNode();
                 node.setNode(o);
                 node.setDistinguishedName(dn);
+                node.setOrganizationalUnit(organizationalUnit);
                 parent.getChildNodes().put(o.getOu(), node);
                 addUsers(this.userSearchBase, node, modifyTimeStamp);
-                addSubtree(dn, node, modifyTimeStamp);
+                addSubtree(organizationalUnit, dn, node, modifyTimeStamp);
             });
 
         } catch (final NameNotFoundException ex) {

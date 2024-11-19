@@ -1,5 +1,6 @@
 package de.muenchen.zammad.ldap.service;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.TreeMap;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.zammad.ldap.domain.ChannelsEmail;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
 import de.muenchen.zammad.ldap.service.config.Assignment;
@@ -22,19 +24,21 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 class PrepareTestEnvironment {
 
+    public static final String ORGANIZATIONAL_UNIT = "ITM";
+
     protected void userAndGroupMocks(ZammadService zammadService) {
         // Groups
-        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null))).thenReturn(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null));
+        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null))).thenReturn(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
 
-        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null))).thenReturn(new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null));
-        when(zammadService.updateZammadGroup(zammadGroup_lhmobjectId_1_1_reset())).thenReturn(new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null));
-        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null))).thenReturn(new ZammadGroupDTO("3", "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null));
-        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null))).thenReturn(new ZammadGroupDTO("4", "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null));
+        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null))).thenReturn(new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
+        when(zammadService.updateZammadGroup(zammadGroup_lhmobjectId_1_1_reset())).thenReturn(new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
+        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null, null, null))).thenReturn(new ZammadGroupDTO("3", "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null, null, null));
+        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null, null, null))).thenReturn(new ZammadGroupDTO("4", "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null, null, null));
 
-        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "3", "shortname_0_1::shortname_1_2::shortname_2_1", true, true, "lhmobjectId_2_1", null))).thenReturn(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_1", true, true, "lhmobjectId_2_1", null));
-        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "3", "shortname_0_1::shortname_1_2::shortname_2_2", true, true, "lhmobjectId_2_2", null))).thenReturn(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2", true, true, "lhmobjectId_2_2", null));
-        when(zammadService.updateZammadGroup(zammadGroup_lhmobjectId_2_2_2_reset())).thenReturn(new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null));
-        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "3", "shortname_0_1::shortname_1_2::shortname_2_3", true, true, "lhmobjectId_2_3", null))).thenReturn(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_3", true, true, "lhmobjectId_2_3", null));
+        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "3", "shortname_0_1::shortname_1_2::shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null))).thenReturn(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null));
+        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "3", "shortname_0_1::shortname_1_2::shortname_2_2", true, true, "lhmobjectId_2_2", null, null, null))).thenReturn(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2", true, true, "lhmobjectId_2_2", null, null, null));
+        when(zammadService.updateZammadGroup(zammadGroup_lhmobjectId_2_2_2_reset())).thenReturn(new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
+        when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "3", "shortname_0_1::shortname_1_2::shortname_2_3", true, true, "lhmobjectId_2_3", null, null, null))).thenReturn(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_3", true, true, "lhmobjectId_2_3", null, null, null));
 
         // User
         when(zammadService.createZammadUser(new ZammadUserDTO(null, "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, "lhmobjectId_0_0_1", List.of(0, 1), Map.of("1", List.of("full")), null, true, null))).thenReturn(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, "lhmobjectId_0_0_1", List.of(0, 1), Map.of("1", List.of("full")), null, true, null));
@@ -66,21 +70,32 @@ class PrepareTestEnvironment {
         when(zammadService.createZammadUser(new ZammadUserDTO(null, "vorname_2_3_2", "nachname_2_3_2", "lhmobjectId_2_3_2", true, null, null, "lhmobjectId_2_3_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null))).thenReturn(new ZammadUserDTO("6", "vorname_2_3_2", "nachname_2_3_2", "lhmobjectId_2_3_2", true, null, null, "lhmobjectId_2_3_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
         when(zammadService.createZammadUser(new ZammadUserDTO(null, "vorname_2_3_3", "nachname_2_3_3", "lhmobjectId_2_3_3", true, null, null, "lhmobjectId_2_3_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null))).thenReturn(new ZammadUserDTO("6", "vorname_2_3_3", "nachname_2_3_3", "lhmobjectId_2_3_3", true, null, null, "lhmobjectId_2_3_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
 
+        channelsMock(zammadService);
     }
 
 
     protected void groupMocksCreateParentNodeTest(ZammadService zammadService) {
 
-      when(zammadService.createZammadGroup(new ZammadGroupDTO(null, null, "shortname_2_1", true, true, "lhmobjectId_2_1", null))).thenReturn(new ZammadGroupDTO("1", null, "shortname_2_1", true, true, "lhmobjectId_2_1", null));
-      when(zammadService.createZammadGroup(new ZammadGroupDTO(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null))).thenReturn(new ZammadGroupDTO("2", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null));
-      when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null))).thenReturn(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null));
+      when(zammadService.createZammadGroup(new ZammadGroupDTO(null, null, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null))).thenReturn(new ZammadGroupDTO("1", null, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null));
+      when(zammadService.createZammadGroup(new ZammadGroupDTO(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null))).thenReturn(new ZammadGroupDTO("2", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
+      when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null))).thenReturn(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
+
+      channelsMock(zammadService);
     }
 
+    private void channelsMock(ZammadService zammadService) {
+
+        // Email Channel
+        var channelsMock = mock(ChannelsEmail.class);
+        when(zammadService.getZammadChannelsEmail()).thenReturn(channelsMock);
+        when(channelsMock.findEmailsAdressId(ORGANIZATIONAL_UNIT)).thenReturn(null);
+        when(channelsMock.getAssets()).thenReturn(null);
+    }
 
 	protected  Map<String, LdapOuNode> createLdapTree() {
 
 	    var dn = "dn_level_0_no_1";
-	    var rootNode = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(0,1), createNextDnLevel(1), createLdapOuUser(0, 0) );
+	    var rootNode = new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(0,1), createNextDnLevel(1), createLdapOuUser(0, 0) );
 
 	    var root = new HashMap<String, LdapOuNode>();
         root.put(dn, rootNode);
@@ -93,11 +108,11 @@ class PrepareTestEnvironment {
 	}
 
 	protected ZammadGroupDTO zammadGroup_lhmobjectId_1_1_reset() {
-        return new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1_reset", true, true, "lhmobjectId_1_1", "changed");
+        return new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1_reset", true, true, "lhmobjectId_1_1", "changed", null, null);
     }
 
 	protected ZammadGroupDTO zammadGroup_lhmobjectId_2_2_2_reset() {
-        return new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2_reset", true, true, "lhmobjectId_2_2", null);
+        return new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2_reset", true, true, "lhmobjectId_2_2", null, null, null);
     }
 
     protected ZammadUserDTO zammadUser_lhmobjectId_2_2_3_reset() {
@@ -108,7 +123,7 @@ class PrepareTestEnvironment {
 	protected Map<String, LdapOuNode> reducedLdapTree() {
 
 	    var dn = "dn_level_0_no_1";
-        var rootNode = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(0,1), createNextDnLevel(1), createLdapOuUser(0, 0) );
+	    var rootNode = new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(0,1), createNextDnLevel(1), createLdapOuUser(0, 0) );
 
         rootNode.getUsers().remove(2);
         rootNode.getChildNodes().get("dn_level_1_no_2").getUsers().remove(2);
@@ -128,14 +143,14 @@ class PrepareTestEnvironment {
 	protected List<ZammadGroupDTO> zammadGroups() {
 
         var zammadGroup = new ArrayList<ZammadGroupDTO>();
-        zammadGroup.add(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null));
-        zammadGroup.add(new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null));
-        zammadGroup.add(new ZammadGroupDTO("3", "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null));
-        zammadGroup.add(new ZammadGroupDTO("4", "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null));
+        zammadGroup.add(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
+        zammadGroup.add(new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
+        zammadGroup.add(new ZammadGroupDTO("3", "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null, null, null));
+        zammadGroup.add(new ZammadGroupDTO("4", "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null, null, null));
 
-        zammadGroup.add(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_1", true, true, "lhmobjectId_2_1", null));
-        zammadGroup.add(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2", true, true, "lhmobjectId_2_2", null));
-        zammadGroup.add(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_3", true, true, "lhmobjectId_2_3", null));
+        zammadGroup.add(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null));
+        zammadGroup.add(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2", true, true, "lhmobjectId_2_2", null, null, null));
+        zammadGroup.add(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1::shortname_2_3", true, true, "lhmobjectId_2_3", null, null, null));
 
         return zammadGroup;
     }
@@ -182,17 +197,17 @@ class PrepareTestEnvironment {
 	    var nodes = new TreeMap<String, LdapOuNode>();
 
 	    var dn = String.format("dn_level_%d_no_%d", level, ++number);
-	    nodes.put(dn,  new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 1)));
+	    nodes.put(dn,  new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 1)));
 
 	    dn = String.format("dn_level_%d_no_%d", level, ++number);
-	    var node = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 2));
+	    var node = new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 2));
 	    if (level == 1 && number == 2) {
     	    node.setChildNodes(createNextDnLevel(2));
         }
 	    nodes.put(dn, node);
 
 	    dn = String.format("dn_level_%d_no_%d", level, ++number);
-        nodes.put(dn,  new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 3)));
+        nodes.put(dn,  new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 3)));
 
         return nodes;
     }

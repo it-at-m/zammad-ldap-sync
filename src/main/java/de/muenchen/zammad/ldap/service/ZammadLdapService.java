@@ -27,7 +27,7 @@ public class ZammadLdapService {
 				if (!v.getOuSearchBase().trim().isEmpty()) {
 					var service = new LdapService(getLdapUrl(), "", "", v.getUserSearchBase(), v.getOuSearchBase());
 					for (String dn : v.getDistinguishedNames()) {
-						var tree = service.buildSubtree(dn, dateTime);
+						var tree = service.buildSubtree(k, dn, dateTime);
                         tree.ifPresent(shadeTrees::putAll);
 					}
 				}
