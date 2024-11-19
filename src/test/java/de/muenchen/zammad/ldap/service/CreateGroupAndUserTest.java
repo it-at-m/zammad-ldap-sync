@@ -71,7 +71,7 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
     void createParentNodeTest() {
 
         var zammadService = mock(ZammadService.class);
-        when(zammadService.getZammadGroups()).thenReturn(List.of( new ZammadGroupDTO("1", "1", "shortname_2_1", true, true, "lhmobjectId_2_1", null, null)));
+        when(zammadService.getZammadGroups()).thenReturn(List.of( new ZammadGroupDTO("1", "1", "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(List.of());
 
         assertEquals(1, zammadService.getZammadGroups().size());
@@ -85,20 +85,20 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
         var number = 1;
         var level = 2;
         var dn = String.format("dn_level_%d_no_%d", level, number);
-        var child_level_2 = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
+        var child_level_2 = new LdapOuNode(ORGANIZATIONAL_UNIT,  dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
         childTree_level_2.put(dn,  child_level_2);
 
         var childTree_level_1 = new TreeMap<String, LdapOuNode>();
         level = 1;
         dn = String.format("dn_level_%d_no_%d", level, number);
-        var child_level_1 = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
+        var child_level_1 = new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
         child_level_1.setChildNodes(childTree_level_2);
         childTree_level_1.put(dn,  child_level_1);
 
         var childTree_level_0 = new TreeMap<String, LdapOuNode>();
         level = 0;
         dn = String.format("dn_level_%d_no_%d", level, number);
-        var child_level_0 = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
+        var child_level_0 = new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
         child_level_0.setChildNodes(childTree_level_1);
         childTree_level_0.put(dn,  child_level_0);
 

@@ -30,6 +30,8 @@ zammad:
     groups: groups
     users: users
     roles: roles
+    channels-email: channels_email
+    signatures: signatures
 
 spring:
   main:
