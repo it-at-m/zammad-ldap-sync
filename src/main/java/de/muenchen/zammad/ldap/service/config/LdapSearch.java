@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 public class LdapSearch {
 
-    private Map<String, OrganizationalUnit> organizationalUnits;
+    private Map<String, OrganizationalUnitProperties> organizationalUnits;
 
     public List<String> listDistinguishedNames() {
 

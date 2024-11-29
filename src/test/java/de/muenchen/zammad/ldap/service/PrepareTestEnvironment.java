@@ -1,5 +1,6 @@
 package de.muenchen.zammad.ldap.service;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,6 +16,7 @@ import de.muenchen.zammad.ldap.domain.ChannelsEmail;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
 import de.muenchen.zammad.ldap.service.config.Assignment;
+import de.muenchen.zammad.ldap.service.config.StandardProperties;
 import de.muenchen.zammad.ldap.service.config.ZammadProperties;
 import de.muenchen.zammad.ldap.service.config.ZammadRoleProperties;
 import de.muenchen.zammad.ldap.service.config.ZammadUrlProperties;
@@ -28,6 +30,7 @@ class PrepareTestEnvironment {
 
     protected void userAndGroupMocks(ZammadService zammadService) {
         // Groups
+//        WARUM IST eMaILId = 0   ????
         when(zammadService.createZammadGroup(new ZammadGroupDTO(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null))).thenReturn(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
 
         when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null))).thenReturn(new ZammadGroupDTO("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
@@ -69,8 +72,6 @@ class PrepareTestEnvironment {
         when(zammadService.createZammadUser(new ZammadUserDTO(null, "vorname_2_3_1", "nachname_2_3_1", "lhmobjectId_2_3_1", true, null, null, "lhmobjectId_2_3_1", List.of(0, 1), Map.of("3", List.of("full")), null, true, null))).thenReturn(new ZammadUserDTO("6", "vorname_2_3_1", "nachname_2_3_1", "lhmobjectId_2_3_1", true, null, null, "lhmobjectId_2_3_1", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
         when(zammadService.createZammadUser(new ZammadUserDTO(null, "vorname_2_3_2", "nachname_2_3_2", "lhmobjectId_2_3_2", true, null, null, "lhmobjectId_2_3_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null))).thenReturn(new ZammadUserDTO("6", "vorname_2_3_2", "nachname_2_3_2", "lhmobjectId_2_3_2", true, null, null, "lhmobjectId_2_3_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
         when(zammadService.createZammadUser(new ZammadUserDTO(null, "vorname_2_3_3", "nachname_2_3_3", "lhmobjectId_2_3_3", true, null, null, "lhmobjectId_2_3_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null))).thenReturn(new ZammadUserDTO("6", "vorname_2_3_3", "nachname_2_3_3", "lhmobjectId_2_3_3", true, null, null, "lhmobjectId_2_3_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
-
-        channelsMock(zammadService);
     }
 
 
@@ -79,17 +80,23 @@ class PrepareTestEnvironment {
       when(zammadService.createZammadGroup(new ZammadGroupDTO(null, null, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null))).thenReturn(new ZammadGroupDTO("1", null, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null));
       when(zammadService.createZammadGroup(new ZammadGroupDTO(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null))).thenReturn(new ZammadGroupDTO("2", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
       when(zammadService.createZammadGroup(new ZammadGroupDTO(null, "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null))).thenReturn(new ZammadGroupDTO("3", "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
-
-      channelsMock(zammadService);
     }
 
-    private void channelsMock(ZammadService zammadService) {
+    protected void channelsMock(ZammadService zammadService) {
 
         // Email Channel
         var channelsMock = mock(ChannelsEmail.class);
         when(zammadService.getZammadChannelsEmail()).thenReturn(channelsMock);
-        when(channelsMock.findEmailsAdressId(ORGANIZATIONAL_UNIT)).thenReturn(null);
+        when(channelsMock.findEmailsAdressId(anyString(), anyString())).thenReturn(null);
         when(channelsMock.getAssets()).thenReturn(null);
+    }
+
+    protected StandardProperties standardDefaultMock() {
+
+        var standardMock = mock(StandardProperties.class);
+        when(standardMock.getMailStartsWith()).thenReturn("LHM");
+        when(standardMock.getSignatureStartsWith()).thenReturn("LHM");
+        return standardMock;
     }
 
 	protected  Map<String, LdapOuNode> createLdapTree() {

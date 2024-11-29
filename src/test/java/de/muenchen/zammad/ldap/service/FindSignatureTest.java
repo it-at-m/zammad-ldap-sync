@@ -19,10 +19,13 @@ import org.mockito.quality.Strictness;
 
 import de.muenchen.zammad.ldap.domain.ChannelsEmail;
 import de.muenchen.zammad.ldap.domain.Signatures;
+import de.muenchen.zammad.ldap.service.config.StandardProperties;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class FindSignatureTest extends PrepareTestEnvironment {
+
+    private static final String DEFAULT_SIGNATURE_STARTS_WITH = "LHM";
 
     @Captor
     private ArgumentCaptor<ChannelsEmail> signaturesCaptor;
@@ -33,17 +36,36 @@ class FindSignatureTest extends PrepareTestEnvironment {
 		var zammadService = mock(ZammadService.class);
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
         when(zammadService.getZammadSignatures()).thenReturn(mockSignatureResponse());
 
-    	var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
-		assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findSignatureId(ORGANIZATIONAL_UNIT));
+    	var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
+    	  // Only one call, first response is cached.
+    	assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findSignatureId(ORGANIZATIONAL_UNIT));
 		assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findSignatureId(ORGANIZATIONAL_UNIT));
-
-		// Only one call, first response is chached.
 		verify(zammadService, times(1)).getZammadSignatures();
 	}
+
+	@Test
+    void findDefaultChannelEmailsTest() {
+
+        var zammadService = mock(ZammadService.class);
+
+        userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
+
+        when(zammadService.getZammadSignatures()).thenReturn(mockSignatureResponse());
+
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
+
+        // Only one call, first response is cached.
+        assertEquals(Integer.valueOf(6), zammadSyncServiceSubtree.findSignatureId(DEFAULT_SIGNATURE_STARTS_WITH));
+        assertEquals(Integer.valueOf(6), zammadSyncServiceSubtree.findSignatureId("lHm"));
+        verify(zammadService, times(1)).getZammadSignatures();
+    }
+
 
 	@Test
     void noMatchTest() {
@@ -51,10 +73,14 @@ class FindSignatureTest extends PrepareTestEnvironment {
         var zammadService = mock(ZammadService.class);
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
         when(zammadService.getZammadSignatures()).thenReturn(mockSignatureResponse());
 
-        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var defaultSignatureNoMatchMock = mock(StandardProperties.class);
+        when(defaultSignatureNoMatchMock.getSignatureStartsWith()).thenReturn("FOO"); // Not included in mockSignatureResponse()
+
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), defaultSignatureNoMatchMock);
         assertNull(zammadSyncServiceSubtree.findSignatureId("FOO"));
 
         verify(zammadService, times(1)).getZammadSignatures();
@@ -66,10 +92,11 @@ class FindSignatureTest extends PrepareTestEnvironment {
         var zammadService = mock(ZammadService.class);
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
         when(zammadService.getZammadSignatures()).thenReturn(mockSignatureResponse());
 
-        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
         assertNull(zammadSyncServiceSubtree.findSignatureId(null));
 
         verify(zammadService, times(0)).getZammadSignatures();
@@ -79,11 +106,15 @@ class FindSignatureTest extends PrepareTestEnvironment {
 	private List<Signatures> mockSignatureResponse() {
 
 
-	    var signature = new Signatures();
-        signature.setId(5);
-        signature.setName(ORGANIZATIONAL_UNIT);
+	    var signatureITM = new Signatures();
+        signatureITM.setId(5);
+        signatureITM.setName(ORGANIZATIONAL_UNIT);
 
-        return List.of(signature);
+        var signatureDefault = new Signatures();
+        signatureDefault.setId(6);
+        signatureDefault.setName(DEFAULT_SIGNATURE_STARTS_WITH);
+
+        return List.of(signatureITM, signatureDefault);
 
 	}
 

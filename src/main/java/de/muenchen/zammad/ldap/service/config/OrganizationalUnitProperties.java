@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OrganizationalUnit {
+public class OrganizationalUnitProperties {
 
 		private List<String> distinguishedNames;
 		private String userSearchBase;

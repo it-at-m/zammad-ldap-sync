@@ -16,6 +16,7 @@ import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import de.muenchen.zammad.ldap.domain.Signatures;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.zammad.ldap.service.config.StandardProperties;
 import de.muenchen.zammad.ldap.service.config.ZammadProperties;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.Getter;
@@ -27,9 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 public class ZammadSyncServiceSubtree {
 
-    public ZammadSyncServiceSubtree(ZammadService zammadService, ZammadProperties zammadProperties) {
+    public ZammadSyncServiceSubtree(ZammadService zammadService, ZammadProperties zammadProperties, StandardProperties standardProperties) {
         this.zammadService = zammadService;
         this.zammadProperties = zammadProperties;
+        this.standardProperties = standardProperties;
     }
 
     private static final String LOG_ID = " - ID : {}";
@@ -48,8 +50,8 @@ public class ZammadSyncServiceSubtree {
     private AtomicLong currentUserCount = new AtomicLong();
 
     private final ZammadService zammadService;
-
     private final ZammadProperties zammadProperties;
+    private final StandardProperties standardProperties;
 
     private HashMap<String, Integer> emailAddressCache = new HashMap<String, Integer>();
     private HashMap<String, Integer> signatureCache = new HashMap<String, Integer>();
@@ -390,17 +392,20 @@ public class ZammadSyncServiceSubtree {
 
     public Integer findEmailAdressId(String emailAddressName) {
 
-        if (emailAddressName == null) {
+       if (emailAddressName == null) {
             log.warn("Find emailAdressId started with invalid identifier 'null'.");
             return null;
         }
 
-        if (getEmailAddressCache().containsKey(emailAddressName)) {
-            var emailAddressID = getEmailAddressCache().get(emailAddressName);
+        if (getEmailAddressCache().containsKey(emailAddressName.toUpperCase())) {
+            var emailAddressID = getEmailAddressCache().get(emailAddressName.toUpperCase());
             log.debug("Fetch emaildAddressId from cache : {}={}", emailAddressName, emailAddressID);
             return emailAddressID;
         } else {
-            getEmailAddressCache().put(emailAddressName, getZammadService().getZammadChannelsEmail().findEmailsAdressId(emailAddressName));
+            var key = emailAddressName.toUpperCase();
+            var value = getZammadService().getZammadChannelsEmail().findEmailsAdressId(emailAddressName, getStandardProperties().getMailStartsWith());
+//            getEmailAddressCache().put(emailAddressName.toUpperCase(), getZammadService().getZammadChannelsEmail().findEmailsAdressId(emailAddressName, getStandardProperties().getMailStartsWith()));
+            getEmailAddressCache().put(key, value);
             log.debug("EmaildAddressId account found in Zammad '{}={}' and added to cache.", emailAddressName, getEmailAddressCache().get(emailAddressName));
             return getEmailAddressCache().get(emailAddressName);
         }
@@ -413,20 +418,24 @@ public class ZammadSyncServiceSubtree {
             return null;
         }
 
-        if (getSignatureCache().containsKey(signatureName)) {
-            var signature = getSignatureCache().get(signatureName);
+        if (getSignatureCache().containsKey(signatureName.toUpperCase())) {
+            var signature = getSignatureCache().get(signatureName.toUpperCase());
             log.debug("Fetch signature from cache : {}={}", signatureName, signature);
             return signature;
         } else {
-            getSignatureCache().put(signatureName, findSignatureId(getZammadService().getZammadSignatures(), signatureName));
+            getSignatureCache().put(signatureName.toUpperCase(), findSignatureId(getZammadService().getZammadSignatures(), signatureName, getStandardProperties().getSignatureStartsWith()));
             log.debug("EmaildAddressId account found in Zammad '{}={}' and added to cache.", signatureName, getSignatureCache().get(signatureName));
             return getSignatureCache().get(signatureName);
         }
     }
 
-    private Integer findSignatureId(List<Signatures> signatures, String name) {
+    private Integer findSignatureId(List<Signatures> signatures, String name, String defaultName) {
 
-        var signature = signatures.stream().filter(signat -> signat.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+        var signature = signatures.stream().filter(signat -> signat.getName().toLowerCase().startsWith(name.toLowerCase())).findFirst().orElse(null);
+
+        if (signature == null && defaultName != null)
+            signature = signatures.stream().filter(signat -> signat.getName().toLowerCase().startsWith(defaultName.toLowerCase())).findFirst().orElse(null);
+
         return signature == null ? null : signature.getId();
 
     }

@@ -2,6 +2,9 @@ ldap:
   url:
 
 sync:
+  standard:
+    mail-starts-with: LHM
+    signature-starts-with: LHM
   organizational-units:
     identifier-1:
       distinguished-names:
