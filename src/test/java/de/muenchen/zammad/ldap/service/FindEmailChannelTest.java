@@ -34,15 +34,15 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
 		var zammadService = mock(ZammadService.class);
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelsEmailResponse());
 
-    	var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
-		assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findEmailAdressId(ORGANIZATIONAL_UNIT));
+    	var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
+    	// Only one call, first response is chached.
+    	assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findEmailAdressId(ORGANIZATIONAL_UNIT));
 		assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findEmailAdressId(ORGANIZATIONAL_UNIT));
-
-		// Only one call, first response is chached.
 		verify(zammadService, times(1)).getZammadChannelsEmail();
 	}
 
@@ -52,10 +52,11 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
         var zammadService = mock(ZammadService.class);
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelsEmailResponse());
 
-        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
         assertNull(zammadSyncServiceSubtree.findEmailAdressId("FOO"));
 
         verify(zammadService, times(1)).getZammadChannelsEmail();
@@ -67,10 +68,11 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
         var zammadService = mock(ZammadService.class);
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelsEmailResponse());
 
-        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
         assertNull(zammadSyncServiceSubtree.findEmailAdressId(null));
 
         verify(zammadService, times(0)).getZammadChannelsEmail();

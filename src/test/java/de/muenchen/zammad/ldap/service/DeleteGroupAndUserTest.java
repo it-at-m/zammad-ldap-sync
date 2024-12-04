@@ -47,11 +47,12 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
         assertEquals(1, zammadService.getZammadGroups().size());
         assertEquals(21, zammadService.getZammadUsers().size());
 
-		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
 		var reducedLdapTree = reducedLdapTree();
 		var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
@@ -74,11 +75,12 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
         assertEquals(7, zammadService.getZammadGroups().size());
         assertEquals(21, zammadService.getZammadUsers().size());
 
-        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
         var reducedLdapTree = reducedLdapTree();
         var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();

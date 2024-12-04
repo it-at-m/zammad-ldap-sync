@@ -58,7 +58,7 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
         when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail());
         when(zammadService.getZammadSignatures()).thenReturn(List.of());
 
-        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
         zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createResetLdapTree());
 
@@ -85,7 +85,7 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(
                 List.of(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", false, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
-        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
         zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createResetLdapTree());
 

@@ -23,43 +23,41 @@ class EmailAddressIdTest {
     void nameIsNullTest() {
 
         var emailChannels = new ChannelsEmail();
-        assertNull(emailChannels.findEmailsAdressId(null));
+        assertNull(emailChannels.findEmailsAdressId(null, null));
     }
 
     @Test
     void notCompleteZammadResponseTest() {
 
         var emailChannels = new ChannelsEmail();
-        assertNull(emailChannels.findEmailsAdressId("FOO"));
+        assertNull(emailChannels.findEmailsAdressId("FOO", "FOO"));
 
         emailChannels = new ChannelsEmail();
         emailChannels.setAssets(new Assets());
-        assertNull(emailChannels.findEmailsAdressId("FOO"));
+        assertNull(emailChannels.findEmailsAdressId("FOO", null));
 
         emailChannels = new ChannelsEmail();
         emailChannels.setAssets(new Assets());
         emailChannels.getAssets().setEmailAddress(Map.of());
-        assertNull(emailChannels.findEmailsAdressId("FOO"));
+        assertNull(emailChannels.findEmailsAdressId("FOO", "FOO"));
     }
 
     @Test
     void nameNotFoundTest() {
 
         var emailChannels = new ChannelsEmail();
-        emailChannels = new ChannelsEmail();
         emailChannels.setAssets(new Assets());
         var emailAddress = new EmailAddress();
         emailAddress.setId(5);
         emailAddress.setName("ITM");
         emailChannels.getAssets().setEmailAddress(Map.of("5", emailAddress));
-        assertNull(emailChannels.findEmailsAdressId("FOO"));
+        assertNull(emailChannels.findEmailsAdressId("FOO", null));
     }
 
     @Test
     void emailIdIgnoreCaseFoundTest() {
 
         var emailChannels = new ChannelsEmail();
-        emailChannels = new ChannelsEmail();
         emailChannels.setAssets(new Assets());
         var emailAddress1 = new EmailAddress();
         emailAddress1.setId(5);
@@ -68,8 +66,22 @@ class EmailAddressIdTest {
         emailAddress2.setId(6);
         emailAddress2.setName("FOO");
         emailChannels.getAssets().setEmailAddress(Map.of("5", emailAddress1, "6", emailAddress2));
-        assertEquals(Integer.valueOf(5), emailChannels.findEmailsAdressId("iTM"));
+        assertEquals(Integer.valueOf(5), emailChannels.findEmailsAdressId("iTM", "lHM"));
+    }
 
+    @Test
+    void defaultEmailIdIgnoreCaseFoundTest() {
+
+        var emailChannels = new ChannelsEmail();
+        emailChannels.setAssets(new Assets());
+        var emailAddress1 = new EmailAddress();
+        emailAddress1.setId(5);
+        emailAddress1.setName("FOO");
+        var emailAddress2 = new EmailAddress();
+        emailAddress2.setId(6);
+        emailAddress2.setName("LhM");
+        emailChannels.getAssets().setEmailAddress(Map.of("5", emailAddress1, "6", emailAddress2));
+        assertEquals(Integer.valueOf(6), emailChannels.findEmailsAdressId("iTM", "lHM"));
     }
 
 }

@@ -48,8 +48,9 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(List.of());
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
-		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
 		zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createLdapTree());
 
@@ -78,8 +79,9 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
         assertEquals(0, zammadService.getZammadUsers().size());
 
         groupMocksCreateParentNodeTest(zammadService);
+        channelsMock(zammadService);
 
-        var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
         var childTree_level_2 = new TreeMap<String, LdapOuNode>();
         var number = 1;
