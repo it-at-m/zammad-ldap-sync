@@ -9,7 +9,7 @@ public class EmailAddress {
 
     private Integer id;
     @JsonProperty("channel_id")
-    private String channelId;
+    private Integer channelId;
     private String name;
     private String email;
     private boolean active;

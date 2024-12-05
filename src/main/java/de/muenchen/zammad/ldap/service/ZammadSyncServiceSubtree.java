@@ -402,10 +402,12 @@ public class ZammadSyncServiceSubtree {
             log.debug("Fetch emaildAddressId from cache : {}={}", emailAddressName, emailAddressID);
             return emailAddressID;
         } else {
-            var key = emailAddressName.toUpperCase();
-            var value = getZammadService().getZammadChannelsEmail().findEmailsAdressId(emailAddressName, getStandardProperties().getMailStartsWith());
-//            getEmailAddressCache().put(emailAddressName.toUpperCase(), getZammadService().getZammadChannelsEmail().findEmailsAdressId(emailAddressName, getStandardProperties().getMailStartsWith()));
-            getEmailAddressCache().put(key, value);
+            var zammadServiceResponse = getZammadService().getZammadChannelsEmail();
+            if (zammadServiceResponse == null)
+                getEmailAddressCache().put(emailAddressName.toUpperCase(), null);
+            else
+                getEmailAddressCache().put(emailAddressName.toUpperCase(), zammadServiceResponse.findEmailsAdressId(emailAddressName, getStandardProperties().getMailStartsWith()));
+
             log.debug("EmaildAddressId account found in Zammad '{}={}' and added to cache.", emailAddressName, getEmailAddressCache().get(emailAddressName));
             return getEmailAddressCache().get(emailAddressName);
         }
