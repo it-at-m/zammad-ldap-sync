@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import de.muenchen.zammad.ldap.domain.Assets;
+import de.muenchen.zammad.ldap.domain.Channel;
 import de.muenchen.zammad.ldap.domain.ChannelsEmail;
 import de.muenchen.zammad.ldap.domain.EmailAddress;
 
@@ -55,32 +56,52 @@ class EmailAddressIdTest {
     }
 
     @Test
-    void emailIdIgnoreCaseFoundTest() {
+    void organizationalUnitIgnoreCaseFoundTest() {
 
         var emailChannels = new ChannelsEmail();
         emailChannels.setAssets(new Assets());
         var emailAddress1 = new EmailAddress();
         emailAddress1.setId(5);
         emailAddress1.setName("ItM");
+        emailAddress1.setChannelId(1);
         var emailAddress2 = new EmailAddress();
         emailAddress2.setId(6);
         emailAddress2.setName("FOO");
+        emailAddress2.setChannelId(2);
         emailChannels.getAssets().setEmailAddress(Map.of("5", emailAddress1, "6", emailAddress2));
+
+        var standardChannel = new Channel();
+        standardChannel.setActive(true);
+        standardChannel.setId(1);
+        emailChannels.getAssets().setChannel(Map.of(1, standardChannel));
+
         assertEquals(Integer.valueOf(5), emailChannels.findEmailsAdressId("iTM", "lHM"));
     }
 
     @Test
-    void defaultEmailIdIgnoreCaseFoundTest() {
+    void standardIgnoreCaseFoundTest() {
 
         var emailChannels = new ChannelsEmail();
         emailChannels.setAssets(new Assets());
         var emailAddress1 = new EmailAddress();
         emailAddress1.setId(5);
         emailAddress1.setName("FOO");
+        emailAddress1.setChannelId(1);
         var emailAddress2 = new EmailAddress();
         emailAddress2.setId(6);
         emailAddress2.setName("LhM");
+        emailAddress2.setChannelId(2);
         emailChannels.getAssets().setEmailAddress(Map.of("5", emailAddress1, "6", emailAddress2));
+
+        var organizationalUnitChannel = new Channel();
+        organizationalUnitChannel.setActive(true);
+        organizationalUnitChannel.setId(1);
+
+        var standardChannel = new Channel();
+        standardChannel.setActive(true);
+        standardChannel.setId(2);
+        emailChannels.getAssets().setChannel(Map.of(1, organizationalUnitChannel, 2, standardChannel));
+
         assertEquals(Integer.valueOf(6), emailChannels.findEmailsAdressId("iTM", "lHM"));
     }
 

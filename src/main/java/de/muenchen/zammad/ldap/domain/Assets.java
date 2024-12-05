@@ -12,17 +12,43 @@ public class Assets {
     @JsonProperty("EmailAddress")
     private Map<String, EmailAddress> emailAddress;
 
+    @JsonProperty("Channel")
+    private Map<Integer, Channel> channel;
+
     public Integer findID(String name, String defaultName) {
 
         if (getEmailAddress() == null || getEmailAddress().isEmpty())
             return null;
 
-         var address = getEmailAddress().values().stream().filter(adress -> adress.getName().toLowerCase().startsWith(name.toLowerCase())).findFirst().orElse(null);
+        var address = getEmailAddress().values().stream().filter(adress -> adress.getName().toLowerCase().startsWith(name.toLowerCase())).findFirst().orElse(null);
 
-         if (address == null && defaultName != null)
-             address = getEmailAddress().values().stream().filter(adress -> adress.getName().toLowerCase().startsWith(defaultName.toLowerCase())).findFirst().orElse(null);
+        if (isChannelActive(address))
+            return address.getId();
+        else
+            address = null;
 
-         return address == null ? null : address.getId();
+        if (address == null && defaultName != null) {
+            address = getEmailAddress().values().stream().filter(adress -> adress.getName().toLowerCase().startsWith(defaultName.toLowerCase())).findFirst().orElse(null);
+            if (isChannelActive(address))
+                return address.getId();
+            else
+                address = null;
+        }
+
+        return address == null ? null : address.getId();
+    }
+
+    private boolean isChannelActive(EmailAddress address) {
+        if (address != null && getChannel() != null) {
+            final Integer emailAddressChannelId = address.getChannelId();
+
+            var channel = getChannel().values().stream().filter(chnl -> chnl.getId().equals(emailAddressChannelId)).findFirst().orElse(null);
+
+            if (channel != null )
+                return channel.getActive();
+
+        }
+        return false;
     }
 
 }

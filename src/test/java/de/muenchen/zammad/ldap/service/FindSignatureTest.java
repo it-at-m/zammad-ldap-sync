@@ -43,8 +43,8 @@ class FindSignatureTest extends PrepareTestEnvironment {
     	var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
     	  // Only one call, first response is cached.
-    	assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findSignatureId(ORGANIZATIONAL_UNIT));
-		assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findSignatureId(ORGANIZATIONAL_UNIT));
+    	assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
+		assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
 		verify(zammadService, times(1)).getZammadSignatures();
 	}
 
@@ -108,7 +108,7 @@ class FindSignatureTest extends PrepareTestEnvironment {
 
 	    var signatureITM = new Signatures();
         signatureITM.setId(5);
-        signatureITM.setName(ORGANIZATIONAL_UNIT);
+        signatureITM.setName(ORGANIZATIONAL_UNIT_CHANNEL);
 
         var signatureDefault = new Signatures();
         signatureDefault.setId(6);

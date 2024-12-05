@@ -26,7 +26,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 class PrepareTestEnvironment {
 
-    public static final String ORGANIZATIONAL_UNIT = "ITM";
+    public static final String ORGANIZATIONAL_UNIT_CHANNEL = "ITM";
+    public static final String STANDARD_EMAIL_CHANNEL = "LHM";
 
     protected void userAndGroupMocks(ZammadService zammadService) {
         // Groups
@@ -94,15 +95,15 @@ class PrepareTestEnvironment {
     protected StandardProperties standardDefaultMock() {
 
         var standardMock = mock(StandardProperties.class);
-        when(standardMock.getMailStartsWith()).thenReturn("LHM");
-        when(standardMock.getSignatureStartsWith()).thenReturn("LHM");
+        when(standardMock.getMailStartsWith()).thenReturn(STANDARD_EMAIL_CHANNEL);
+        when(standardMock.getSignatureStartsWith()).thenReturn(STANDARD_EMAIL_CHANNEL);
         return standardMock;
     }
 
 	protected  Map<String, LdapOuNode> createLdapTree() {
 
 	    var dn = "dn_level_0_no_1";
-	    var rootNode = new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(0,1), createNextDnLevel(1), createLdapOuUser(0, 0) );
+	    var rootNode = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(0,1), createNextDnLevel(1), createLdapOuUser(0, 0) );
 
 	    var root = new HashMap<String, LdapOuNode>();
         root.put(dn, rootNode);
@@ -130,7 +131,7 @@ class PrepareTestEnvironment {
 	protected Map<String, LdapOuNode> reducedLdapTree() {
 
 	    var dn = "dn_level_0_no_1";
-	    var rootNode = new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(0,1), createNextDnLevel(1), createLdapOuUser(0, 0) );
+	    var rootNode = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(0,1), createNextDnLevel(1), createLdapOuUser(0, 0) );
 
         rootNode.getUsers().remove(2);
         rootNode.getChildNodes().get("dn_level_1_no_2").getUsers().remove(2);
@@ -204,17 +205,17 @@ class PrepareTestEnvironment {
 	    var nodes = new TreeMap<String, LdapOuNode>();
 
 	    var dn = String.format("dn_level_%d_no_%d", level, ++number);
-	    nodes.put(dn,  new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 1)));
+	    nodes.put(dn,  new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 1)));
 
 	    dn = String.format("dn_level_%d_no_%d", level, ++number);
-	    var node = new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 2));
+	    var node = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 2));
 	    if (level == 1 && number == 2) {
     	    node.setChildNodes(createNextDnLevel(2));
         }
 	    nodes.put(dn, node);
 
 	    dn = String.format("dn_level_%d_no_%d", level, ++number);
-        nodes.put(dn,  new LdapOuNode(ORGANIZATIONAL_UNIT, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 3)));
+        nodes.put(dn,  new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<>(), createLdapOuUser(level, 3)));
 
         return nodes;
     }
