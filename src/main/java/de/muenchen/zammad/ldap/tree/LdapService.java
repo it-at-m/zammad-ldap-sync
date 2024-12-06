@@ -109,17 +109,18 @@ public class LdapService {
         if (distinguishedNameIsValid == null || distinguishedNameIsValid.size() == 0)
             return Optional.empty();
 
-        if (distinguishedName.endsWith(ouSearchBase) && distinguishedName.trim().length() > ouSearchBase.trim().length()) {
-            var rootNode = buildParentCollectorTree(organizationalUnit, distinguishedName, null);
-            rootNode.setOrganizationalUnit(organizationalUnit);
-            var collectorTreeNodes = rootNode.flatListLdapOuNode();
-            var lastCollectorTreeNode = collectorTreeNodes.get(collectorTreeNodes.size() - 1);
-            lastCollectorTreeNode.setChildNodes(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp));
-            return Optional.of(Map.of(distinguishedName, rootNode));
-        }
-        else {
+//        Deactivate add parent groups
+//        if (distinguishedName.endsWith(ouSearchBase) && distinguishedName.trim().length() > ouSearchBase.trim().length()) {
+//            var rootNode = buildParentCollectorTree(organizationalUnit, distinguishedName, null);
+//            rootNode.setOrganizationalUnit(organizationalUnit);
+//            var collectorTreeNodes = rootNode.flatListLdapOuNode();
+//            var lastCollectorTreeNode = collectorTreeNodes.get(collectorTreeNodes.size() - 1);
+//            lastCollectorTreeNode.setChildNodes(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp));
+//            return Optional.of(Map.of(distinguishedName, rootNode));
+//        }
+//        else {
             return Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp));
-        }
+//        }
     }
 
     private LdapOuNode buildParentCollectorTree(String organizationalUnit, String distinguishedName, LdapOuNode rootNode) {

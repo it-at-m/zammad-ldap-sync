@@ -72,10 +72,11 @@ public class ZammadSyncServiceSubtree {
 
         shadeLdapSubtree.entrySet().stream().findFirst().ifPresent(finding -> logStatistic(finding.getValue()));
 
-        var zammadParentGroup = findZammadParentGroupIfExists(shadeLdapSubtree);
-        if (zammadParentGroup.isPresent()) {
-            updateZammadGroupsWithUsers(shadeLdapSubtree, zammadParentGroup.get().getName(), zammadParentGroup.get().getId());
-        } else
+//      Deactivate add parent groups
+//        var zammadParentGroup = findZammadParentGroupIfExists(shadeLdapSubtree);
+//        if (zammadParentGroup.isPresent()) {
+//            updateZammadGroupsWithUsers(shadeLdapSubtree, zammadParentGroup.get().getName(), zammadParentGroup.get().getId());
+//        } else
             updateZammadGroupsWithUsers(shadeLdapSubtree, null, null);
 
     }
