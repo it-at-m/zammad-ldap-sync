@@ -24,9 +24,13 @@ sync:
 zammad:
   assignment:
     role:
+      # Default zammad role. Is created by zammad.
       name-agent: Agent
+      # Zammad role with permission ticket.agent. Must be created.
       name-erstellen: Erstellen
+      # Zammad role with permission ticket.agent. Must be created.
       name-vollzugriff: Vollzugriff
+  # Create a personal access token in your Zammad profile > Token Access > Create and put it in here
   token: <token>
   url:
     base: http://<url>
