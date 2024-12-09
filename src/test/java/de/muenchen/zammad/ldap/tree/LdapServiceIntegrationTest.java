@@ -110,7 +110,7 @@ class LdapServiceIntegrationTest {
 
     }
 
-//  Deactivate add parent groups
+//  Deactivate add parent groups (LdapService, ZammadSyncServiceSubtree, LdapServiceIntegrationTest)
 //    @Test
 //    void calculate_shade_tree_with_parent_node_path() {
 //

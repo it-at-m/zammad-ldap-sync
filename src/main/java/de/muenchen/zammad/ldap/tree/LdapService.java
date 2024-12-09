@@ -109,7 +109,7 @@ public class LdapService {
         if (distinguishedNameIsValid == null || distinguishedNameIsValid.size() == 0)
             return Optional.empty();
 
-//        Deactivate add parent groups
+//        Deactivate add parent groups (LdapService, ZammadSyncServiceSubtree, LdapServiceIntegrationTest)
 //        if (distinguishedName.endsWith(ouSearchBase) && distinguishedName.trim().length() > ouSearchBase.trim().length()) {
 //            var rootNode = buildParentCollectorTree(organizationalUnit, distinguishedName, null);
 //            rootNode.setOrganizationalUnit(organizationalUnit);

@@ -72,7 +72,7 @@ public class ZammadSyncServiceSubtree {
 
         shadeLdapSubtree.entrySet().stream().findFirst().ifPresent(finding -> logStatistic(finding.getValue()));
 
-//      Deactivate add parent groups
+//      Deactivate add parent groups (LdapService, ZammadSyncServiceSubtree, LdapServiceIntegrationTest)
 //        var zammadParentGroup = findZammadParentGroupIfExists(shadeLdapSubtree);
 //        if (zammadParentGroup.isPresent()) {
 //            updateZammadGroupsWithUsers(shadeLdapSubtree, zammadParentGroup.get().getName(), zammadParentGroup.get().getId());
