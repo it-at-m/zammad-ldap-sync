@@ -11,15 +11,13 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import de.muenchen.zammad.ldap.domain.ChannelsEmail;
 import de.muenchen.zammad.ldap.domain.Signatures;
-import de.muenchen.zammad.ldap.service.config.StandardProperties;
+import de.muenchen.zammad.ldap.service.config.OrganizationalUnitsCommonProperties;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -27,10 +25,7 @@ class FindSignatureTest extends PrepareTestEnvironment {
 
     private static final String DEFAULT_SIGNATURE_STARTS_WITH = "LHM";
 
-    @Captor
-    private ArgumentCaptor<ChannelsEmail> signaturesCaptor;
-
-	@Test
+  	@Test
 	void findChannelEmailsTest() {
 
 		var zammadService = mock(ZammadService.class);
@@ -38,16 +33,16 @@ class FindSignatureTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        when(zammadService.getZammadSignatures()).thenReturn(mockSignatureResponse());
+        when(zammadService.getZammadEmailSignatures()).thenReturn(mockSignatureResponse());
 
     	var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
     	  // Only one call, first response is cached.
 
-    	assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
-		assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
+    	assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findEmailSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
+		assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findEmailSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
 
-		verify(zammadService, times(1)).getZammadSignatures();
+		verify(zammadService, times(1)).getZammadEmailSignatures();
 	}
 
 	@Test
@@ -58,14 +53,14 @@ class FindSignatureTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        when(zammadService.getZammadSignatures()).thenReturn(mockSignatureResponse());
+        when(zammadService.getZammadEmailSignatures()).thenReturn(mockSignatureResponse());
 
         var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
         // Only one call, first response is cached.
-        assertEquals(Integer.valueOf(6), zammadSyncServiceSubtree.findSignatureId(DEFAULT_SIGNATURE_STARTS_WITH));
-        assertEquals(Integer.valueOf(6), zammadSyncServiceSubtree.findSignatureId("lHm"));
-        verify(zammadService, times(1)).getZammadSignatures();
+        assertEquals(Integer.valueOf(6), zammadSyncServiceSubtree.findEmailSignatureId(DEFAULT_SIGNATURE_STARTS_WITH));
+        assertEquals(Integer.valueOf(6), zammadSyncServiceSubtree.findEmailSignatureId("lHm"));
+        verify(zammadService, times(1)).getZammadEmailSignatures();
     }
 
 
@@ -77,15 +72,15 @@ class FindSignatureTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        when(zammadService.getZammadSignatures()).thenReturn(mockSignatureResponse());
+        when(zammadService.getZammadEmailSignatures()).thenReturn(mockSignatureResponse());
 
-        var defaultSignatureNoMatchMock = mock(StandardProperties.class);
+        var defaultSignatureNoMatchMock = mock(OrganizationalUnitsCommonProperties.class);
         when(defaultSignatureNoMatchMock.getSignatureStartsWith()).thenReturn("FOO"); // Not included in mockSignatureResponse()
 
         var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), defaultSignatureNoMatchMock);
-        assertNull(zammadSyncServiceSubtree.findSignatureId("FOO"));
+        assertNull(zammadSyncServiceSubtree.findEmailSignatureId("FOO"));
 
-        verify(zammadService, times(1)).getZammadSignatures();
+        verify(zammadService, times(1)).getZammadEmailSignatures();
     }
 
 	@Test
@@ -96,12 +91,12 @@ class FindSignatureTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        when(zammadService.getZammadSignatures()).thenReturn(mockSignatureResponse());
+        when(zammadService.getZammadEmailSignatures()).thenReturn(mockSignatureResponse());
 
         var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
-        assertNull(zammadSyncServiceSubtree.findSignatureId(null));
+        assertNull(zammadSyncServiceSubtree.findEmailSignatureId(null));
 
-        verify(zammadService, times(0)).getZammadSignatures();
+        verify(zammadService, times(0)).getZammadEmailSignatures();
     }
 
 

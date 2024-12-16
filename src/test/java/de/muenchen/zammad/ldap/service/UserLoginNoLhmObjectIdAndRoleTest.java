@@ -56,7 +56,7 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
                 List.of(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail());
-        when(zammadService.getZammadSignatures()).thenReturn(List.of());
+        when(zammadService.getZammadEmailSignatures()).thenReturn(List.of());
 
         var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 

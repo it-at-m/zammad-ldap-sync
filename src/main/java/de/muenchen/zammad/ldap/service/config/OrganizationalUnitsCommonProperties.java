@@ -7,8 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "sync.standard")
-public class StandardProperties {
+@ConfigurationProperties(prefix = "sync.organizational-units-common")
+public class OrganizationalUnitsCommonProperties {
 
     private String mailStartsWith;
     private String signatureStartsWith;

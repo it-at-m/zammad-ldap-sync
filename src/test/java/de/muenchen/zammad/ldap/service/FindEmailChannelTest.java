@@ -11,8 +11,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -30,9 +28,6 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
     final static Integer STANDARD_UNIT_CHANNEL_ID = 2;
     final static Integer ORGANIZATIONAL_EMAIL_ID = 5;
     final static Integer STANDARD_EMAIL_ID = 6;
-
-    @Captor
-    private ArgumentCaptor<ChannelsEmail> channelEmailCaptor;
 
     @Test
     void channelsEmailEmptyTest() {

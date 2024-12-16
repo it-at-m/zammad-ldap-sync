@@ -10,7 +10,7 @@ public class ChannelsEmail {
     @JsonProperty("assets")
     private Assets assets;
 
-    public Integer findEmailsAdressId(String name, String defaultName) {
+    public Integer findEmailsAddressId(String name, String defaultName) {
 
         if (name == null) {
             return null;

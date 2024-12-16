@@ -110,28 +110,6 @@ class LdapServiceIntegrationTest {
 
     }
 
-//  Deactivate add parent groups (LdapService, ZammadSyncServiceSubtree, LdapServiceIntegrationTest)
-//    @Test
-//    void calculate_shade_tree_with_parent_node_path() {
-//
-//        var shadetree = this.ldapService.buildSubtree("orgUnit","ou=Abteilung 1,ou=Referat für Bildung und Sport,o=oubase,dc=example,dc=org", null);
-//        Assertions.assertTrue(shadetree.isPresent());
-//        var rootNode = shadetree.get().values().iterator().next();
-//        Assertions.assertEquals("o=oubase,dc=example,dc=org", rootNode.getDistinguishedName());
-//        Assertions.assertEquals("342", rootNode.getNode().getLhmObjectId());
-//
-//        var rbs = rootNode.getChildNodes().values().iterator().next();
-//        Assertions.assertEquals("Referat für Bildung und Sport", rbs.getNode().getOu());
-//
-//        var departments = rbs.getChildNodes();
-//        var abt_1 = departments.get("ou=Abteilung 1,ou=Referat für Bildung und Sport,o=oubase,dc=example,dc=org");
-//        Assertions.assertEquals("ou=Abteilung 1,ou=Referat für Bildung und Sport,o=oubase,dc=example,dc=org", abt_1.getDistinguishedName());
-//        Assertions.assertEquals("ou=Abteilung 1,ou=Referat für Bildung und Sport,o=oubase,dc=example,dc=org", abt_1.getUsers().get(0).getLhmObjectPath());
-//
-//    }
-
-
-
     @Test
     void calculate_shade_tree_select_user_with_modifyTimestamp() {
 

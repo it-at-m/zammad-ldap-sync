@@ -1,7 +1,8 @@
 package de.muenchen.zammad.ldap.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Map;
 
@@ -24,23 +25,23 @@ class EmailAddressIdTest {
     void nameIsNullTest() {
 
         var emailChannels = new ChannelsEmail();
-        assertNull(emailChannels.findEmailsAdressId(null, null));
+        assertNull(emailChannels.findEmailsAddressId(null, null));
     }
 
     @Test
     void notCompleteZammadResponseTest() {
 
         var emailChannels = new ChannelsEmail();
-        assertNull(emailChannels.findEmailsAdressId("FOO", "FOO"));
+        assertNull(emailChannels.findEmailsAddressId("FOO", "FOO"));
 
         emailChannels = new ChannelsEmail();
         emailChannels.setAssets(new Assets());
-        assertNull(emailChannels.findEmailsAdressId("FOO", null));
+        assertNull(emailChannels.findEmailsAddressId("FOO", null));
 
         emailChannels = new ChannelsEmail();
         emailChannels.setAssets(new Assets());
         emailChannels.getAssets().setEmailAddress(Map.of());
-        assertNull(emailChannels.findEmailsAdressId("FOO", "FOO"));
+        assertNull(emailChannels.findEmailsAddressId("FOO", "FOO"));
     }
 
     @Test
@@ -52,7 +53,7 @@ class EmailAddressIdTest {
         emailAddress.setId(5);
         emailAddress.setName("ITM");
         emailChannels.getAssets().setEmailAddress(Map.of("5", emailAddress));
-        assertNull(emailChannels.findEmailsAdressId("FOO", null));
+        assertNull(emailChannels.findEmailsAddressId("FOO", null));
     }
 
     @Test
@@ -79,7 +80,7 @@ class EmailAddressIdTest {
         standardChannel.setId(2);
         emailChannels.getAssets().setChannel(Map.of(1, organizationalUnitChannel, 2, standardChannel));
 
-        assertEquals(Integer.valueOf(5), emailChannels.findEmailsAdressId("iTM", "lHM"));
+        assertEquals(Integer.valueOf(5), emailChannels.findEmailsAddressId("iTM", "lHM"));
     }
 
 
@@ -108,6 +109,6 @@ class EmailAddressIdTest {
         standardChannel.setId(2);
         emailChannels.getAssets().setChannel(Map.of(1, organizationalUnitChannel, 2, standardChannel));
 
-        assertEquals(Integer.valueOf(6), emailChannels.findEmailsAdressId("iTM", "lHM"));
+        assertEquals(Integer.valueOf(6), emailChannels.findEmailsAddressId("iTM", "lHM"));
     }
 }
