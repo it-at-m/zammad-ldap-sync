@@ -28,10 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 public class ZammadSyncServiceSubtree {
 
     public ZammadSyncServiceSubtree(ZammadService zammadService, ZammadProperties zammadProperties,
-            OrganizationalUnitsCommonProperties standardProperties) {
+            OrganizationalUnitsCommonProperties commonmProperties) {
+
         this.zammadService = zammadService;
         this.zammadProperties = zammadProperties;
-        this.standardProperties = standardProperties;
+        this.commonProperties = commonmProperties;
     }
 
     private static final String LOG_ID = " - ID : {}";
@@ -51,7 +52,7 @@ public class ZammadSyncServiceSubtree {
 
     private final ZammadService zammadService;
     private final ZammadProperties zammadProperties;
-    private final OrganizationalUnitsCommonProperties standardProperties;
+    private final OrganizationalUnitsCommonProperties commonProperties;
 
     private final HashMap<String, Integer> emailAddressCache = new HashMap<>();
     private final HashMap<String, Integer> signatureCache = new HashMap<>();
@@ -73,7 +74,6 @@ public class ZammadSyncServiceSubtree {
         shadeLdapSubtree.entrySet().stream().findFirst().ifPresent(finding -> logStatistic(finding.getValue()));
 
         updateZammadGroupsWithUsers(shadeLdapSubtree, null, null);
-
     }
 
     private void logStatistic(LdapOuNode root) {
@@ -418,7 +418,7 @@ public class ZammadSyncServiceSubtree {
                 getEmailAddressCache().put(emailAddressName.toUpperCase(), null);
             else
                 getEmailAddressCache().put(emailAddressName.toUpperCase(), zammadServiceResponse
-                        .findEmailsAddressId(emailAddressName, getStandardProperties().getMailStartsWith()));
+                        .findEmailsAddressId(emailAddressName, getCommonProperties().getMailStartsWith()));
 
             log.debug("EmaildAddressId account found in Zammad '{}={}' and added to cache.", emailAddressName,
                     getEmailAddressCache().get(emailAddressName));
@@ -438,9 +438,8 @@ public class ZammadSyncServiceSubtree {
             log.debug("Fetch signature from cache : {}={}", signatureName, signature);
             return signature;
         } else {
-            getSignatureCache().put(signatureName.toUpperCase(),
-                    findSignatureId(getZammadService().getZammadEmailSignatures(), signatureName,
-                            getStandardProperties().getSignatureStartsWith()));
+            getSignatureCache().put(signatureName.toUpperCase(), findSignatureId(getZammadService().getZammadEmailSignatures(), signatureName,
+                            getCommonProperties().getSignatureStartsWith()));
             log.debug("EmailSignatureId account found in Zammad '{}={}' and added to cache.", signatureName,
                     getSignatureCache().get(signatureName));
             return getSignatureCache().get(signatureName);
