@@ -69,8 +69,8 @@ class ZammadUserDTOTest {
         // Test changing roleIds
         userB = createZammadUserDTO();
         userB.setRoleIds(List.of(1, 2, 3));
-        assertFalse(userA.equals(userB), "Objects are not equal unexpectedly");
-        assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
+        assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
+        assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
 
         // Test changing groupIds
         userB = createZammadUserDTO();
@@ -115,26 +115,17 @@ class ZammadUserDTOTest {
         return userDto;
     }
 
-
     @Test
     void testEqualsGroupIds() {
         // Setup
         ZammadUserDTO dto1 = new ZammadUserDTO();
-        dto1.setGroupIds(Map.of(
-                "group1", List.of("member1", "member2"),
-                "group2", List.of("member3")
-        ));
+        dto1.setGroupIds(Map.of("group1", List.of("member1", "member2"), "group2", List.of("member3")));
 
         ZammadUserDTO dto2 = new ZammadUserDTO();
-        dto2.setGroupIds(Map.of(
-                "group1", List.of("member1", "member2"),
-                "group2", List.of("member3")
-        ));
+        dto2.setGroupIds(Map.of("group1", List.of("member1", "member2"), "group2", List.of("member3")));
 
         ZammadUserDTO dto3 = new ZammadUserDTO();
-        dto3.setGroupIds(Map.of(
-                "group1", List.of("member1", "member2"),
-                "group2", List.of("member4") // Different value
+        dto3.setGroupIds(Map.of("group1", List.of("member1", "member2"), "group2", List.of("member4") // Different value
         ));
 
         ZammadUserDTO dto4 = new ZammadUserDTO();
@@ -145,9 +136,9 @@ class ZammadUserDTOTest {
 
         // Test
         assertTrue(dto1.equals(dto2), "Objects are not equal unexpectedly"); // Same structure
-        assertFalse(dto1.equals(dto3),"Objects are equal unexpectedly"); // Different value in one group
-        assertFalse(dto1.equals(dto4),"Objects are equal unexpectedly"); // Empty map
-        assertFalse(dto1.equals(dto5),"Objects are equal unexpectedly"); // Null map
+        assertFalse(dto1.equals(dto3), "Objects are equal unexpectedly"); // Different value in one group
+        assertFalse(dto1.equals(dto4), "Objects are equal unexpectedly"); // Empty map
+        assertFalse(dto1.equals(dto5), "Objects are equal unexpectedly"); // Null map
     }
 
 }

@@ -88,7 +88,7 @@ class PrepareTestEnvironment {
         // Email Channel
         var channelsMock = mock(ChannelsEmail.class);
         when(zammadService.getZammadChannelsEmail()).thenReturn(channelsMock);
-        when(channelsMock.findEmailsAdressId(anyString(), anyString())).thenReturn(null);
+        when(channelsMock.findEmailsAddressId(anyString(), anyString())).thenReturn(null);
         when(channelsMock.getAssets()).thenReturn(null);
     }
 

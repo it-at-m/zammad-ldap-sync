@@ -11,13 +11,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import de.muenchen.zammad.ldap.domain.ChannelsEmail;
 import de.muenchen.zammad.ldap.domain.Signatures;
 import de.muenchen.zammad.ldap.service.config.StandardProperties;
 
@@ -27,10 +25,7 @@ class FindSignatureTest extends PrepareTestEnvironment {
 
     private static final String DEFAULT_SIGNATURE_STARTS_WITH = "LHM";
 
-    @Captor
-    private ArgumentCaptor<ChannelsEmail> signaturesCaptor;
-
-	@Test
+  	@Test
 	void findChannelEmailsTest() {
 
 		var zammadService = mock(ZammadService.class);
