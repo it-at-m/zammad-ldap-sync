@@ -8,6 +8,10 @@ on:
         required: true
         default: false
         description: 'should the image for prod be build'
+      github-tag:
+        type: string
+        required: true
+        description: 'type in the new Git-Hub tag name like "v1.0.0"'
 
 jobs:
   build:
@@ -15,3 +19,7 @@ jobs:
     with:
       tag-name: 'prod'
       publish: ${{ github.event.inputs.publish == 'true' }}
+  release:
+    uses: ./.github/workflows/workflow-github-release.yaml
+    with:
+      github-tag: ${{ github.event.inputs.github-tag }}
