@@ -12,6 +12,14 @@ jobs:
         with:
           ref: test-release
 
+      - name: Setup git user
+        uses: fregante/setup-git-user@v2
+
+      - name: Update main
+        run: |
+          git checkout -b main || git checkout main
+          git merge test-release
+
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
@@ -26,9 +34,6 @@ jobs:
           mvn versions:set -DremoveSnapshot=true
           version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "version=$version" >> $GITHUB_ENV
-
-      - name: Setup git user
-        uses: fregante/setup-git-user@v2
 
       - name: Commit Updated Version
         run: |
