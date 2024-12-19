@@ -9,16 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
 
       - name: Setup git user
         uses: fregante/setup-git-user@v2
 
       - name: Update main
         run: |
-          git fetch
-          git merge test-release --allow-unrelated-histories
+          git fetch origin
+          git checkout main
+          git merge origin/test-release --no-ff -m "Update main from dev"
+          git push origin main
 
       - name: Setup Java 21
         uses: actions/setup-java@v4
@@ -37,6 +37,7 @@ jobs:
 
       - name: Commit Updated Version
         run: |
+          git fetch origin
           git checkout main
           git add pom.xml
           git commit -m "Release version ${{ env.version }}"
