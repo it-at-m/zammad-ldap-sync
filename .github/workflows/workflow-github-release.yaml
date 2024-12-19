@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: dev
+          ref: test-release
 
       - name: Setup Java 21
         uses: actions/setup-java@v4
@@ -82,7 +82,7 @@ jobs:
               owner,
               repo,
               head: '${{ env.bumped_version }}-version-bump',
-              base: 'dev',
+              base: 'test-release',
               body: [
                 'This PR is auto-generated'
               ].join('\n')
