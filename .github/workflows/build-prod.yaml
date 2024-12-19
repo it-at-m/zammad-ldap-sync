@@ -1,4 +1,4 @@
-name: test test test
+name: Build Image for Prod
 
 on:
   workflow_dispatch:
