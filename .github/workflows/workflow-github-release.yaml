@@ -18,7 +18,7 @@ jobs:
       - name: Update main
         run: |
           git checkout -b main || git checkout main
-          git reset --hard origin/main
+          git pull
           git merge test-release
 
       - name: Setup Java 21
