@@ -7,7 +7,7 @@ on:
         description: 'should the image be build'
         type: boolean
         default: false
-        required: true
+        required: false
       tag-name:
         description: 'image tag'
         required: false
