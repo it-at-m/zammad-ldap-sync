@@ -81,7 +81,7 @@ jobs:
               title: 'chore: bump release version to ${{ env.bumped_version }}',
               owner,
               repo,
-              head: 'version-bump-${{ env.bumped_version }}',
+              head: `bump-version-${process.env.bumped_version}`,
               base: 'test-release',
               body: [
                 'This PR is auto-generated'
