@@ -17,7 +17,7 @@ jobs:
         run: |
           git fetch origin
           git checkout main || git checkout -b main
-          git merge origin/test-release --no-ff -m "Update main from dev" --allow-unrelated-histories
+          git rebase test-release
           git push origin main
 
       - name: Setup Java 21
