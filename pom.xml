@@ -14,7 +14,7 @@
 
     <groupId>de.muenchen.mpdz.zammad</groupId>
     <artifactId>zammad-ldap-sync</artifactId>
-    <version>0.4</version>
+    <version>0.5-SNAPSHOT</version>
     <description>Zammad LDAP Synchronisation</description>
 
       <properties>
