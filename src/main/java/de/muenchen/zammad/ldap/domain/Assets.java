@@ -27,20 +27,16 @@ public class Assets {
         // organizational-units email
         if (isChannelActive(address))
             return address.getId();
-        else
-            address = null;
 
         // default email
-        if (address == null && defaultName != null) {
+        if (defaultName != null) {
             address = getEmailAddress().values().stream()
                     .filter(adress -> adress.getName().toLowerCase().startsWith(defaultName.toLowerCase())).findFirst()
                     .orElse(null);
             if (isChannelActive(address))
                 return address.getId();
-            else
-                address = null;
-        }
 
+        }
         return null;
     }
 
