@@ -1,4 +1,4 @@
-name: Release zammad-ldap-sync
+name: Build Image for Prod
 
 on:
   workflow_dispatch:
