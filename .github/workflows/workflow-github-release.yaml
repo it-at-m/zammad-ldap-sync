@@ -17,7 +17,8 @@ jobs:
 
       - name: Update main
         run: |
-          git checkout -b main || git checkout main
+          git fetch
+          git checkout main
           git pull
           git merge test-release
 
