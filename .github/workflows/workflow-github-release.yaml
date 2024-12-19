@@ -37,7 +37,8 @@ jobs:
 
       - name: Commit Updated Version
         run: |
-          git checkout -b main || git checkout main
+          git checkout main
+          git fetch
           git add pom.xml
           git commit -m "Release version ${{ env.version }}"
           git push origin main
