@@ -18,7 +18,7 @@ jobs:
       - name: Update main
         run: |
           git fetch
-          git checkout main
+          git checkout main || git checkout -b main
           git merge test-release --allow-unrelated-histories
 
       - name: Setup Java 21
