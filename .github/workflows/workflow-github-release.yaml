@@ -18,6 +18,7 @@ jobs:
       - name: Update main
         run: |
           git checkout -b main || git checkout main
+          git reset --hard origin/main
           git merge test-release
 
       - name: Setup Java 21
@@ -38,7 +39,6 @@ jobs:
       - name: Commit Updated Version
         run: |
           git checkout main
-          git fetch
           git add pom.xml
           git commit -m "Release version ${{ env.version }}"
           git push origin main
