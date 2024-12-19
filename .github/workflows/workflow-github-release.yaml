@@ -19,8 +19,7 @@ jobs:
         run: |
           git fetch
           git checkout main
-          git pull
-          git merge test-release
+          git merge test-release --allow-unrelated-histories
 
       - name: Setup Java 21
         uses: actions/setup-java@v4
