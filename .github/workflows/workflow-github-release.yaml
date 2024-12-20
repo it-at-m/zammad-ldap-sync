@@ -8,10 +8,18 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
+      # Update main with dev
       - uses: actions/checkout@v4
-        with:
-          ref: dev
+      - name: Setup git user
+        uses: fregante/setup-git-user@v2
+      - name: Update main
+        run: |
+          git fetch origin
+          git checkout main || git checkout -b main
+          git merge dev
+          git push origin main
 
+      # Remove SNAPSHOT
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
@@ -19,24 +27,21 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
           cache-dependency-path: './pom.xml'
-
       - name: Remove -SNAPSHOT from Version
         id: remove_snapshot
         run: |
           mvn versions:set -DremoveSnapshot=true
           version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "version=$version" >> $GITHUB_ENV
-
-      - name: Setup git user
-        uses: fregante/setup-git-user@v2
-
       - name: Commit Updated Version
         run: |
-          git checkout -b main || git checkout main
+          git fetch origin
+          git checkout main
           git add pom.xml
           git commit -m "Release version ${{ env.version }}"
           git push origin main
 
+      # Create tag and release
       - name: Create tag
         uses: actions/github-script@v7
         with:
@@ -47,7 +52,6 @@ jobs:
               ref: `refs/tags/${ process.env.version }`,
               sha: context.sha
             })
-
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v2
@@ -57,6 +61,7 @@ jobs:
           prerelease: false
           generate_release_notes: true
 
+      # Create a pull request containing the next SNAPSHOT version
       - name: Bump Version
         id: bump_version
         run: |
@@ -64,14 +69,12 @@ jobs:
               -DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}-SNAPSHOT'
           bumped_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "bumped_version=$bumped_version" >> $GITHUB_ENV
-
       - name: Push Bumped Version
         run: |
           git add pom.xml
           git commit -m "chore: mvn auto version bump to $(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)"
           git checkout -b bump-version-${{ env.bumped_version }}
           git push origin bump-version-${{ env.bumped_version }}
-
       - name: Create pull request
         uses: actions/github-script@v7
         with:
@@ -81,7 +84,7 @@ jobs:
               title: 'chore: bump release version to ${{ env.bumped_version }}',
               owner,
               repo,
-              head: '${{ env.bumped_version }}-version-bump',
+              head: `bump-version-${process.env.bumped_version}`,
               base: 'dev',
               body: [
                 'This PR is auto-generated'
