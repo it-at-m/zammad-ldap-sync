@@ -1,0 +1,13 @@
+name: Release zammad-ldap-sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      github-tag:
+        type: string
+        required: true
+        description: 'type in the new Git-Hub tag name like "v1.0.0"'
+
+jobs:
+  release:
+    uses: ./.github/workflows/workflow-github-release.yaml
