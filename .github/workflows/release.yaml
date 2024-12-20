@@ -1,0 +1,8 @@
+name: Release zammad-ldap-sync
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    uses: ./.github/workflows/workflow-github-release.yaml
