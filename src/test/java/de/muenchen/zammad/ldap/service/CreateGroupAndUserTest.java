@@ -35,7 +35,7 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
     private ArgumentCaptor<ZammadGroupDTO> updateGroupCaptor;
 
     @Captor
-    private ArgumentCaptor<ZammadUserDTO> userUserCaptor;
+    private ArgumentCaptor<ZammadUserDTO> createUserCaptor;
 
     /*
      * Test create zammad rest representations for a given ldap shadow tree (see tree dump) in an empty zammad group/user manager.
@@ -48,8 +48,9 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(List.of());
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
-		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
 		zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createLdapTree());
 
@@ -59,8 +60,8 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
 		verify(zammadService, times(7)).createZammadGroup(createGroupCaptor.capture());
 		assertEquals("lhmobjectId_1_3", createGroupCaptor.getAllValues().get(6).getLhmobjectid());
 
-		verify(zammadService, times(21)).createZammadUser(userUserCaptor.capture());
-		assertEquals("lhmobjectId_2_2_1", userUserCaptor.getAllValues().get(12).getLhmobjectid());
+		verify(zammadService, times(21)).createZammadUser(createUserCaptor.capture());
+		assertEquals("lhmobjectId_2_2_1", createUserCaptor.getAllValues().get(12).getLhmobjectid());
 
 	}
 
@@ -71,34 +72,35 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
     void createParentNodeTest() {
 
         var zammadService = mock(ZammadService.class);
-        when(zammadService.getZammadGroups()).thenReturn(List.of( new ZammadGroupDTO("1", "1", "shortname_2_1", true, true, "lhmobjectId_2_1", null)));
+        when(zammadService.getZammadGroups()).thenReturn(List.of( new ZammadGroupDTO("1", "1", "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(List.of());
 
         assertEquals(1, zammadService.getZammadGroups().size());
         assertEquals(0, zammadService.getZammadUsers().size());
 
         groupMocksCreateParentNodeTest(zammadService);
+        channelsMock(zammadService);
 
-        var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
         var childTree_level_2 = new TreeMap<String, LdapOuNode>();
         var number = 1;
         var level = 2;
         var dn = String.format("dn_level_%d_no_%d", level, number);
-        var child_level_2 = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
+        var child_level_2 = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL,  dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
         childTree_level_2.put(dn,  child_level_2);
 
         var childTree_level_1 = new TreeMap<String, LdapOuNode>();
         level = 1;
         dn = String.format("dn_level_%d_no_%d", level, number);
-        var child_level_1 = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
+        var child_level_1 = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
         child_level_1.setChildNodes(childTree_level_2);
         childTree_level_1.put(dn,  child_level_1);
 
         var childTree_level_0 = new TreeMap<String, LdapOuNode>();
         level = 0;
         dn = String.format("dn_level_%d_no_%d", level, number);
-        var child_level_0 = new LdapOuNode(dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
+        var child_level_0 = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
         child_level_0.setChildNodes(childTree_level_1);
         childTree_level_0.put(dn,  child_level_0);
 

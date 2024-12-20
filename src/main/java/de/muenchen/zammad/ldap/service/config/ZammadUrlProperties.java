@@ -11,5 +11,7 @@ public class ZammadUrlProperties {
 	private String groups;
 	private String users;
 	private String roles;
+	private String channelsEmail;
+	private String signatures;
 
 }

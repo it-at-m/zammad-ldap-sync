@@ -25,6 +25,7 @@ package de.muenchen.zammad.ldap.tree;
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class LdapOuNode {
 
+    private String organizationalUnit;
     private String distinguishedName;
     private EnhancedLdapOuSearchResultDTO node;
     private Map<String, LdapOuNode> childNodes = new TreeMap<>();
@@ -73,7 +75,8 @@ public class LdapOuNode {
         if (getUsers() != null)
             getUsers().forEach(u -> tree.append(tab).append(u.toString()).append(System.lineSeparator()));
 
-        getChildNodes().forEach((k, v) -> tree.append(v.formatTree(tab + "     ")));
+        if (getChildNodes() != null)
+            getChildNodes().forEach((k, v) -> tree.append(v.formatTree(tab + "     ")));
 
         return tree.toString();
     }
@@ -96,6 +99,9 @@ public class LdapOuNode {
     private List<EnhancedLdapUserDto> flatListLdapUserDTO(Map<String, LdapOuNode> subtree) {
 
         var enhancedLdapUsers = new ArrayList<EnhancedLdapUserDto>();
+        if (subtree == null)
+            return enhancedLdapUsers;
+
         subtree.forEach((key, nodeEntry) -> {
             if (nodeEntry.getUsers() != null)
                 enhancedLdapUsers.addAll(nodeEntry.getUsers());
@@ -122,12 +128,48 @@ public class LdapOuNode {
     private List<LdapOuSearchResultDTO> flatListLdapOuDTO(Map<String, LdapOuNode> subtree) {
 
         var ous = new ArrayList<LdapOuSearchResultDTO>();
+        if (subtree == null)
+            return ous;
+
         subtree.forEach((key, nodeEntry) -> {
             ous.add(nodeEntry.getNode());
             ous.addAll(flatListLdapOuDTO(nodeEntry.getChildNodes()));
         });
         return ous;
     }
+
+    /**
+     * Creates a list of all LdapOuNode contained in the subtree
+     *
+     * @return list
+     */
+    public List<LdapOuNode> flatListLdapOuNode() {
+
+        var ous = new ArrayList<LdapOuNode>();
+        ous.add(this);
+
+        ous.addAll(flatListLdapOuNode(this.getChildNodes()));
+        return ous;
+    }
+
+    private List<LdapOuNode> flatListLdapOuNode(Map<String, LdapOuNode> subtree) {
+
+        var ous = new ArrayList<LdapOuNode>();
+        subtree.forEach((key, nodeEntry) -> {
+            ous.add(nodeEntry);
+            ous.addAll(flatListLdapOuNode(nodeEntry.getChildNodes()));
+        });
+        return ous;
+    }
+
+    /*
+     * Find ldap node by distinguished name
+     */
+    public LdapOuNode findLdapOuNode(String distinguishedName) {
+        var nodes = flatListLdapOuNode();
+        return nodes.stream().filter(node -> node.getDistinguishedName().equals(distinguishedName)).findFirst().orElseThrow();
+    }
+
 
     public String json() throws JsonProcessingException {
     	return new ObjectMapper().writeValueAsString(childNodes);

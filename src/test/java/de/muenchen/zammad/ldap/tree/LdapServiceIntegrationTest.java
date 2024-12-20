@@ -42,7 +42,7 @@ import org.testcontainers.utility.MountableFile;
 @Testcontainers
 class LdapServiceIntegrationTest {
 
-    private LdapService sut;
+    private LdapService ldapService;
 
     private static final int OPENLDAP_EXPOSED_PORT = 389;
     private static final String USER_BASE = "o=users,dc=example,dc=org";
@@ -84,9 +84,9 @@ class LdapServiceIntegrationTest {
         System.out.println(exposedPort);
         final LdapContextSource contextSource = this.contextSource(exposedPort);
         final LdapBaseUserAttributesMapper baseUserAttributesMapper = new LdapBaseUserAttributesMapper();
-        this.sut = new LdapService(this.ldapTemplate(contextSource),
+        this.ldapService = new LdapService(this.ldapTemplate(contextSource),
                 new EnhancedLdapUserAttributesMapper(baseUserAttributesMapper),
-                baseUserAttributesMapper, new EnhancedLdapOuAttributesMapper(), new DtoMapperImpl(), USER_BASE,
+                baseUserAttributesMapper, new EnhancedLdapOuAttributesMapper(), USER_BASE,
                 ORG_BASE);
     }
 
@@ -94,7 +94,7 @@ class LdapServiceIntegrationTest {
     @Test
     void calculate_shade_tree() {
 
-        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
+        var shadetree = this.ldapService.buildSubtree("orgUnit", "o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
         Assertions.assertEquals("o=oubase,dc=example,dc=org", rootNode.getDistinguishedName());
@@ -113,7 +113,7 @@ class LdapServiceIntegrationTest {
     @Test
     void calculate_shade_tree_select_user_with_modifyTimestamp() {
 
-        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", "20240226083627Z");
+        var shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", "20240226083627Z");
         Assertions.assertTrue(shadetree.isPresent());
         Assertions.assertEquals(1, shadetree.get().size());
         var rootNode = shadetree.get().values().iterator().next();
@@ -122,7 +122,7 @@ class LdapServiceIntegrationTest {
         Assertions.assertEquals(1, rbs.getUsers().size(), "User expected. All users were created after the timestamp");
         Assertions.assertNotNull(rbs.getUsers().get(0).getModifyTimeStamp(), "Operational ldap user attribute modifyTimestamp not selected.");
 
-        shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", "30000000000000Z");
+        shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", "30000000000000Z");
         Assertions.assertTrue(shadetree.isPresent());
         Assertions.assertEquals(1, shadetree.get().size());
         rootNode = shadetree.get().values().iterator().next();
@@ -134,7 +134,7 @@ class LdapServiceIntegrationTest {
     @Test
     void shade_tree_override_toString() {
 
-        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
+        var shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
 
@@ -146,7 +146,7 @@ class LdapServiceIntegrationTest {
     @Test
     void shade_tree_flat_list_user() {
 
-        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
+        var shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
 
@@ -157,7 +157,7 @@ class LdapServiceIntegrationTest {
     @Test
     void shade_tree_flat_list_ou() {
 
-        var shadetree = this.sut.createSubtreeWithUsers("o=oubase,dc=example,dc=org", null);
+        var shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
 

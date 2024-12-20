@@ -69,7 +69,7 @@ public class ZammadSyncService {
             getSubtree().updateZammadGroupsWithUsers(map);
 
             log.debug("3/4 Mark user for deletion ...");
-            getSubtree().assignDeletionFlagZammadUser(entry.getValue(), allLdapUsers);
+            getSubtree().assignDeletionFlagZammadUser(entry.getValue().findLdapOuNode(entry.getKey()), allLdapUsers);
 
             log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
         }
@@ -90,7 +90,7 @@ public class ZammadSyncService {
         log.debug("Getting all zammad groups");
         List<ZammadGroupDTO> zammadGroupDTOs = getZammadService().getZammadGroups();
 
-        // Fetch Asignmentrole Erstellen
+        // Fetch Assignmentrole Erstellen
         log.debug("Getting assignment role Erstellen");
         ZammadRoleDTO zammadRoleDTOErstellen = getZammadService()
                 .getZammadRole(getZammadProperties().getAssignment().getRole().getIdErstellen());
@@ -118,7 +118,7 @@ public class ZammadSyncService {
         }
 
         // Update AssignmentRole
-        log.debug("Updating assignment role Vollzugriff with \"create\" for all groups");
+        log.debug("Updating assignment role Vollzugriff with \"full\" for all groups");
         zammadRoleDTOVollzugriff.setGroupIds(newGroupIdsVollzugriff);
         getZammadService().updateZammadRole(zammadRoleDTOVollzugriff);
 

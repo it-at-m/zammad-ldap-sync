@@ -47,8 +47,9 @@ class CreateUpdateGroupAndUserTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(List.of(zammadUser_lhmobjectId_2_2_3_reset()));
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
-		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
 		var ldapTree = createLdapTree();
 
@@ -91,8 +92,9 @@ class CreateUpdateGroupAndUserTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(modifiedUserList);
 
         userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
 
-        var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties());
+        var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 
         var ldapTree = createLdapTree();
 
