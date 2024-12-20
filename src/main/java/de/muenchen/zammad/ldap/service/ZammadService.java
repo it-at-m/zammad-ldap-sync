@@ -209,7 +209,7 @@ public class ZammadService {
         return (ChannelsEmail) responseEntity.getBody();
     }
 
-    public List<Signatures> getZammadSignatures() {
+    public List<Signatures> getZammadEmailSignatures() {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 

@@ -16,7 +16,7 @@ import de.muenchen.zammad.ldap.domain.ChannelsEmail;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
 import de.muenchen.zammad.ldap.service.config.Assignment;
-import de.muenchen.zammad.ldap.service.config.StandardProperties;
+import de.muenchen.zammad.ldap.service.config.OrganizationalUnitsCommonProperties;
 import de.muenchen.zammad.ldap.service.config.ZammadProperties;
 import de.muenchen.zammad.ldap.service.config.ZammadRoleProperties;
 import de.muenchen.zammad.ldap.service.config.ZammadUrlProperties;
@@ -88,13 +88,13 @@ class PrepareTestEnvironment {
         // Email Channel
         var channelsMock = mock(ChannelsEmail.class);
         when(zammadService.getZammadChannelsEmail()).thenReturn(channelsMock);
-        when(channelsMock.findEmailsAdressId(anyString(), anyString())).thenReturn(null);
+        when(channelsMock.findEmailsAddressId(anyString(), anyString())).thenReturn(null);
         when(channelsMock.getAssets()).thenReturn(null);
     }
 
-    protected StandardProperties standardDefaultMock() {
+    protected OrganizationalUnitsCommonProperties standardDefaultMock() {
 
-        var standardMock = mock(StandardProperties.class);
+        var standardMock = mock(OrganizationalUnitsCommonProperties.class);
         when(standardMock.getMailStartsWith()).thenReturn(STANDARD_EMAIL_CHANNEL);
         when(standardMock.getSignatureStartsWith()).thenReturn(STANDARD_EMAIL_CHANNEL);
         return standardMock;

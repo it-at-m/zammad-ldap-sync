@@ -2,7 +2,7 @@ ldap:
   url:
 
 sync:
-  standard:
+  organizational-units-common:
     mail-starts-with: Landeshauptstadt München
     signature-starts-with: LHM
   organizational-units:

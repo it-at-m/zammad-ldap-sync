@@ -31,9 +31,6 @@ import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.SearchScope;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -106,63 +103,14 @@ public class LdapService {
     public Optional<Map<String, LdapOuNode>> buildSubtree(String organizationalUnit, String distinguishedName, String modifyTimeStamp) {
 
         var distinguishedNameIsValid = ldapQuery(distinguishedName);
-        if (distinguishedNameIsValid == null || distinguishedNameIsValid.size() == 0)
+        if (distinguishedNameIsValid == null || distinguishedNameIsValid.isEmpty())
             return Optional.empty();
 
-        if (distinguishedName.endsWith(ouSearchBase) && distinguishedName.trim().length() > ouSearchBase.trim().length()) {
-            var rootNode = buildParentCollectorTree(organizationalUnit, distinguishedName, null);
-            rootNode.setOrganizationalUnit(organizationalUnit);
-            var collectorTreeNodes = rootNode.flatListLdapOuNode();
-            var lastCollectorTreeNode = collectorTreeNodes.get(collectorTreeNodes.size() - 1);
-            lastCollectorTreeNode.setChildNodes(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp));
-            return Optional.of(Map.of(distinguishedName, rootNode));
-        }
-        else {
-            return Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp));
-        }
+        return Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp));
+
     }
 
-    private LdapOuNode buildParentCollectorTree(String organizationalUnit, String distinguishedName, LdapOuNode rootNode) {
-
-        var searchResults = ldapQuery(ouSearchBase);
-        if (searchResults != null && searchResults.size() == 1) {
-
-            rootNode = new LdapOuNode();
-            rootNode.setNode(searchResults.get(0));
-            rootNode.setDistinguishedName(ouSearchBase);
-            rootNode.setOrganizationalUnit(organizationalUnit);
-
-            LdapOuNode lastNode = rootNode;
-
-            var zammadRootIdentifier = distinguishedName.replace("," + ouSearchBase, "");
-            var zammadRootIdentifiers = new ArrayList<>(Arrays.asList(zammadRootIdentifier.split(",ou=")));
-            zammadRootIdentifiers.replaceAll(ou -> ou.startsWith("ou=") ? ou : "ou=" + ou);
-            zammadRootIdentifiers.remove(0);
-            Collections.reverse(zammadRootIdentifiers);
-            String parentCollector = "";
-
-            for (String identifier : zammadRootIdentifiers) {
-                parentCollector = parentCollector.isEmpty() ? identifier : identifier + "," + parentCollector;
-                distinguishedName = parentCollector + "," + ouSearchBase;
-                searchResults = ldapQuery(distinguishedName);
-                if (searchResults != null && searchResults.size() == 1) {
-                    var node = new LdapOuNode();
-                    node.setNode(searchResults.get(0));
-                    node.setDistinguishedName(distinguishedName);
-                    node.setOrganizationalUnit(organizationalUnit);
-                    lastNode.setChildNodes(Map.of(identifier, node));
-                    lastNode = node;
-                } else {
-                    log.error("Ambiguous DN entries found : " + distinguishedName);
-                }
-            }
-        } else {
-            log.error("Collector rootNode not found : " + distinguishedName);
-        }
-        return rootNode;
-    }
-
-    private List<EnhancedLdapOuSearchResultDTO> ldapQuery(String distinguishedName) {
+  private List<EnhancedLdapOuSearchResultDTO> ldapQuery(String distinguishedName) {
         try {
             final LdapQuery ouObjectReferenceQuery = query().searchScope(SearchScope.OBJECT).base(distinguishedName).attributes(ATTRIBUTE_MODIFY_TIMESTAMP, "*").where(ATTRIBUTE_OBJECT_CLASS)
                     .is(LHM_ORGANIZATIONAL_UNIT);

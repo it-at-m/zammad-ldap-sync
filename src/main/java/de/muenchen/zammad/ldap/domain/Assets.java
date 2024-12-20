@@ -20,31 +20,34 @@ public class Assets {
         if (getEmailAddress() == null || getEmailAddress().isEmpty())
             return null;
 
-        var address = getEmailAddress().values().stream().filter(adress -> adress.getName().toLowerCase().startsWith(name.toLowerCase())).findFirst().orElse(null);
+        var address = getEmailAddress().values().stream()
+                .filter(adress -> adress.getName().toLowerCase().startsWith(name.toLowerCase())).findFirst()
+                .orElse(null);
 
+        // organizational-units email
         if (isChannelActive(address))
             return address.getId();
-        else
-            address = null;
 
-        if (address == null && defaultName != null) {
-            address = getEmailAddress().values().stream().filter(adress -> adress.getName().toLowerCase().startsWith(defaultName.toLowerCase())).findFirst().orElse(null);
+        // default email
+        if (defaultName != null) {
+            address = getEmailAddress().values().stream()
+                    .filter(adress -> adress.getName().toLowerCase().startsWith(defaultName.toLowerCase())).findFirst()
+                    .orElse(null);
             if (isChannelActive(address))
                 return address.getId();
-            else
-                address = null;
-        }
 
-        return address == null ? null : address.getId();
+        }
+        return null;
     }
 
     private boolean isChannelActive(EmailAddress address) {
         if (address != null && getChannel() != null) {
             final Integer emailAddressChannelId = address.getChannelId();
 
-            var channel = getChannel().values().stream().filter(chnl -> chnl.getId().equals(emailAddressChannelId)).findFirst().orElse(null);
+            var channel = getChannel().values().stream().filter(chnl -> chnl.getId().equals(emailAddressChannelId))
+                    .findFirst().orElse(null);
 
-            if (channel != null )
+            if (channel != null)
                 return channel.getActive();
 
         }
