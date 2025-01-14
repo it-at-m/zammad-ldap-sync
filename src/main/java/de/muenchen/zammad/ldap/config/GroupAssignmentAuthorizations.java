@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.service.config;
+package de.muenchen.zammad.ldap.config;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadRoleDTO;
+import de.muenchen.zammad.ldap.property.ZammadProperties;
 import de.muenchen.zammad.ldap.service.ZammadService;
 import lombok.extern.slf4j.Slf4j;
 

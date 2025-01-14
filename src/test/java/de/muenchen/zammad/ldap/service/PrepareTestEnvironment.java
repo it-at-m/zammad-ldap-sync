@@ -15,11 +15,11 @@ import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.zammad.ldap.domain.ChannelsEmail;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
-import de.muenchen.zammad.ldap.service.config.Assignment;
-import de.muenchen.zammad.ldap.service.config.OrganizationalUnitsCommonProperties;
-import de.muenchen.zammad.ldap.service.config.ZammadProperties;
-import de.muenchen.zammad.ldap.service.config.ZammadRoleProperties;
-import de.muenchen.zammad.ldap.service.config.ZammadUrlProperties;
+import de.muenchen.zammad.ldap.property.Assignment;
+import de.muenchen.zammad.ldap.property.OrganizationalUnitsCommonProperties;
+import de.muenchen.zammad.ldap.property.ZammadProperties;
+import de.muenchen.zammad.ldap.property.ZammadRoleProperties;
+import de.muenchen.zammad.ldap.property.ZammadUrlProperties;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.extern.log4j.Log4j2;
 

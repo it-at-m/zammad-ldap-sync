@@ -17,7 +17,7 @@ import de.muenchen.zammad.ldap.domain.Signatures;
 import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
 import de.muenchen.zammad.ldap.domain.ZammadRoleDTO;
 import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
-import de.muenchen.zammad.ldap.service.config.ZammadProperties;
+import de.muenchen.zammad.ldap.property.ZammadProperties;
 import lombok.extern.slf4j.Slf4j;
 
 @Service

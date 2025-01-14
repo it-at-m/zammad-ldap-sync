@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import de.muenchen.zammad.ldap.service.config.LdapSearch;
+import de.muenchen.zammad.ldap.property.LdapSearch;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import de.muenchen.zammad.ldap.tree.LdapService;
 import lombok.Getter;

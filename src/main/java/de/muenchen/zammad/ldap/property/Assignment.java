@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.service.config;
+package de.muenchen.zammad.ldap.property;
 
 import lombok.Getter;
 import lombok.Setter;

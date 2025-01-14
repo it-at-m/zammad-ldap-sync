@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import de.muenchen.zammad.ldap.config.RoleIds;
 import de.muenchen.zammad.ldap.service.ZammadSyncService;
 import lombok.extern.slf4j.Slf4j;
 

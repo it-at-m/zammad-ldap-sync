@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
-import de.muenchen.zammad.ldap.service.config.GroupAssignmentAuthorizations;
-import de.muenchen.zammad.ldap.service.config.LdapSearch;
-import de.muenchen.zammad.ldap.service.config.ZammadProperties;
+import de.muenchen.zammad.ldap.config.GroupAssignmentAuthorizations;
+import de.muenchen.zammad.ldap.property.LdapSearch;
+import de.muenchen.zammad.ldap.property.ZammadProperties;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
