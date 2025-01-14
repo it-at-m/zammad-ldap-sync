@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.domain;
+package de.muenchen.zammad.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -13,7 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ZammadGroupDTO {
+public class Group {
 
     private String id;
     @JsonProperty("parent_id")

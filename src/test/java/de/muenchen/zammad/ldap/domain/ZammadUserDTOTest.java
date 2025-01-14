@@ -3,6 +3,8 @@ package de.muenchen.zammad.ldap.domain;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+import de.muenchen.zammad.domain.User;
+
 import java.util.List;
 import java.util.Map;
 
@@ -97,8 +99,8 @@ class ZammadUserDTOTest {
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
-    private ZammadUserDTO createZammadUserDTO() {
-        val userDto = new ZammadUserDTO();
+    private User createZammadUserDTO() {
+        val userDto = new User();
         userDto.setId("id");
         userDto.setLogin("john.doe");
         userDto.setLdapsyncupdate(true);
@@ -118,20 +120,20 @@ class ZammadUserDTOTest {
     @Test
     void testEqualsGroupIds() {
         // Setup
-        ZammadUserDTO dto1 = new ZammadUserDTO();
+        User dto1 = new User();
         dto1.setGroupIds(Map.of("group1", List.of("member1", "member2"), "group2", List.of("member3")));
 
-        ZammadUserDTO dto2 = new ZammadUserDTO();
+        User dto2 = new User();
         dto2.setGroupIds(Map.of("group1", List.of("member1", "member2"), "group2", List.of("member3")));
 
-        ZammadUserDTO dto3 = new ZammadUserDTO();
+        User dto3 = new User();
         dto3.setGroupIds(Map.of("group1", List.of("member1", "member2"), "group2", List.of("member4") // Different value
         ));
 
-        ZammadUserDTO dto4 = new ZammadUserDTO();
+        User dto4 = new User();
         dto4.setGroupIds(Map.of());
 
-        ZammadUserDTO dto5 = new ZammadUserDTO();
+        User dto5 = new User();
         dto5.setGroupIds(null);
 
         // Test

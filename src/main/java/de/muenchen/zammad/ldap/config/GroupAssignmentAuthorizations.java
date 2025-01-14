@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.zammad.ldap.domain.ZammadRoleDTO;
+import de.muenchen.zammad.domain.Group;
+import de.muenchen.zammad.domain.Role;
 import de.muenchen.zammad.ldap.property.ZammadProperties;
 import de.muenchen.zammad.ldap.service.ZammadService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class GroupAssignmentAuthorizations {
         this.zammadService = zammadService;
     }
 
-    List<ZammadGroupDTO> zammadGroups;
+    List<Group> zammadGroups;
 
     public void assignRoleAuthorizations() {
 
@@ -41,13 +41,13 @@ public class GroupAssignmentAuthorizations {
 
         // Fetch Assignmentrole Erstellen
         log.debug("Getting assignment role Erstellen");
-        ZammadRoleDTO assignmentRole = zammadService
+        Role assignmentRole = zammadService
                 .getZammadRole(zammadProperties.getAssignment().getRole().getIdErstellen());
 
         // Create group-map
         Map<String, List<String>> groupIdsAuthorization = new HashMap<>();
-        for (ZammadGroupDTO zammadGroupDTO : zammadGroups) {
-            groupIdsAuthorization.put(zammadGroupDTO.getId(), List.of("create"));
+        for (Group zammadGroup : zammadGroups) {
+            groupIdsAuthorization.put(zammadGroup.getId(), List.of("create"));
         }
 
         // Update AssignmentRole Erstellen
@@ -61,13 +61,13 @@ public class GroupAssignmentAuthorizations {
 
         // Fetch Assignmentrole Vollzugriff
         log.debug("Getting assignment role Vollzugriff");
-        ZammadRoleDTO technicalUserRole = zammadService
+        Role technicalUserRole = zammadService
                 .getZammadRole(zammadProperties.getAssignment().getRole().getIdVollzugriff());
 
         // Create group-map
         Map<String, List<String>> groupIdsAuthorization = new HashMap<>();
-        for (ZammadGroupDTO zammadGroupDTO : zammadGroups) {
-            groupIdsAuthorization.put(zammadGroupDTO.getId(), List.of("full"));
+        for (Group zammadGroup : zammadGroups) {
+            groupIdsAuthorization.put(zammadGroup.getId(), List.of("full"));
         }
 
         // Update AssignmentRole

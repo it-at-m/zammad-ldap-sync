@@ -12,10 +12,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import de.muenchen.zammad.ldap.domain.Assets;
-import de.muenchen.zammad.ldap.domain.Channel;
-import de.muenchen.zammad.ldap.domain.ChannelsEmail;
-import de.muenchen.zammad.ldap.domain.EmailAddress;
+import de.muenchen.zammad.domain.Assets;
+import de.muenchen.zammad.domain.Channel;
+import de.muenchen.zammad.domain.ChannelsEmail;
+import de.muenchen.zammad.domain.EmailAddress;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)

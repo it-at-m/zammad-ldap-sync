@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.domain;
+package de.muenchen.zammad.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
 @EqualsAndHashCode
-public class ZammadRoleDTO {
+public class Role {
     private String id;
     private String name;
     @JsonProperty("group_ids")

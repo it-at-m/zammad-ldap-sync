@@ -20,9 +20,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
-import de.muenchen.zammad.ldap.domain.ChannelsEmail;
-import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.zammad.domain.ChannelsEmail;
+import de.muenchen.zammad.domain.Group;
+import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.extern.log4j.Log4j2;
 
@@ -32,13 +32,13 @@ import lombok.extern.log4j.Log4j2;
 class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
 
     @Captor
-    private ArgumentCaptor<ZammadGroupDTO> createGroupCaptor;
+    private ArgumentCaptor<Group> createGroupCaptor;
 
     @Captor
-    private ArgumentCaptor<ZammadGroupDTO> updateGroupCaptor;
+    private ArgumentCaptor<Group> updateGroupCaptor;
 
     @Captor
-    private ArgumentCaptor<ZammadUserDTO> updateUserCaptor;
+    private ArgumentCaptor<User> updateUserCaptor;
 
     /*
      * Test update ZammadUser with own login in Zammad before the first
@@ -51,9 +51,9 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
 
         var zammadService = mock(ZammadService.class);
 
-        when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
+        when(zammadService.getZammadGroups()).thenReturn(List.of(new Group("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(
-                List.of(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
+                List.of(new User("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail());
         when(zammadService.getZammadEmailSignatures()).thenReturn(List.of());
@@ -81,9 +81,9 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
 
         var zammadService = mock(ZammadService.class);
 
-        when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
+        when(zammadService.getZammadGroups()).thenReturn(List.of(new Group("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(
-                List.of(new ZammadUserDTO("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", false, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
+                List.of(new User("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", false, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
         var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
 

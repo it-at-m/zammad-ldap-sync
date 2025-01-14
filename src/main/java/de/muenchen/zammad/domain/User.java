@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.domain;
+package de.muenchen.zammad.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ZammadUserDTO {
+public class User {
 
     private String id;
     @EqualsAndHashCode.Include

@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.domain;
+package de.muenchen.zammad.domain;
 
 
 import lombok.Data;

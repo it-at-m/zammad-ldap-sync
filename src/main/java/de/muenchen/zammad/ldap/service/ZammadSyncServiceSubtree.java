@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
-import de.muenchen.zammad.ldap.domain.Signatures;
-import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.zammad.domain.Group;
+import de.muenchen.zammad.domain.Signatures;
+import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.property.OrganizationalUnitsCommonProperties;
 import de.muenchen.zammad.ldap.property.ZammadProperties;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
@@ -58,10 +58,10 @@ public class ZammadSyncServiceSubtree {
     private final HashMap<String, Integer> signatureCache = new HashMap<>();
 
     @Setter
-    Map<String, List<ZammadGroupDTO>> zammadGroupsByLhmObjectId;
+    Map<String, List<Group>> zammadGroupsByLhmObjectId;
 
     @Setter
-    Map<String, List<ZammadUserDTO>> zammadUsersByLhmObjectId;
+    Map<String, List<User>> zammadUsersByLhmObjectId;
 
     public void updateZammadGroupsWithUsers(Map<String, LdapOuNode> shadeLdapSubtree) {
 
@@ -95,15 +95,15 @@ public class ZammadSyncServiceSubtree {
                 log.debug("Processing update Zammad Ou and User ou '{}' lhmObjectId: '{}'.", node.getNode().getOu(),
                         node.getNode().getLhmObjectId());
 
-                // Create new ZammadGroupDTO out of LDAP-OU
+                // Create new ZammadGroup out of LDAP-OU
                 var ldapOuDto = node.getNode();
                 var zammadCurrentGroupName = zammadGroupName != null
                         ? zammadGroupName + "::" + ldapOuDto.getLhmOUShortname()
                         : ldapOuDto.getLhmOUShortname();
-                var zammadGroupCompareDTO = mapToZammadGroup(node.getNode(), zammadCurrentGroupName, parentGroupID);
-                zammadGroupCompareDTO.setEmailAddressId(findEmailAdressId(node.getOrganizationalUnit()));
-                zammadGroupCompareDTO.setSignatureId(findEmailSignatureId(node.getOrganizationalUnit()));
-                log.debug(zammadGroupCompareDTO.toString());
+                var zammadGroupCompare = mapToZammadGroup(node.getNode(), zammadCurrentGroupName, parentGroupID);
+                zammadGroupCompare.setEmailAddressId(findEmailAdressId(node.getOrganizationalUnit()));
+                zammadGroupCompare.setSignatureId(findEmailSignatureId(node.getOrganizationalUnit()));
+                log.debug(zammadGroupCompare.toString());
 
                 // Find zammad group with lhmObjectID
                 var lhmObjectIdToFind = ldapOuDto.getLhmObjectId();
@@ -116,7 +116,7 @@ public class ZammadSyncServiceSubtree {
                             lhmObjectIdToFind);
                     zammadGroupList.forEach(item -> log.error(LOG_ID, item.getId()));
                 } else if (zammadGroupList != null && zammadGroupList.size() == 1) {
-                    ZammadGroupDTO zammadLdapSyncGroup = zammadGroupList.get(0);
+                    Group zammadLdapSyncGroup = zammadGroupList.get(0);
                     if (zammadLdapSyncGroup != null) {
                         log.debug("Zammad group '{}' found with lhmObjectId '{}'.", zammadLdapSyncGroup.getName(),
                                 lhmObjectIdToFind);
@@ -125,13 +125,13 @@ public class ZammadSyncServiceSubtree {
                             log.debug("Zammad group isLdapsyncupdate={} - check for update.",
                                     zammadLdapSyncGroup.isLdapsyncupdate());
                             // To compare add Id and updated_at
-                            zammadGroupCompareDTO.setId(zammadLdapSyncGroup.getId());
-                            zammadGroupCompareDTO.setUpdatedAt(zammadLdapSyncGroup.getUpdatedAt());
+                            zammadGroupCompare.setId(zammadLdapSyncGroup.getId());
+                            zammadGroupCompare.setUpdatedAt(zammadLdapSyncGroup.getUpdatedAt());
                             log.trace("Zammad : {}.", zammadLdapSyncGroup);
-                            log.trace("LDAP   : {}.", zammadGroupCompareDTO);
-                            if (!zammadLdapSyncGroup.equals(zammadGroupCompareDTO)) {
+                            log.trace("LDAP   : {}.", zammadGroupCompare);
+                            if (!zammadLdapSyncGroup.equals(zammadGroupCompare)) {
                                 log.debug("Something has changed - updating.");
-                                getZammadService().updateZammadGroup(zammadGroupCompareDTO);
+                                getZammadService().updateZammadGroup(zammadGroupCompare);
                             } else {
                                 log.debug("No change - skipping.");
                             }
@@ -140,7 +140,7 @@ public class ZammadSyncServiceSubtree {
                 } else {
                     log.debug("Group not found in Zammad with lhmObjectId '{}' - creating.", lhmObjectIdToFind);
                     // Not found: create new with isLdapsyncupdate=true
-                    ZammadGroupDTO createdZammadGroupDTO = getZammadService().createZammadGroup(zammadGroupCompareDTO);
+                    Group createdZammadGroupDTO = getZammadService().createZammadGroup(zammadGroupCompare);
                     log.trace("Zammad group created : '{}'", createdZammadGroupDTO);
                     ongoingZammadGroupId = createdZammadGroupDTO.getId();
                     log.debug("Zammad group with ID '{}' created.", ongoingZammadGroupId);
@@ -180,9 +180,9 @@ public class ZammadSyncServiceSubtree {
                 log.debug("Processing: lhmObjectId: '{}'.", user.getLhmObjectId());
 
                 // Create new LdapBaseUserDTO out of LDAP-OU and create zammadGroupId
-                var zammadUserCompareDTO = mapToZammadUser(user);
-                setDefaultRoleIdAndGroupId(zammadUserCompareDTO, zammadUserGroupId);
-                log.trace(zammadUserCompareDTO.toString());
+                var zammadUserCompare = mapToZammadUser(user);
+                setDefaultRoleIdAndGroupId(zammadUserCompare, zammadUserGroupId);
+                log.trace(zammadUserCompare.toString());
                 // Find zammad-user with lhmObjectID
                 String lhmObjectIdToFind = user.getLhmObjectId();
                 var foundZammadUser = getZammadUsersByLhmObjectId().get(lhmObjectIdToFind);
@@ -199,12 +199,12 @@ public class ZammadSyncServiceSubtree {
                             log.debug("User isLdapsyncupdate={} - check for update.",
                                     zammadLdapSyncUser.isLdapsyncupdate());
                             // Update Id, updated_at und role_ids in case updateZammadUser
-                            prepareUserForComparison(zammadUserCompareDTO, zammadLdapSyncUser);
-                            log.trace("LDAP   : {}.", zammadUserCompareDTO);
+                            prepareUserForComparison(zammadUserCompare, zammadLdapSyncUser);
+                            log.trace("LDAP   : {}.", zammadUserCompare);
                             log.trace("Zammad : {}.", zammadLdapSyncUser);
-                            if (!zammadUserCompareDTO.equals(zammadLdapSyncUser)) {
+                            if (!zammadUserCompare.equals(zammadLdapSyncUser)) {
                                 log.debug("Something has changed - updating.");
-                                getZammadService().updateZammadUser(zammadUserCompareDTO);
+                                getZammadService().updateZammadUser(zammadUserCompare);
                             } else {
                                 log.debug("No change - skipping.");
                             }
@@ -215,8 +215,8 @@ public class ZammadSyncServiceSubtree {
                 } else {
                     log.debug("User not found in Zammad with lhmObjectid '{}' - creating.", lhmObjectIdToFind);
                     // Not found: create new with isLdapsyncupdate=true
-                    prepareUserForCreation(zammadUserCompareDTO);
-                    ZammadUserDTO zammadUserDTO = getZammadService().createZammadUser(zammadUserCompareDTO);
+                    prepareUserForCreation(zammadUserCompare);
+                    User zammadUserDTO = getZammadService().createZammadUser(zammadUserCompare);
                     log.trace("Zammad user created : '{}'", zammadUserDTO);
                     log.debug("Zammad user with ID '{}' created.", zammadUserDTO.getId());
                 }
@@ -276,72 +276,72 @@ public class ZammadSyncServiceSubtree {
         }
     }
 
-    private Map<String, List<ZammadGroupDTO>> getCurrentZammadGroups() {
+    private Map<String, List<Group>> getCurrentZammadGroups() {
         return generatelhmObjectIdZammadGroupMap(getZammadService().getZammadGroups());
     }
 
-    private Map<String, List<ZammadGroupDTO>> generatelhmObjectIdZammadGroupMap(List<ZammadGroupDTO> zammadGroupDTOs) {
-        return zammadGroupDTOs.stream().filter(g -> g.getLhmobjectid() != null && !g.getLhmobjectid().isBlank())
-                .collect(Collectors.groupingBy(ZammadGroupDTO::getLhmobjectid));
+    private Map<String, List<Group>> generatelhmObjectIdZammadGroupMap(List<Group> zammadGroups) {
+        return zammadGroups.stream().filter(g -> g.getLhmobjectid() != null && !g.getLhmobjectid().isBlank())
+                .collect(Collectors.groupingBy(Group::getLhmobjectid));
     }
 
-    private ZammadGroupDTO mapToZammadGroup(LdapOuSearchResultDTO ldapOuSearchResultDTO, String groupName,
+    private Group mapToZammadGroup(LdapOuSearchResultDTO ldapOuSearchResultDTO, String groupName,
             String parentGroupId) {
-        ZammadGroupDTO zammadGroupDTO = new ZammadGroupDTO();
-        zammadGroupDTO.setName(groupName);
-        zammadGroupDTO.setParentId(parentGroupId);
-        zammadGroupDTO.setActive(true);
-        zammadGroupDTO.setLdapsyncupdate(true);
-        zammadGroupDTO.setLhmobjectid(ldapOuSearchResultDTO.getLhmObjectId());
-        return zammadGroupDTO;
+        Group zammadGroup = new Group();
+        zammadGroup.setName(groupName);
+        zammadGroup.setParentId(parentGroupId);
+        zammadGroup.setActive(true);
+        zammadGroup.setLdapsyncupdate(true);
+        zammadGroup.setLhmobjectid(ldapOuSearchResultDTO.getLhmObjectId());
+        return zammadGroup;
     }
 
-    private Map<String, List<ZammadUserDTO>> getCurrentZammadUsers() {
+    private Map<String, List<User>> getCurrentZammadUsers() {
         return generatelhmObjectIdZammadUserMap(getZammadService().getZammadUsers());
     }
 
-    private Map<String, List<ZammadUserDTO>> generatelhmObjectIdZammadUserMap(List<ZammadUserDTO> zammadUserDTOs) {
-        var listLhmobjectid = zammadUserDTOs.stream()
+    private Map<String, List<User>> generatelhmObjectIdZammadUserMap(List<User> zammadUsers) {
+        var listLhmobjectid = zammadUsers.stream()
                 .filter(u -> u.getLhmobjectid() != null && !u.getLhmobjectid().isBlank())
-                .collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
-        var listLogin = zammadUserDTOs.stream().filter(
+                .collect(Collectors.groupingBy(User::getLhmobjectid));
+        var listLogin = zammadUsers.stream().filter(
                 u -> (u.getLhmobjectid() == null || u.getLhmobjectid().isBlank())
                         && u.getLogin() != null && !u.getLogin().isBlank())
-                .collect(Collectors.groupingBy(ZammadUserDTO::getLogin));
+                .collect(Collectors.groupingBy(User::getLogin));
         listLhmobjectid.putAll(listLogin);
         return listLhmobjectid;
     }
 
-    private ZammadUserDTO mapToZammadUser(LdapUserDTO ldapBaseUserDTO) {
+    private User mapToZammadUser(LdapUserDTO ldapBaseUserDTO) {
 
-        ZammadUserDTO zammadUserDTO = new ZammadUserDTO();
-        zammadUserDTO.setDepartment(ldapBaseUserDTO.getOu());
-        zammadUserDTO.setLhmobjectid(ldapBaseUserDTO.getLhmObjectId());
-        zammadUserDTO.setLogin(ldapBaseUserDTO.getLhmObjectId());
-        zammadUserDTO.setEmail(ldapBaseUserDTO.getMail());
-        zammadUserDTO.setFirstname(ldapBaseUserDTO.getVorname());
-        zammadUserDTO.setLastname(ldapBaseUserDTO.getNachname());
-        return zammadUserDTO;
+        User zammadUser = new User();
+        zammadUser.setDepartment(ldapBaseUserDTO.getOu());
+        zammadUser.setLhmobjectid(ldapBaseUserDTO.getLhmObjectId());
+        zammadUser.setLogin(ldapBaseUserDTO.getLhmObjectId());
+        zammadUser.setEmail(ldapBaseUserDTO.getMail());
+        zammadUser.setFirstname(ldapBaseUserDTO.getVorname());
+        zammadUser.setLastname(ldapBaseUserDTO.getNachname());
+        return zammadUser;
     }
 
-    private void setDefaultRoleIdAndGroupId(ZammadUserDTO user, String zammadGroupId) {
+    private void setDefaultRoleIdAndGroupId(User user, String zammadGroupId) {
         user.setRoleIds(defaultSynchronizationRoles());
         Map<String, List<String>> newGroupIds = new HashMap<>();
         newGroupIds.put(zammadGroupId, List.of("full"));
         user.setGroupIds(newGroupIds);
     }
 
-    private void prepareUserForComparison(ZammadUserDTO zammadUserCompareDTO, ZammadUserDTO foundZammadUser) {
-        zammadUserCompareDTO.setId(foundZammadUser.getId());
-        zammadUserCompareDTO.setUpdatedAt(foundZammadUser.getUpdatedAt());
-        zammadUserCompareDTO.setActive(foundZammadUser.isActive());
-        zammadUserCompareDTO.setLdapsyncupdate(true);
+    private void prepareUserForComparison(User zammadUserCompare, User foundZammadUser) {
+        zammadUserCompare.setId(foundZammadUser.getId());
+        zammadUserCompare.setUpdatedAt(foundZammadUser.getUpdatedAt());
+        zammadUserCompare.setActive(foundZammadUser.isActive());
+        zammadUserCompare.setLdapsyncupdate(true);
 
     }
 
-    private void prepareUserForCreation(ZammadUserDTO zammadUserDTO) {
-        zammadUserDTO.setActive(true);
-        zammadUserDTO.setLdapsyncupdate(true);
+    private void prepareUserForCreation(User zammadUser) {
+        zammadUser.setActive(true);
+        zammadUser.setLdapsyncupdate(true);
     }
 
     private List<Integer> defaultSynchronizationRoles() {
@@ -351,7 +351,7 @@ public class ZammadSyncServiceSubtree {
         return roleIds;
     }
 
-    private Map<String, List<ZammadUserDTO>> findAllZammadBranchGroupUsers(String ldapOuRootLhmObjectId) {
+    private Map<String, List<User>> findAllZammadBranchGroupUsers(String ldapOuRootLhmObjectId) {
 
         var zammadGroups = new ArrayList<>(findRootZammadGroup(ldapOuRootLhmObjectId));
 
@@ -361,16 +361,16 @@ public class ZammadSyncServiceSubtree {
 
             findChildGroups(getZammadService().getZammadGroups(), zammadGroups.get(0).getId(), zammadGroups);
 
-            var zammadBranchUsers = new ArrayList<ZammadUserDTO>();
+            var zammadBranchUsers = new ArrayList<User>();
             var zammadUsers = getZammadService().getZammadUsers();
             zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
 
             return zammadBranchUsers.stream().filter(u -> u.getLhmobjectid() != null && !u.getLhmobjectid().isBlank())
-                    .collect(Collectors.groupingBy(ZammadUserDTO::getLhmobjectid));
+                    .collect(Collectors.groupingBy(User::getLhmobjectid));
         }
     }
 
-    private List<ZammadGroupDTO> findRootZammadGroup(String ldapOuRootLhmObjectId) {
+    private List<Group> findRootZammadGroup(String ldapOuRootLhmObjectId) {
 
         var rootZammadGroups = getCurrentZammadGroups().get(ldapOuRootLhmObjectId);
         if (rootZammadGroups == null) {
@@ -386,8 +386,8 @@ public class ZammadSyncServiceSubtree {
 
     }
 
-    private void findChildGroups(List<ZammadGroupDTO> zammadServiceGroups, String zammadGroupId,
-            List<ZammadGroupDTO> allZammadBranchGroups) {
+    private void findChildGroups(List<Group> zammadServiceGroups, String zammadGroupId,
+            List<Group> allZammadBranchGroups) {
 
         var childGroups = zammadServiceGroups.stream()
                 .filter(g -> (g.getParentId() != null && g.getParentId().equals(zammadGroupId))).toList();
@@ -397,7 +397,7 @@ public class ZammadSyncServiceSubtree {
         }
     }
 
-    private List<ZammadUserDTO> findUsers(List<ZammadUserDTO> zammadServiceUsers, String zammadGroupId) {
+    private List<User> findUsers(List<User> zammadServiceUsers, String zammadGroupId) {
         return zammadServiceUsers.stream().filter(u -> u.getGroupIds().containsKey(zammadGroupId)).toList();
     }
 

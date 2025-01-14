@@ -18,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.zammad.domain.Group;
+import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.extern.log4j.Log4j2;
 
@@ -29,13 +29,13 @@ import lombok.extern.log4j.Log4j2;
 class CreateGroupAndUserTest extends PrepareTestEnvironment {
 
     @Captor
-    private ArgumentCaptor<ZammadGroupDTO> createGroupCaptor;
+    private ArgumentCaptor<Group> createGroupCaptor;
 
     @Captor
-    private ArgumentCaptor<ZammadGroupDTO> updateGroupCaptor;
+    private ArgumentCaptor<Group> updateGroupCaptor;
 
     @Captor
-    private ArgumentCaptor<ZammadUserDTO> createUserCaptor;
+    private ArgumentCaptor<User> createUserCaptor;
 
     /*
      * Test create zammad rest representations for a given ldap shadow tree (see tree dump) in an empty zammad group/user manager.
@@ -72,7 +72,7 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
     void createParentNodeTest() {
 
         var zammadService = mock(ZammadService.class);
-        when(zammadService.getZammadGroups()).thenReturn(List.of( new ZammadGroupDTO("1", "1", "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null)));
+        when(zammadService.getZammadGroups()).thenReturn(List.of( new Group("1", "1", "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(List.of());
 
         assertEquals(1, zammadService.getZammadGroups().size());

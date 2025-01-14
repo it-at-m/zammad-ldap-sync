@@ -12,11 +12,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import de.muenchen.zammad.ldap.domain.ChannelsEmail;
-import de.muenchen.zammad.ldap.domain.Signatures;
-import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.zammad.ldap.domain.ZammadRoleDTO;
-import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.zammad.domain.ChannelsEmail;
+import de.muenchen.zammad.domain.Group;
+import de.muenchen.zammad.domain.Role;
+import de.muenchen.zammad.domain.Signatures;
+import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.property.ZammadProperties;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,18 +34,18 @@ public class ZammadService {
         this.zammadProperties = zammadProperties;
     }
 
-    public List<ZammadGroupDTO> getZammadGroups() {
+    public List<Group> getZammadGroups() {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
         boolean found = true;
         int i = 0;
-        List<ZammadGroupDTO> result = new ArrayList<>();
+        List<Group> result = new ArrayList<>();
         while (found) {
             i = i + 1;
             log.debug("Fetching groups page {}", i);
-            ResponseEntity<ZammadGroupDTO[]> entity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "?page=" + i + "&per_page=500",
-                    HttpMethod.GET, new HttpEntity<>(headers), ZammadGroupDTO[].class);
+            ResponseEntity<Group[]> entity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "?page=" + i + "&per_page=500",
+                    HttpMethod.GET, new HttpEntity<>(headers), Group[].class);
 
             if (entity.hasBody() && entity.getBody().length > 0) {
                 result.addAll(Arrays.asList(entity.getBody()));
@@ -56,16 +56,16 @@ public class ZammadService {
         return result;
     }
 
-    public ZammadGroupDTO updateZammadGroup(ZammadGroupDTO zammadGroupDTO) {
+    public Group updateZammadGroup(Group zammadGroup) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
-        HttpEntity<ZammadGroupDTO> requestEntity = new HttpEntity<>(zammadGroupDTO, headers);
+        HttpEntity<Group> requestEntity = new HttpEntity<>(zammadGroup, headers);
 
-        String userId = zammadGroupDTO.getId();
+        String userId = zammadGroup.getId();
 
-        ResponseEntity<ZammadGroupDTO> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "/" + userId, HttpMethod.PUT, requestEntity,
-                ZammadGroupDTO.class);
+        ResponseEntity<Group> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "/" + userId, HttpMethod.PUT, requestEntity,
+                Group.class);
 
         return responseEntity.getBody();
     }
@@ -74,7 +74,7 @@ public class ZammadService {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
-        HttpEntity<ZammadGroupDTO> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<Group> requestEntity = new HttpEntity<>(headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "/" + id, HttpMethod.DELETE, requestEntity,
                 String.class);
@@ -82,14 +82,14 @@ public class ZammadService {
         return responseEntity.getBody();
     }
 
-    public ZammadGroupDTO createZammadGroup(ZammadGroupDTO zammadGroupDTO) {
+    public Group createZammadGroup(Group zammadGroup) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
-        HttpEntity<ZammadGroupDTO> requestEntity = new HttpEntity<>(zammadGroupDTO, headers);
+        HttpEntity<Group> requestEntity = new HttpEntity<>(zammadGroup, headers);
 
-        ResponseEntity<ZammadGroupDTO> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups(), HttpMethod.POST, requestEntity,
-                ZammadGroupDTO.class);
+        ResponseEntity<Group> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups(), HttpMethod.POST, requestEntity,
+                Group.class);
 
         log.trace(responseEntity.toString());
 
@@ -100,18 +100,18 @@ public class ZammadService {
 
     }
 
-    public List<ZammadUserDTO> getZammadUsers() {
+    public List<User> getZammadUsers() {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
         boolean found = true;
         int i = 0;
-        List<ZammadUserDTO> result = new ArrayList<>();
+        List<User> result = new ArrayList<>();
         while (found) {
             i = i + 1;
             log.debug("Fetching users page {}", i);
-            ResponseEntity<ZammadUserDTO[]> entity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers() + "?page=" + i + "&per_page=500", HttpMethod.GET,
-                    new HttpEntity<>(headers), ZammadUserDTO[].class);
+            ResponseEntity<User[]> entity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers() + "?page=" + i + "&per_page=500", HttpMethod.GET,
+                    new HttpEntity<>(headers), User[].class);
             if (entity.hasBody() && entity.getBody().length > 0) {
                 result.addAll(Arrays.asList(entity.getBody()));
             } else {
@@ -121,28 +121,28 @@ public class ZammadService {
         return result;
     }
 
-    public ZammadUserDTO updateZammadUser(ZammadUserDTO zammadUserDTO) {
+    public User updateZammadUser(User zammadUser) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
-        HttpEntity<ZammadUserDTO> requestEntity = new HttpEntity<>(zammadUserDTO, headers);
+        HttpEntity<User> requestEntity = new HttpEntity<>(zammadUser, headers);
 
-        String userId = zammadUserDTO.getId();
+        String userId = zammadUser.getId();
 
-        ResponseEntity<ZammadUserDTO> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers() + "/" + userId, HttpMethod.PUT, requestEntity,
-                ZammadUserDTO.class);
+        ResponseEntity<User> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers() + "/" + userId, HttpMethod.PUT, requestEntity,
+                User.class);
 
         return responseEntity.getBody();
     }
 
-    public ZammadUserDTO createZammadUser(ZammadUserDTO zammadUserDTO) {
+    public User createZammadUser(User zammadUser) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
-        HttpEntity<ZammadUserDTO> requestEntity = new HttpEntity<>(zammadUserDTO, headers);
+        HttpEntity<User> requestEntity = new HttpEntity<>(zammadUser, headers);
 
-        ResponseEntity<ZammadUserDTO> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers(), HttpMethod.POST, requestEntity,
-                ZammadUserDTO.class);
+        ResponseEntity<User> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers(), HttpMethod.POST, requestEntity,
+                User.class);
 
         return responseEntity.getBody();
     }
@@ -151,7 +151,7 @@ public class ZammadService {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
-        HttpEntity<ZammadUserDTO> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<User> requestEntity = new HttpEntity<>(headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers() + "/" + id, HttpMethod.DELETE, requestEntity,
                 String.class);
@@ -159,40 +159,40 @@ public class ZammadService {
         return responseEntity.getBody();
     }
 
-    public ZammadRoleDTO getZammadRole(int id) {
+    public Role getZammadRole(int id) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
-        HttpEntity<ZammadRoleDTO> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<Role> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<ZammadRoleDTO> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getRoles() + "/" + id, HttpMethod.GET, requestEntity,
-                ZammadRoleDTO.class);
+        ResponseEntity<Role> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getRoles() + "/" + id, HttpMethod.GET, requestEntity,
+                Role.class);
 
         return responseEntity.getBody();
     }
 
-    public List<ZammadRoleDTO> getZammadRoles() {
+    public List<Role> getZammadRoles() {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
-        HttpEntity<ZammadRoleDTO> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<Role> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<ZammadRoleDTO[]> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getRoles(), HttpMethod.GET, requestEntity,
-                ZammadRoleDTO[].class);
+        ResponseEntity<Role[]> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getRoles(), HttpMethod.GET, requestEntity,
+                Role[].class);
 
         return Arrays.asList(responseEntity.getBody());
     }
 
-    public ZammadRoleDTO updateZammadRole(ZammadRoleDTO zammadRoleDTO) {
+    public Role updateZammadRole(Role zammadRole) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
-        HttpEntity<ZammadRoleDTO> requestEntity = new HttpEntity<>(zammadRoleDTO, headers);
+        HttpEntity<Role> requestEntity = new HttpEntity<>(zammadRole, headers);
 
-        String userId = zammadRoleDTO.getId();
+        String userId = zammadRole.getId();
 
-        ResponseEntity<ZammadRoleDTO> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getRoles() + "/" + userId, HttpMethod.PUT, requestEntity,
-                ZammadRoleDTO.class);
+        ResponseEntity<Role> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getRoles() + "/" + userId, HttpMethod.PUT, requestEntity,
+                Role.class);
 
         return responseEntity.getBody();
     }

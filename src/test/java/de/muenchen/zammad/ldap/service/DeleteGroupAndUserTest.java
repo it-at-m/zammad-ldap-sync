@@ -17,8 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.zammad.domain.Group;
+import de.muenchen.zammad.domain.User;
 
 
 /*
@@ -32,7 +32,7 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
 
 
     @Captor
-    private ArgumentCaptor<ZammadUserDTO> updateUserCaptor;
+    private ArgumentCaptor<User> updateUserCaptor;
 
     /*
      * In case you do not want to synchronize the entire ldap hierarchy, the zammad-ldap-sync allows you to synchronize only branches.
@@ -43,7 +43,7 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
 	void deleteOneGroupTest() {
 
 		var zammadService = mock(ZammadService.class);
-		when(zammadService.getZammadGroups()).thenReturn(List.of(new ZammadGroupDTO("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
+		when(zammadService.getZammadGroups()).thenReturn(List.of(new Group("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
 
         userAndGroupMocks(zammadService);

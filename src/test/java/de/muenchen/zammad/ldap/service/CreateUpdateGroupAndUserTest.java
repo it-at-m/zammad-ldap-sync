@@ -17,24 +17,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
-import de.muenchen.zammad.ldap.domain.ZammadUserDTO;
+import de.muenchen.zammad.domain.Group;
+import de.muenchen.zammad.domain.User;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CreateUpdateGroupAndUserTest extends PrepareTestEnvironment {
 
     @Captor
-    private ArgumentCaptor<ZammadGroupDTO> createGroupCaptor;
+    private ArgumentCaptor<Group> createGroupCaptor;
 
     @Captor
-    private ArgumentCaptor<ZammadGroupDTO> updateGroupCaptor;
+    private ArgumentCaptor<Group> updateGroupCaptor;
 
     @Captor
-    private ArgumentCaptor<ZammadUserDTO> createUserCaptor;
+    private ArgumentCaptor<User> createUserCaptor;
 
     @Captor
-    private ArgumentCaptor<ZammadUserDTO> updateUserCaptor;
+    private ArgumentCaptor<User> updateUserCaptor;
 
     /*
      * Test update manually changed zammad group entries. Reset manually changed zammad values to ldap values.
