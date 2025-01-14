@@ -1,0 +1,79 @@
+package de.muenchen.zammad.ldap.service.config;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import de.muenchen.zammad.ldap.domain.ZammadGroupDTO;
+import de.muenchen.zammad.ldap.domain.ZammadRoleDTO;
+import de.muenchen.zammad.ldap.service.ZammadService;
+import lombok.extern.slf4j.Slf4j;
+
+@Component
+@Slf4j
+public class GroupAssignmentAuthorizations {
+
+    private ZammadProperties zammadProperties;
+    private ZammadService zammadService;
+
+    public GroupAssignmentAuthorizations(ZammadProperties zammadProperties, ZammadService zammadService) {
+        super();
+        this.zammadProperties = zammadProperties;
+        this.zammadService = zammadService;
+    }
+
+    List<ZammadGroupDTO> zammadGroups;
+
+    public void assignRoleAuthorizations() {
+
+     // Fetch all zammad groups
+        log.debug("Getting all zammad groups");
+        zammadGroups = zammadService.getZammadGroups();
+
+        assignRolesTicketGroupAssignment();
+        assignRolesTechnicalUser();
+    }
+
+    private void assignRolesTicketGroupAssignment() {
+
+        // Fetch Assignmentrole Erstellen
+        log.debug("Getting assignment role Erstellen");
+        ZammadRoleDTO assignmentRole = zammadService
+                .getZammadRole(zammadProperties.getAssignment().getRole().getIdErstellen());
+
+        // Create group-map
+        Map<String, List<String>> groupIdsAuthorization = new HashMap<>();
+        for (ZammadGroupDTO zammadGroupDTO : zammadGroups) {
+            groupIdsAuthorization.put(zammadGroupDTO.getId(), List.of("create"));
+        }
+
+        // Update AssignmentRole Erstellen
+        log.debug("Updating assignment role Zweisung with \"create\" for all groups");
+        assignmentRole.setGroupIds(groupIdsAuthorization);
+        zammadService.updateZammadRole(assignmentRole);
+
+    }
+
+    private void assignRolesTechnicalUser() {
+
+        // Fetch Assignmentrole Vollzugriff
+        log.debug("Getting assignment role Vollzugriff");
+        ZammadRoleDTO technicalUserRole = zammadService
+                .getZammadRole(zammadProperties.getAssignment().getRole().getIdVollzugriff());
+
+        // Create group-map
+        Map<String, List<String>> groupIdsAuthorization = new HashMap<>();
+        for (ZammadGroupDTO zammadGroupDTO : zammadGroups) {
+            groupIdsAuthorization.put(zammadGroupDTO.getId(), List.of("full"));
+        }
+
+        // Update AssignmentRole
+        log.debug("Updating assignment role Vollzugriff with \"full\" for all groups");
+        technicalUserRole.setGroupIds(groupIdsAuthorization);
+        zammadService.updateZammadRole(technicalUserRole);
+
+    }
+
+}
