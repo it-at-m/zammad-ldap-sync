@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.service;
+package de.muenchen.zammad.ldap.sync;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,52 +10,47 @@ import org.springframework.stereotype.Service;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
-import de.muenchen.zammad.ldap.config.GroupAssignmentAuthorizations;
-import de.muenchen.zammad.ldap.property.LdapSearch;
-import de.muenchen.zammad.ldap.property.ZammadProperties;
+import de.muenchen.zammad.ldap.property.RequestedOrganizationalUnits;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@Getter
 @AllArgsConstructor
-public class ZammadSyncService {
+public class OuTreeControl {
 
-    private LdapSearch organizationalUnits;
+    private RequestedOrganizationalUnits requestedOrgUnits;
 
-    private ZammadProperties zammadProperties;
+    private LdapOuTreeService zammadLdapService;
 
-    private ZammadService zammadService;
-
-    private ZammadLdapService zammadLdapService;
-
-    private ZammadSyncServiceSubtree subtree;
+    private OuTreeSynchronization subtree;
 
     private GroupAssignmentAuthorizations groupAssignmentAuthorizations;
 
-    private Validation validation;
+    private RequestedDnCompleteness validation;
 
     /**
-     * Calculate ldap subtree with users based on distinguished name. Add/update
-     * zammad groups. Update zammad assignment role for each role. Add/update zammad
-     * users.
+     * Use the ldap distinguished name to determine the organizational unit ldap (shade) tree.
+     * Warn if not for all required distinguished names a shade tree exists.
+     * Synchronize shade tree branching with Zammad parent group attribute.
+     * Synchronize Zammad domain group attributes and assigned group users with organizational units in shade tree.
+     * Add/update Zammad domain user attributes.
+     * Update zammad assignment role for each role.
      */
-    public void syncSubtreeByDn() {
+    public void synchronizationControl() {
 
-        var ldapSyncDistinguishedNames = getOrganizationalUnits().listDistinguishedNames();
+        var ldapSyncDistinguishedNames = requestedOrgUnits.flatMapDistinguishedNames();
         log.info("OuBases :");
         ldapSyncDistinguishedNames.forEach(dn -> log.info("   {}", dn));
 
         log.info("Start sychronize Zammad groups, user and roles ...");
 
         log.debug("1/4 Start LDAP operations ...");
-        var ldapShadetrees = zammadLdapService.buildLdapTreesWithDistinguishedNames(null, organizationalUnits);
+        var ldapShadetrees = zammadLdapService.buildLdapTreesWithDistinguishedNames(null, requestedOrgUnits);
         var allLdapUsers = allLdapUsersWithDistinguishedNames(ldapShadetrees);
 
-        validation.checkOuBases(ldapSyncDistinguishedNames, ldapShadetrees);
+        validation.validate(ldapSyncDistinguishedNames, ldapShadetrees);
 
         for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
 
@@ -66,10 +61,10 @@ public class ZammadSyncService {
             log.debug("2/4 Update zammad groups and users ...");
             var map = new HashMap<String, LdapOuNode>();
             map.put(entry.getKey(), entry.getValue());
-            getSubtree().updateZammadGroupsWithUsers(map);
+            subtree.updateZammadGroupsWithUsers(map);
 
             log.debug("3/4 Mark user for deletion ...");
-            getSubtree().assignDeletionFlagZammadUser(entry.getValue().findLdapOuNode(entry.getKey()), allLdapUsers);
+            subtree.assignDeletionFlagZammadUser(entry.getValue().findLdapOuNode(entry.getKey()), allLdapUsers);
 
             log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
         }

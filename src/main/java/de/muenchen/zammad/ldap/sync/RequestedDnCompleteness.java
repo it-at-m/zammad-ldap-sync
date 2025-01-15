@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.service;
+package de.muenchen.zammad.ldap.sync;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class Validation {
+public class RequestedDnCompleteness {
 
     @Value(value = "${sync.message.from}")
     private String from = "noreply@test.com";
@@ -29,7 +29,7 @@ public class Validation {
 
     private final JavaMailSender javaMailSender;
 
-    void checkOuBases(List<String> ldapSyncDistinguishedNames, Map<String, LdapOuNode> ldapShadetrees) {
+    public void validate(List<String> ldapSyncDistinguishedNames, Map<String, LdapOuNode> ldapShadetrees) {
 
         if (ldapShadetrees.size() != ldapSyncDistinguishedNames.size()) {
 

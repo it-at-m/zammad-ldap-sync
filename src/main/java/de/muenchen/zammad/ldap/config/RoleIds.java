@@ -3,7 +3,7 @@ package de.muenchen.zammad.ldap.config;
 import org.springframework.stereotype.Component;
 
 import de.muenchen.zammad.ldap.property.ZammadProperties;
-import de.muenchen.zammad.ldap.service.ZammadService;
+import de.muenchen.zammad.ldap.sync.ZammadService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

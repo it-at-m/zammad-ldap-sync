@@ -20,6 +20,7 @@ import de.muenchen.zammad.ldap.property.OrganizationalUnitsCommonProperties;
 import de.muenchen.zammad.ldap.property.ZammadProperties;
 import de.muenchen.zammad.ldap.property.ZammadRoleProperties;
 import de.muenchen.zammad.ldap.property.ZammadUrlProperties;
+import de.muenchen.zammad.ldap.sync.ZammadService;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.extern.log4j.Log4j2;
 

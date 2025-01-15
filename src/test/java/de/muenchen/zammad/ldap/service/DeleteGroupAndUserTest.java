@@ -19,6 +19,9 @@ import org.mockito.quality.Strictness;
 
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
+import de.muenchen.zammad.ldap.sync.OuTreeControl;
+import de.muenchen.zammad.ldap.sync.OuTreeSynchronization;
+import de.muenchen.zammad.ldap.sync.ZammadService;
 
 
 /*
@@ -52,13 +55,13 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
         assertEquals(1, zammadService.getZammadGroups().size());
         assertEquals(21, zammadService.getZammadUsers().size());
 
-		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
+		var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
 
 		var reducedLdapTree = reducedLdapTree();
 		var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
 		assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-		var reducedEnhancedLdapUserDTO = ZammadSyncService.allLdapUsersWithDistinguishedNames(reducedLdapTree);
+		var reducedEnhancedLdapUserDTO = OuTreeControl.allLdapUsersWithDistinguishedNames(reducedLdapTree);
 
 		zammadSyncServiceSubtree.assignDeletionFlagZammadUser(rootNode, reducedEnhancedLdapUserDTO);
 
@@ -80,13 +83,13 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
         assertEquals(7, zammadService.getZammadGroups().size());
         assertEquals(21, zammadService.getZammadUsers().size());
 
-        var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
+        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
 
         var reducedLdapTree = reducedLdapTree();
         var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
         assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-        var reducedEnhancedLdapUserDTO = ZammadSyncService.allLdapUsersWithDistinguishedNames(reducedLdapTree);
+        var reducedEnhancedLdapUserDTO = OuTreeControl.allLdapUsersWithDistinguishedNames(reducedLdapTree);
 
         zammadSyncServiceSubtree.assignDeletionFlagZammadUser(rootNode, reducedEnhancedLdapUserDTO);
 

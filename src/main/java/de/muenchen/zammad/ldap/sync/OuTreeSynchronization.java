@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.service;
+package de.muenchen.zammad.ldap.sync;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @Getter
-public class ZammadSyncServiceSubtree {
+public class OuTreeSynchronization {
 
-    public ZammadSyncServiceSubtree(ZammadService zammadService, ZammadProperties zammadProperties,
+    public OuTreeSynchronization(ZammadService zammadService, ZammadProperties zammadProperties,
             OrganizationalUnitsCommonProperties commonmProperties) {
 
         this.zammadService = zammadService;

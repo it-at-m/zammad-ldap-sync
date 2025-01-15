@@ -20,6 +20,8 @@ import org.mockito.quality.Strictness;
 
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
+import de.muenchen.zammad.ldap.sync.OuTreeSynchronization;
+import de.muenchen.zammad.ldap.sync.ZammadService;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.extern.log4j.Log4j2;
 
@@ -50,7 +52,7 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-		var zammadSyncServiceSubtree = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
+		var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
 
 		zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createLdapTree());
 
@@ -81,7 +83,7 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
         groupMocksCreateParentNodeTest(zammadService);
         channelsMock(zammadService);
 
-        var zammadSyncService = new ZammadSyncServiceSubtree(zammadService, createZammadProperties(), standardDefaultMock());
+        var zammadSyncService = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
 
         var childTree_level_2 = new TreeMap<String, LdapOuNode>();
         var number = 1;

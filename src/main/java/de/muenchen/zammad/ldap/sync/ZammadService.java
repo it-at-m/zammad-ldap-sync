@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap.service;
+package de.muenchen.zammad.ldap.sync;
 
 import java.util.ArrayList;
 import java.util.Arrays;
