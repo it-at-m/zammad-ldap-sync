@@ -13,12 +13,12 @@ import lombok.Getter;
 
 @Service
 @Getter
-public class LdapOuTreeService {
+public class LdapTreeService {
 
 	@Value("${ldap.url}")
 	private String ldapUrl;
 
-	public Map<String, LdapOuNode> buildLdapTreesWithDistinguishedNames(String dateTime,
+	public Map<String, LdapOuNode> buildLdapTrees(String dateTime,
 			RequestedOrganizationalUnits organizationalUnits) {
 
 		Map<String, LdapOuNode> shadeTrees = new TreeMap<>();

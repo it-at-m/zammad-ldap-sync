@@ -23,7 +23,9 @@ import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
 import de.muenchen.zammad.domain.ChannelsEmail;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
-import de.muenchen.zammad.ldap.sync.OuTreeSynchronization;
+import de.muenchen.zammad.ldap.sync.EmailAddressCache;
+import de.muenchen.zammad.ldap.sync.TreeSynchronization;
+import de.muenchen.zammad.ldap.sync.SignatureCache;
 import de.muenchen.zammad.ldap.sync.ZammadService;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.extern.log4j.Log4j2;
@@ -60,9 +62,9 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
         when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail());
         when(zammadService.getZammadEmailSignatures()).thenReturn(List.of());
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
+        var zammadSyncService = new TreeSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
 
-        zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createResetLdapTree());
+        zammadSyncService.updateZammadGroupsWithUsers(createResetLdapTree());
 
         assertEquals(1, zammadService.getZammadGroups().size());
         assertEquals(1, zammadService.getZammadUsers().size());
@@ -87,9 +89,9 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(
                 List.of(new User("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", false, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
+        var zammadSyncService = new TreeSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
 
-        zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createResetLdapTree());
+        zammadSyncService.updateZammadGroupsWithUsers(createResetLdapTree());
 
         assertEquals(1, zammadService.getZammadGroups().size());
         assertEquals(1, zammadService.getZammadUsers().size());

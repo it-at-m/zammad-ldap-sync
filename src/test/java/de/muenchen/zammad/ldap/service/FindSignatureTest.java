@@ -11,14 +11,13 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import de.muenchen.zammad.domain.Signatures;
 import de.muenchen.zammad.ldap.property.OrganizationalUnitsCommonProperties;
-import de.muenchen.zammad.ldap.sync.OuTreeSynchronization;
+import de.muenchen.zammad.ldap.sync.SignatureCache;
 import de.muenchen.zammad.ldap.sync.ZammadService;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,12 +36,12 @@ class FindSignatureTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadEmailSignatures()).thenReturn(mockSignatureResponse());
 
-    	var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
+    	var cache = new SignatureCache(zammadService, standardDefaultMock());
 
     	  // Only one call, first response is cached.
 
-    	assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findEmailSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
-		assertEquals(Integer.valueOf(5), zammadSyncServiceSubtree.findEmailSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
+    	assertEquals(Integer.valueOf(5), cache.findEmailSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
+		assertEquals(Integer.valueOf(5), cache.findEmailSignatureId(ORGANIZATIONAL_UNIT_CHANNEL));
 
 		verify(zammadService, times(1)).getZammadEmailSignatures();
 	}
@@ -57,11 +56,11 @@ class FindSignatureTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadEmailSignatures()).thenReturn(mockSignatureResponse());
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
+        var cache = new SignatureCache(zammadService, standardDefaultMock());
 
         // Only one call, first response is cached.
-        assertEquals(Integer.valueOf(6), zammadSyncServiceSubtree.findEmailSignatureId(DEFAULT_SIGNATURE_STARTS_WITH));
-        assertEquals(Integer.valueOf(6), zammadSyncServiceSubtree.findEmailSignatureId("lHm"));
+        assertEquals(Integer.valueOf(6), cache.findEmailSignatureId(DEFAULT_SIGNATURE_STARTS_WITH));
+        assertEquals(Integer.valueOf(6), cache.findEmailSignatureId("lHm"));
         verify(zammadService, times(1)).getZammadEmailSignatures();
     }
 
@@ -79,8 +78,8 @@ class FindSignatureTest extends PrepareTestEnvironment {
         var defaultSignatureNoMatchMock = mock(OrganizationalUnitsCommonProperties.class);
         when(defaultSignatureNoMatchMock.getSignatureStartsWith()).thenReturn("FOO"); // Not included in mockSignatureResponse()
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), defaultSignatureNoMatchMock);
-        assertNull(zammadSyncServiceSubtree.findEmailSignatureId("FOO"));
+        var cache = new SignatureCache(zammadService, defaultSignatureNoMatchMock);
+        assertNull(cache.findEmailSignatureId("FOO"));
 
         verify(zammadService, times(1)).getZammadEmailSignatures();
     }
@@ -95,8 +94,8 @@ class FindSignatureTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadEmailSignatures()).thenReturn(mockSignatureResponse());
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
-        assertNull(zammadSyncServiceSubtree.findEmailSignatureId(null));
+        var cache = new SignatureCache(zammadService, standardDefaultMock());
+        assertNull(cache.findEmailSignatureId(null));
 
         verify(zammadService, times(0)).getZammadEmailSignatures();
     }

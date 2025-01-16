@@ -1,6 +1,7 @@
 package de.muenchen.zammad.ldap.sync;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -18,41 +19,43 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class OuTreeControl {
+public class TreeControl {
 
     private RequestedOrganizationalUnits requestedOrgUnits;
 
-    private LdapOuTreeService zammadLdapService;
+    private LdapTreeService zammadLdapService;
 
-    private OuTreeSynchronization subtree;
+    private TreeSynchronization subtree;
+
+    private DeletedLdapUser deletedLdapUser;
 
     private GroupAssignmentAuthorizations groupAssignmentAuthorizations;
 
-    private RequestedDnCompleteness validation;
+    private RequestedDistinguishedNames dnValidation;
 
     /**
-     * Use the ldap distinguished name to determine the organizational unit ldap (shade) tree.
+     * Use the requested ldap distinguished names to determine the organizational unit ldap (shade) trees.
      * Warn if not for all required distinguished names a shade tree exists.
-     * Synchronize shade tree branching with Zammad parent group attribute.
-     * Synchronize Zammad domain group attributes and assigned group users with organizational units in shade tree.
+     * Synchronize each shade tree branching with Zammad parent group attribute.
+     * Synchronize Zammad domain group attributes and assigned group users with organizational units in each shade tree.
      * Add/update Zammad domain user attributes.
-     * Update zammad assignment role for each role.
+     * Update Zammad assignment role for each role.
      */
     public void synchronizationControl() {
 
-        var ldapSyncDistinguishedNames = requestedOrgUnits.flatMapDistinguishedNames();
+        List<String> ldapDistinguishedNames = requestedOrgUnits.flatMapDistinguishedNames();
         log.info("OuBases :");
-        ldapSyncDistinguishedNames.forEach(dn -> log.info("   {}", dn));
+        ldapDistinguishedNames.forEach(dn -> log.info("   {}", dn));
 
         log.info("Start sychronize Zammad groups, user and roles ...");
 
         log.debug("1/4 Start LDAP operations ...");
-        var ldapShadetrees = zammadLdapService.buildLdapTreesWithDistinguishedNames(null, requestedOrgUnits);
-        var allLdapUsers = allLdapUsersWithDistinguishedNames(ldapShadetrees);
+        Map<String, LdapOuNode> ldapShadeTrees = zammadLdapService.buildLdapTrees(null, requestedOrgUnits);
+        Map<String, EnhancedLdapUserDto> completeLdapUser = collectUserFromAllBranches(ldapShadeTrees);
 
-        validation.validate(ldapSyncDistinguishedNames, ldapShadetrees);
+        dnValidation.warnAboutIncompleteness(ldapDistinguishedNames, ldapShadeTrees);
 
-        for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
+        for (Map.Entry<String, LdapOuNode> entry : ldapShadeTrees.entrySet()) {
 
             log.info("Begin synchronize Zammad groups and users with ouBase : {}. ", entry.getKey());
 
@@ -64,12 +67,12 @@ public class OuTreeControl {
             subtree.updateZammadGroupsWithUsers(map);
 
             log.debug("3/4 Mark user for deletion ...");
-            subtree.assignDeletionFlagZammadUser(entry.getValue().findLdapOuNode(entry.getKey()), allLdapUsers);
+            deletedLdapUser.checkForRemoval(entry.getValue().findLdapOuNode(entry.getKey()), completeLdapUser);
 
             log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
         }
 
-        if (!ldapShadetrees.isEmpty()) {
+        if (!ldapShadeTrees.isEmpty()) {
             log.debug("4/4 Sync assignment roles for all ouBases ...");
             groupAssignmentAuthorizations.assignRoleAuthorizations();
         }
@@ -78,15 +81,15 @@ public class OuTreeControl {
 
     }
 
-    public static Map<String, EnhancedLdapUserDto> allLdapUsersWithDistinguishedNames(
+    public static Map<String, EnhancedLdapUserDto> collectUserFromAllBranches(
             Map<String, LdapOuNode> ldapShadetrees) {
 
-        Map<String, EnhancedLdapUserDto> list = new TreeMap<>();
+        Map<String, EnhancedLdapUserDto> collection = new TreeMap<>();
         for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
-            list.putAll(entry.getValue().flatListLdapUserDTO().stream()
+            collection.putAll(entry.getValue().flatListLdapUserDTO().stream()
                     .collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity())));
         }
-        return list;
+        return collection;
     }
 
 }

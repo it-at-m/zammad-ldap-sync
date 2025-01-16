@@ -19,7 +19,7 @@ import de.muenchen.zammad.domain.Assets;
 import de.muenchen.zammad.domain.Channel;
 import de.muenchen.zammad.domain.ChannelsEmail;
 import de.muenchen.zammad.domain.EmailAddress;
-import de.muenchen.zammad.ldap.sync.OuTreeSynchronization;
+import de.muenchen.zammad.ldap.sync.EmailAddressCache;
 import de.muenchen.zammad.ldap.sync.ZammadService;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,9 +41,9 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail());
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
 
-        assertNull(zammadSyncServiceSubtree.findEmailAdressId("Value does not matter"));
+        assertNull(cache.findEmailAdressId("Value does not matter"));
 
         verify(zammadService, times(1)).getZammadChannelsEmail();
     }
@@ -57,8 +57,8 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(null);
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
-        assertNull(zammadSyncServiceSubtree.findEmailAdressId("Value does not matter"));
+        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
+        assertNull(cache.findEmailAdressId("Value does not matter"));
 
         verify(zammadService, times(1)).getZammadChannelsEmail();
     }
@@ -82,11 +82,11 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelIsActive);
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
 
         // Only one call, first response is cached.
-        assertNull(zammadSyncServiceSubtree.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
-        assertNull(zammadSyncServiceSubtree.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
+        assertNull(cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
+        assertNull(cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
         verify(zammadService, times(1)).getZammadChannelsEmail();
     }
 
@@ -109,11 +109,11 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelIsActive);
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
 
         // Only one call, first response is cached.
-        assertEquals(ORGANIZATIONAL_EMAIL_ID, zammadSyncServiceSubtree.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
-        assertEquals(ORGANIZATIONAL_EMAIL_ID, zammadSyncServiceSubtree.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
+        assertEquals(ORGANIZATIONAL_EMAIL_ID, cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
+        assertEquals(ORGANIZATIONAL_EMAIL_ID, cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
         verify(zammadService, times(1)).getZammadChannelsEmail();
     }
 
@@ -136,11 +136,11 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelIsActive);
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
 
         // Only one call, first response is cached.
-        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), zammadSyncServiceSubtree.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
-        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), zammadSyncServiceSubtree.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
+        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
+        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
         verify(zammadService, times(1)).getZammadChannelsEmail();
     }
 
@@ -163,9 +163,9 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(onlyStandardEmailChannelExists);
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
-        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), zammadSyncServiceSubtree.findEmailAdressId("FOO"));
-        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), zammadSyncServiceSubtree.findEmailAdressId("FOO"));
+        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
+        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), cache.findEmailAdressId("FOO"));
+        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), cache.findEmailAdressId("FOO"));
         verify(zammadService, times(1)).getZammadChannelsEmail();
     }
 
@@ -179,8 +179,8 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelsEmailResponse());
 
-        var zammadSyncServiceSubtree = new OuTreeSynchronization(zammadService, createZammadProperties(), standardDefaultMock());
-        assertNull(zammadSyncServiceSubtree.findEmailAdressId(null));
+        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
+        assertNull(cache.findEmailAdressId(null));
 
         verify(zammadService, times(0)).getZammadChannelsEmail();
     }
