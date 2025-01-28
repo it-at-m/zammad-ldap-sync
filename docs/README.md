@@ -62,7 +62,8 @@ zammad:
  ```
 # Configuration properties
 Where possible, the **application.yaml** is pre-filled.
-However, some properties still need to be added.
+You have to add ldap values and the [Zammad token](https://user-docs.zammad.org/en/latest/extras/profile-and-settings.html#user-profile-settings) and Zammad-Api-URL
+
 ```
 ldap:
   url: [ldap url]
