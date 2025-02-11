@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
 import de.muenchen.zammad.domain.ChannelsEmail;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
@@ -222,24 +222,24 @@ class PrepareTestEnvironment {
     }
 
 
-	protected List<EnhancedLdapUserDto> createLdapOuUser(Integer level, Integer no) {
+	protected List<EnhancedLdapUserDTO> createLdapOuUser(Integer level, Integer no) {
 
 	    var userNo = 0;
-	    var user = new ArrayList<EnhancedLdapUserDto>();
+	    var user = new ArrayList<EnhancedLdapUserDTO>();
 
-	    var user1 = new EnhancedLdapUserDto(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo );
+	    var user1 = new EnhancedLdapUserDTO(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo );
 	    user1.setLhmObjectId(String.format("lhmobjectId_%d_%d_%d", level, no, userNo));
 	    user1.setNachname(String.format("nachname_%d_%d_%d", level, no, userNo));
 	    user1.setVorname(String.format("vorname_%d_%d_%d", level, no, userNo));
 	    user.add(user1);
 
-	    var user2 = new EnhancedLdapUserDto(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo );
+	    var user2 = new EnhancedLdapUserDTO(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo );
         user2.setLhmObjectId(String.format("lhmobjectId_%d_%d_%d", level, no, userNo));
         user2.setNachname(String.format("nachname_%d_%d_%d", level, no, userNo));
         user2.setVorname(String.format("vorname_%d_%d_%d", level, no, userNo));
         user.add(user2);
 
-        var user3 = new EnhancedLdapUserDto(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo );
+        var user3 = new EnhancedLdapUserDTO(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo );
         user3.setLhmObjectId(String.format("lhmobjectId_%d_%d_%d", level, no, userNo));
         user3.setNachname(String.format("nachname_%d_%d_%d", level, no, userNo));
         user3.setVorname(String.format("vorname_%d_%d_%d", level, no, userNo));

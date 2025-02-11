@@ -19,7 +19,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import de.muenchen.zammad.ldap.sync.RequestedDistinguishedNames;
+import de.muenchen.zammad.ldap.sync.DistinguishedNameCheck;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -38,9 +38,9 @@ class DistinguishedNameEMailTest {
 
 		var javaMailSender = mock(JavaMailSender.class);
 
-		var validation = new RequestedDistinguishedNames(javaMailSender);
+		var validation = new DistinguishedNameCheck(javaMailSender);
 
-		validation.warnAboutIncompleteness(List.of("ou1dn1", "ou1dn2", "ou2dn1", "ou2dn2"), Map.of());
+		validation.warnIncompleteness(List.of("ou1dn1", "ou1dn2", "ou2dn1", "ou2dn2"), Map.of());
 
 		verify(javaMailSender, times(1)).send(mailCaptor.capture());
 		var text = mailCaptor.getAllValues().get(0).getText();

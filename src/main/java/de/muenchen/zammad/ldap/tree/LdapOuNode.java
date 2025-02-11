@@ -23,7 +23,7 @@
 package de.muenchen.zammad.ldap.tree;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class LdapOuNode {
     private String distinguishedName;
     private EnhancedLdapOuSearchResultDTO node;
     private Map<String, LdapOuNode> childNodes = new TreeMap<>();
-    private List<EnhancedLdapUserDto> users;
+    private List<EnhancedLdapUserDTO> users;
 
     /**
      * Creates formatted representation of the subtree
@@ -86,8 +86,8 @@ public class LdapOuNode {
      *
      * @return list
      */
-    public List<EnhancedLdapUserDto> flatListLdapUserDTO() {
-        var enhancedLdapUsers = new ArrayList<EnhancedLdapUserDto>();
+    public List<EnhancedLdapUserDTO> flatListLdapUserDTO() {
+        var enhancedLdapUsers = new ArrayList<EnhancedLdapUserDTO>();
         if (this.getUsers() != null)
             enhancedLdapUsers.addAll(this.getUsers());
 
@@ -96,9 +96,9 @@ public class LdapOuNode {
         return enhancedLdapUsers;
     }
 
-    private List<EnhancedLdapUserDto> flatListLdapUserDTO(Map<String, LdapOuNode> subtree) {
+    private List<EnhancedLdapUserDTO> flatListLdapUserDTO(Map<String, LdapOuNode> subtree) {
 
-        var enhancedLdapUsers = new ArrayList<EnhancedLdapUserDto>();
+        var enhancedLdapUsers = new ArrayList<EnhancedLdapUserDTO>();
         if (subtree == null)
             return enhancedLdapUsers;
 

@@ -8,16 +8,11 @@ import lombok.ToString;
 
 import java.io.Serial;
 
-/*
- *  @ToString(callSuper = true, onlyExplicitlyIncluded = true) : log all ldap user data
- */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-//@ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true)
-public class EnhancedLdapUserDto extends LdapUserDTO {
+public class EnhancedLdapUserDTO extends LdapUserDTO {
 
     @Serial
     private static final long serialVersionUID = 1L;

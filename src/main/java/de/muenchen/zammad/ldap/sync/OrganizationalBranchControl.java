@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import de.muenchen.zammad.ldap.property.RequestedOrganizationalUnits;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
@@ -19,19 +19,19 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class TreeControl {
+public class OrganizationalBranchControl {
 
     private RequestedOrganizationalUnits requestedOrgUnits;
 
-    private LdapTreeService zammadLdapService;
+    private LdapTreeService ldapTreeService;
 
-    private TreeSynchronization subtree;
+    private OrganizationalBranchSynchronization subtree;
 
-    private DeletedLdapUser deletedLdapUser;
+    private EliminatedLdapUser deletedLdapUser;
 
     private GroupAssignmentAuthorizations groupAssignmentAuthorizations;
 
-    private RequestedDistinguishedNames dnValidation;
+    private DistinguishedNameCheck dnValidation;
 
     /**
      * Use the requested ldap distinguished names to determine the organizational unit ldap (shade) trees.
@@ -50,10 +50,10 @@ public class TreeControl {
         log.info("Start sychronize Zammad groups, user and roles ...");
 
         log.debug("1/4 Start LDAP operations ...");
-        Map<String, LdapOuNode> ldapShadeTrees = zammadLdapService.buildLdapTrees(null, requestedOrgUnits);
-        Map<String, EnhancedLdapUserDto> completeLdapUser = collectUserFromAllBranches(ldapShadeTrees);
+        Map<String, LdapOuNode> ldapShadeTrees = ldapTreeService.buildLdapTrees(null, requestedOrgUnits);
+        Map<String, EnhancedLdapUserDTO> completeLdapUser = collectUserFromAllBranches(ldapShadeTrees);
 
-        dnValidation.warnAboutIncompleteness(ldapDistinguishedNames, ldapShadeTrees);
+        dnValidation.warnIncompleteness(ldapDistinguishedNames, ldapShadeTrees);
 
         for (Map.Entry<String, LdapOuNode> entry : ldapShadeTrees.entrySet()) {
 
@@ -81,10 +81,10 @@ public class TreeControl {
 
     }
 
-    public static Map<String, EnhancedLdapUserDto> collectUserFromAllBranches(
+    public static Map<String, EnhancedLdapUserDTO> collectUserFromAllBranches(
             Map<String, LdapOuNode> ldapShadetrees) {
 
-        Map<String, EnhancedLdapUserDto> collection = new TreeMap<>();
+        Map<String, EnhancedLdapUserDTO> collection = new TreeMap<>();
         for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
             collection.putAll(entry.getValue().flatListLdapUserDTO().stream()
                     .collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity())));

@@ -21,7 +21,7 @@ import org.mockito.quality.Strictness;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.sync.EmailAddressCache;
-import de.muenchen.zammad.ldap.sync.TreeSynchronization;
+import de.muenchen.zammad.ldap.sync.OrganizationalBranchSynchronization;
 import de.muenchen.zammad.ldap.sync.SignatureCache;
 import de.muenchen.zammad.ldap.sync.ZammadService;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
@@ -54,7 +54,7 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-		var zammadSyncServiceSubtree = new TreeSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
+		var zammadSyncServiceSubtree = new OrganizationalBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
 
 		zammadSyncServiceSubtree.updateZammadGroupsWithUsers(createLdapTree());
 
@@ -85,7 +85,7 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
         groupMocksCreateParentNodeTest(zammadService);
         channelsMock(zammadService);
 
-        var zammadSyncService = new TreeSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
+        var zammadSyncService = new OrganizationalBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
 
         var childTree_level_2 = new TreeMap<String, LdapOuNode>();
         var number = 1;

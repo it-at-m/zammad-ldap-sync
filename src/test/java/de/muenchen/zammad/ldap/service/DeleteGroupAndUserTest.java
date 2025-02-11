@@ -19,8 +19,8 @@ import org.mockito.quality.Strictness;
 
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
-import de.muenchen.zammad.ldap.sync.DeletedLdapUser;
-import de.muenchen.zammad.ldap.sync.TreeControl;
+import de.muenchen.zammad.ldap.sync.EliminatedLdapUser;
+import de.muenchen.zammad.ldap.sync.OrganizationalBranchControl;
 import de.muenchen.zammad.ldap.sync.ZammadService;
 
 
@@ -55,13 +55,13 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
         assertEquals(1, zammadService.getZammadGroups().size());
         assertEquals(21, zammadService.getZammadUsers().size());
 
-        var deletedLdapUser = new DeletedLdapUser(zammadService);
+        var deletedLdapUser = new EliminatedLdapUser(zammadService);
 
 		var reducedLdapTree = reducedLdapTree();
 		var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
 		assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-		var reducedEnhancedLdapUserDTO = TreeControl.collectUserFromAllBranches(reducedLdapTree);
+		var reducedEnhancedLdapUserDTO = OrganizationalBranchControl.collectUserFromAllBranches(reducedLdapTree);
 
 		deletedLdapUser.checkForRemoval(rootNode, reducedEnhancedLdapUserDTO);
 
@@ -83,13 +83,13 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
         assertEquals(7, zammadService.getZammadGroups().size());
         assertEquals(21, zammadService.getZammadUsers().size());
 
-        var deletedLdapUser = new DeletedLdapUser(zammadService);
+        var deletedLdapUser = new EliminatedLdapUser(zammadService);
 
         var reducedLdapTree = reducedLdapTree();
         var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
         assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-        var reducedEnhancedLdapUserDTO = TreeControl.collectUserFromAllBranches(reducedLdapTree);
+        var reducedEnhancedLdapUserDTO = OrganizationalBranchControl.collectUserFromAllBranches(reducedLdapTree);
 
         deletedLdapUser.checkForRemoval(rootNode, reducedEnhancedLdapUserDTO);
 

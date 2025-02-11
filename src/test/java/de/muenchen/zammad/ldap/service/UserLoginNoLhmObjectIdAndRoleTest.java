@@ -19,12 +19,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
 import de.muenchen.zammad.domain.ChannelsEmail;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.sync.EmailAddressCache;
-import de.muenchen.zammad.ldap.sync.TreeSynchronization;
+import de.muenchen.zammad.ldap.sync.OrganizationalBranchSynchronization;
 import de.muenchen.zammad.ldap.sync.SignatureCache;
 import de.muenchen.zammad.ldap.sync.ZammadService;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
@@ -62,7 +62,7 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
         when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail());
         when(zammadService.getZammadEmailSignatures()).thenReturn(List.of());
 
-        var zammadSyncService = new TreeSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
+        var zammadSyncService = new OrganizationalBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
 
         zammadSyncService.updateZammadGroupsWithUsers(createResetLdapTree());
 
@@ -89,7 +89,7 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(
                 List.of(new User("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", false, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
-        var zammadSyncService = new TreeSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
+        var zammadSyncService = new OrganizationalBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
 
         zammadSyncService.updateZammadGroupsWithUsers(createResetLdapTree());
 
@@ -118,12 +118,12 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
         return root;
     }
 
-    protected List<EnhancedLdapUserDto> createResetLdapOuUser(Integer level, Integer no) {
+    protected List<EnhancedLdapUserDTO> createResetLdapOuUser(Integer level, Integer no) {
 
         var userNo = 0;
-        var user = new ArrayList<EnhancedLdapUserDto>();
+        var user = new ArrayList<EnhancedLdapUserDTO>();
 
-        var user1 = new EnhancedLdapUserDto(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo);
+        var user1 = new EnhancedLdapUserDTO(null, "lhmObjectUserReference_" + level + "_" + no + "_" + ++userNo);
         user1.setLhmObjectId(String.format("lhmobjectId_%d_%d_%d", level, no, userNo));
         user1.setNachname(String.format("nachname_%d_%d_%d", level, no, userNo));
         user1.setVorname(String.format("vorname_%d_%d_%d", level, no, userNo));

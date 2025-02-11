@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
@@ -16,13 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class DeletedLdapUser extends AbstractTree {
+public class EliminatedLdapUser extends AbstractTree {
 
-    public DeletedLdapUser(ZammadService zammadService) {
+    public EliminatedLdapUser(ZammadService zammadService) {
         this.zammadService = zammadService;
     }
 
-    public void checkForRemoval(LdapOuNode rootNode, Map<String, EnhancedLdapUserDto> completeLdapUsers) {
+    public void checkForRemoval(LdapOuNode rootNode, Map<String, EnhancedLdapUserDTO> completeLdapUsers) {
 
         try {
 
@@ -58,7 +58,7 @@ public class DeletedLdapUser extends AbstractTree {
         }
     }
 
-    private void assignDeletion(Map<String, EnhancedLdapUserDto> allLdapUsers, String lhmObjectId,
+    private void assignDeletion(Map<String, EnhancedLdapUserDTO> allLdapUsers, String lhmObjectId,
             User zammadUser) {
         var ldapBaseUserDTO = allLdapUsers.get(lhmObjectId);
         if (ldapBaseUserDTO == null) {

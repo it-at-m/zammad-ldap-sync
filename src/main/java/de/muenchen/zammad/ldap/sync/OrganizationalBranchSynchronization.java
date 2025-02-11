@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDto;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
 import de.muenchen.zammad.domain.Group;
@@ -20,12 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class TreeSynchronization extends AbstractTree {
+public class OrganizationalBranchSynchronization extends AbstractTree {
 
     private EmailAddressCache emailAddressCache;
     private SignatureCache signatureCache;
 
-    public TreeSynchronization(ZammadService zammadService, ZammadProperties zammadProperties, EmailAddressCache emailAddress, SignatureCache signature) {
+    public OrganizationalBranchSynchronization(ZammadService zammadService, ZammadProperties zammadProperties, EmailAddressCache emailAddress, SignatureCache signature) {
         this.zammadService = zammadService;
         this.zammadProperties = zammadProperties;
         this.emailAddressCache = emailAddress;
@@ -154,7 +154,7 @@ public class TreeSynchronization extends AbstractTree {
         return currentZammadGroupId;
     }
 
-    private void updateZammadGroupUsers(List<EnhancedLdapUserDto> ldapBaseUserDTOs, String zammadUserGroupId) {
+    private void updateZammadGroupUsers(List<EnhancedLdapUserDTO> ldapBaseUserDTOs, String zammadUserGroupId) {
 
         try {
 

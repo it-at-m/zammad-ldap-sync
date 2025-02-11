@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RequestedDistinguishedNames {
+public class DistinguishedNameCheck {
 
     @Value(value = "${sync.message.from}")
     private String from = "noreply@test.com";
@@ -29,7 +29,7 @@ public class RequestedDistinguishedNames {
 
     private final JavaMailSender javaMailSender;
 
-    public void warnAboutIncompleteness(List<String> ldapSyncDistinguishedNames, Map<String, LdapOuNode> ldapShadetrees) {
+    public void warnIncompleteness(List<String> ldapSyncDistinguishedNames, Map<String, LdapOuNode> ldapShadetrees) {
 
         if (ldapShadetrees.size() != ldapSyncDistinguishedNames.size()) {
 
