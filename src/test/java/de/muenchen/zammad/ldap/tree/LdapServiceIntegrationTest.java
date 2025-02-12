@@ -25,6 +25,10 @@ package de.muenchen.zammad.ldap.tree;
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuAttributesMapper;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserAttributesMapper;
 import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
+
+import java.util.Map;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +46,7 @@ import org.testcontainers.utility.MountableFile;
 @Testcontainers
 class LdapServiceIntegrationTest {
 
-    private LdapService ldapService;
+    private LdapService<?> ldapService;
 
     private static final int OPENLDAP_EXPOSED_PORT = 389;
     private static final String USER_BASE = "o=users,dc=example,dc=org";
@@ -92,9 +96,9 @@ class LdapServiceIntegrationTest {
 
 
     @Test
-    void calculate_shade_tree() {
+    void calculateShadeTree() {
 
-        var shadetree = this.ldapService.buildSubtree("orgUnit", "o=oubase,dc=example,dc=org", null);
+        Optional<Map<String, LdapOuNode>> shadetree = this.ldapService.buildSubtree("orgUnit", "o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
         Assertions.assertEquals("o=oubase,dc=example,dc=org", rootNode.getDistinguishedName());
@@ -111,9 +115,9 @@ class LdapServiceIntegrationTest {
     }
 
     @Test
-    void calculate_shade_tree_select_user_with_modifyTimestamp() {
+    void calculateShadeTreeSelectUserWithModifyTimestamp() {
 
-        var shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", "20240226083627Z");
+        Optional<Map<String, LdapOuNode>> shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", "20240226083627Z");
         Assertions.assertTrue(shadetree.isPresent());
         Assertions.assertEquals(1, shadetree.get().size());
         var rootNode = shadetree.get().values().iterator().next();
@@ -132,9 +136,9 @@ class LdapServiceIntegrationTest {
     }
 
     @Test
-    void shade_tree_override_toString() {
+    void shadeTreeOverrideToString() {
 
-        var shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", null);
+        Optional<Map<String, LdapOuNode>> shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
 
@@ -144,9 +148,9 @@ class LdapServiceIntegrationTest {
     }
 
     @Test
-    void shade_tree_flat_list_user() {
+    void shadeTreeFlatListUser() {
 
-        var shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", null);
+        Optional<Map<String, LdapOuNode>> shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
 
@@ -155,14 +159,19 @@ class LdapServiceIntegrationTest {
     }
 
     @Test
-    void shade_tree_flat_list_ou() {
+    void shadeTreeFlatListOu() {
 
-        var shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", null);
+        Optional<Map<String, LdapOuNode>> shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", null);
         Assertions.assertTrue(shadetree.isPresent());
         var rootNode = shadetree.get().values().iterator().next();
 
         var lhmobjectids = rootNode.flatListLdapOuDTO();
         Assertions.assertEquals(4, lhmobjectids.size());
+    }
+
+    @Test
+    void distinguishedNameNotFound() {
+        Assertions.assertTrue(this.ldapService.buildSubtree("orgUnit","o=foo,dc=example,dc=org", null).isEmpty());
     }
 
 }

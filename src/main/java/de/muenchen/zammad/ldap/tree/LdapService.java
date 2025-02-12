@@ -22,8 +22,13 @@
  */
 package de.muenchen.zammad.ldap.tree;
 
-import de.muenchen.oss.ezldap.core.*;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+
 import org.springframework.ldap.NameNotFoundException;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -31,26 +36,23 @@ import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.SearchScope;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
+import de.muenchen.oss.ezldap.core.EnhancedLdapOuAttributesMapper;
+import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserAttributesMapper;
+import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
+import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
+import de.muenchen.oss.ezldap.core.LdapOuAttributesMapper;
+import de.muenchen.oss.ezldap.core.LdapUserAttributesMapper;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LdapService {
-
-    private static final String ATTRIBUTE_OBJECT_CLASS = "objectClass";
+public class LdapService<T> extends AbstractLdap<T> {
 
     private static final String ATTRIBUTE_MODIFY_TIMESTAMP = "modifyTimestamp";
     private static final String LHM_ORGANIZATIONAL_UNIT = "lhmOrganizationalUnit";
     private static final String LHM_OBJECT_PATH = "lhmObjectPath";
+    private static final String[] ATTRIBUTE_LIST = new String[] { ATTRIBUTE_MODIFY_TIMESTAMP, "*" };
 
-    private final String ouSearchBase;
-    private final String userSearchBase;
-
-    private final LdapTemplate ldapTemplate;
     private final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper;
     private final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper;
     private final LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper;
@@ -66,8 +68,11 @@ public class LdapService {
      * @param userSearchBase                   Search-Base für User (DN)
      * @param ouSearchBase                     Search-Base für OUs (DN)
      */
-    public LdapService(final LdapTemplate ldapTemplate, final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper, final LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper,
-            final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper, final String userSearchBase, final String ouSearchBase) {
+    public LdapService(final LdapTemplate ldapTemplate,
+            final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper,
+            final LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper,
+            final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper, final String userSearchBase,
+            final String ouSearchBase) {
         this.ldapTemplate = ldapTemplate;
         this.enhancedLdapUserAttributesMapper = enhancedLdapUserAttributesMapper;
         this.ldapBaseUserAttributesMapper = ldapBaseUserAttributesMapper;
@@ -85,7 +90,8 @@ public class LdapService {
      * @param userSearchBase die Search-Base für User (z.B. 'o=example,c=org')
      * @param ouSearchBase   die Search-Base für OU's (z.B. 'o=example,c=org')
      */
-    public LdapService(final String ldapUrl, final String ldapUserDn, final String ldapPassword, final String userSearchBase, final String ouSearchBase) {
+    public LdapService(final String ldapUrl, final String ldapUserDn, final String ldapPassword,
+            final String userSearchBase, final String ouSearchBase) {
 
         final LdapContextSource ldapContextSource = new LdapContextSource();
         ldapContextSource.setUrl(ldapUrl);
@@ -100,31 +106,16 @@ public class LdapService {
         this.ouSearchBase = ouSearchBase;
     }
 
-    public Optional<Map<String, LdapOuNode>> buildSubtree(String organizationalUnit, String distinguishedName, String modifyTimeStamp) {
+    public Optional<Map<String, LdapOuNode>> buildSubtree(String organizationalUnit, String distinguishedName,
+            String modifyTimeStamp) {
 
-        var distinguishedNameIsValid = ldapQuery(distinguishedName);
-        if (distinguishedNameIsValid == null || distinguishedNameIsValid.isEmpty())
+        if (directoryServiceEntryNotExists(distinguishedName))
             return Optional.empty();
 
-        return Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp));
+        return Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp,
+                LdapAttribute.fromIdentifier(LdapAttribute.LHM_ORGANIZATIONAL_UNIT.getIdentifier()),
+                this.enhancedLdapOuAttributesMapper));
 
-    }
-
-  private List<EnhancedLdapOuSearchResultDTO> ldapQuery(String distinguishedName) {
-        try {
-            final LdapQuery ouObjectReferenceQuery = query().searchScope(SearchScope.OBJECT).base(distinguishedName).attributes(ATTRIBUTE_MODIFY_TIMESTAMP, "*").where(ATTRIBUTE_OBJECT_CLASS)
-                    .is(LHM_ORGANIZATIONAL_UNIT);
-            final List<EnhancedLdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery, this.enhancedLdapOuAttributesMapper);
-            if (searchResults.size() == 1) {
-                return searchResults;
-            } else {
-                log.error("Ambiguous DN entries found : " + distinguishedName);
-            }
-            return null;
-        } catch (Exception ex) {
-            log.error(String.format("LDAP search error with dn=%s", distinguishedName), ex);
-            return null;
-        }
     }
 
     /**
@@ -132,22 +123,28 @@ public class LdapService {
      * entries (LdapOuNodes). Add ou assigned users. Returns a nested map
      * <distinguishedName, LdapOuNode>.
      *
+     * @param <T>
+     *
      * @param distinguishedName Start tree ldap root entry
      * @param modifyTimeStamp   Optional ldap search attribute
      * @return OU Tree
      */
-    private Map<String, LdapOuNode> buildSubtreeWithUsers(String organizationalUnit, String distinguishedName, String modifyTimeStamp) {
+    private Map<String, LdapOuNode> buildSubtreeWithUsers(String organizationalUnit, String distinguishedName,
+            String modifyTimeStamp, LdapAttribute attribute,
+            EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper) {
 
         var subtree = new TreeMap<String, LdapOuNode>();
         try {
             log.trace("Searching for dn='{} & objectClass='{}' ...", distinguishedName, LHM_ORGANIZATIONAL_UNIT);
-            final LdapQuery ouObjectReferenceQuery = query().searchScope(SearchScope.OBJECT).base(distinguishedName).attributes(ATTRIBUTE_MODIFY_TIMESTAMP, "*").where(ATTRIBUTE_OBJECT_CLASS)
-                    .is(LHM_ORGANIZATIONAL_UNIT);
 
-            final List<EnhancedLdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery, this.enhancedLdapOuAttributesMapper);
+            final LdapQuery ouObjectReferenceQuery = query().searchScope(SearchScope.OBJECT).base(distinguishedName)
+                    .attributes(ATTRIBUTE_LIST).where(attribute.getDescription()).is(attribute.getIdentifier());
+
+            final List<EnhancedLdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
+                    enhancedLdapOuAttributesMapper);
 
             if (searchResults.size() == 1) {
-                var object = searchResults.get(0);
+                EnhancedLdapOuSearchResultDTO object = (EnhancedLdapOuSearchResultDTO) searchResults.get(0);
                 var rootNode = new LdapOuNode();
                 rootNode.setNode(object);
                 rootNode.setOrganizationalUnit(organizationalUnit);
@@ -155,14 +152,15 @@ public class LdapService {
                 addUsers(this.userSearchBase, rootNode, modifyTimeStamp);
                 subtree.put(distinguishedName, rootNode);
 
-                searchResults.forEach(o -> addSubtree(organizationalUnit, distinguishedName, rootNode, modifyTimeStamp));
+                addSubtree(organizationalUnit, distinguishedName, rootNode, modifyTimeStamp);
 
             } else {
                 log.error("Ambiguous DN entries found : " + distinguishedName);
             }
 
         } catch (final NameNotFoundException ex) {
-            log.error("No LDAP entry found with DN = '{}'. Query failed with exception '{}'", distinguishedName, ex.getClass().getName());
+            log.error("No LDAP entry found with DN = '{}'. Query failed with exception '{}'", distinguishedName,
+                    ex.getClass().getName());
         }
 
         return subtree;
@@ -176,14 +174,17 @@ public class LdapService {
      * @param distinguishedName Ldap search base
      * @param modifyTimeStamp   Optional ldap search attribute
      */
-    private void addSubtree(String organizationalUnit, String distinguishedName, LdapOuNode parent, String modifyTimeStamp) {
+    private void addSubtree(String organizationalUnit, String distinguishedName, LdapOuNode parent,
+            String modifyTimeStamp) {
 
         try {
 
             log.trace("Searching for dn='{}' & objectClass='{}' ...", distinguishedName, LHM_ORGANIZATIONAL_UNIT);
-            final LdapQuery ouObjectReferenceQuery = getOuObjectReferenceQuery(distinguishedName, null);
+            final LdapQuery ouObjectReferenceQuery = getOuObjectReferenceQuery(distinguishedName, null,
+                    LdapAttribute.fromIdentifier(LdapAttribute.LHM_ORGANIZATIONAL_UNIT.getIdentifier()));
 
-            final List<EnhancedLdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery, this.enhancedLdapOuAttributesMapper);
+            final List<EnhancedLdapOuSearchResultDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
+                    this.enhancedLdapOuAttributesMapper);
 
             searchResults.forEach(o -> {
                 var dn = String.format("ou=%s,%s", o.getOu().replace(",", "\\,"), distinguishedName);
@@ -197,7 +198,8 @@ public class LdapService {
             });
 
         } catch (final NameNotFoundException ex) {
-            log.warn("No LDAP Entry found with DN = '{}' Query failed with exception '{}", distinguishedName, ex.getClass().getName());
+            log.warn("No LDAP Entry found with DN = '{}' Query failed with exception '{}", distinguishedName,
+                    ex.getClass().getName());
         }
     }
 
@@ -205,13 +207,16 @@ public class LdapService {
      * @param distinguishedName Ldap search base
      * @param modifyTimeStamp   Optional ldap search attribute
      */
-    private static ContainerCriteria getOuObjectReferenceQuery(String distinguishedName, String modifyTimeStamp) {
+    private static ContainerCriteria getOuObjectReferenceQuery(String distinguishedName, String modifyTimeStamp,
+            LdapAttribute attribute) {
 
         if (modifyTimeStamp != null)
-            return query().searchScope(SearchScope.ONELEVEL).base(distinguishedName).attributes(ATTRIBUTE_MODIFY_TIMESTAMP, "*").where(ATTRIBUTE_OBJECT_CLASS).is(LHM_ORGANIZATIONAL_UNIT)
-                    .and(ATTRIBUTE_MODIFY_TIMESTAMP).gte(modifyTimeStamp);
+            return query().searchScope(SearchScope.ONELEVEL).base(distinguishedName).attributes(ATTRIBUTE_LIST)
+                    .where(attribute.getDescription()).is(attribute.getIdentifier()).and(ATTRIBUTE_MODIFY_TIMESTAMP)
+                    .gte(modifyTimeStamp);
         else
-            return query().searchScope(SearchScope.ONELEVEL).base(distinguishedName).attributes(ATTRIBUTE_MODIFY_TIMESTAMP, "*").where(ATTRIBUTE_OBJECT_CLASS).is(LHM_ORGANIZATIONAL_UNIT);
+            return query().searchScope(SearchScope.ONELEVEL).base(distinguishedName).attributes(ATTRIBUTE_LIST)
+                    .where(attribute.getDescription()).is(attribute.getIdentifier());
     }
 
     /**
@@ -223,7 +228,8 @@ public class LdapService {
 
         final LdapQuery ouObjectReferenceQuery = getOuObjectReferenceQuery(searchBase, node, modifyTimeStamp);
 
-        final List<EnhancedLdapUserDto> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery, this.enhancedLdapUserAttributesMapper);
+        final List<EnhancedLdapUserDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
+                this.enhancedLdapUserAttributesMapper);
         node.setUsers(searchResults);
     }
 
@@ -232,13 +238,16 @@ public class LdapService {
      * @param node            Shade tree node
      * @param modifyTimeStamp Optional ldap search attribute
      */
-    private static ContainerCriteria getOuObjectReferenceQuery(String searchBase, LdapOuNode node, String modifyTimeStamp) {
+    private static ContainerCriteria getOuObjectReferenceQuery(String searchBase, LdapOuNode node,
+            String modifyTimeStamp) {
 
         if (modifyTimeStamp != null)
-            return query().searchScope(SearchScope.ONELEVEL).base(searchBase).attributes(ATTRIBUTE_MODIFY_TIMESTAMP, "*").where(LHM_OBJECT_PATH).is(node.getDistinguishedName())
-                    .and(ATTRIBUTE_MODIFY_TIMESTAMP).gte(modifyTimeStamp);
+            return query().searchScope(SearchScope.ONELEVEL).base(searchBase).attributes(ATTRIBUTE_LIST)
+                    .where(LHM_OBJECT_PATH).is(node.getDistinguishedName()).and(ATTRIBUTE_MODIFY_TIMESTAMP)
+                    .gte(modifyTimeStamp);
         else
-            return query().searchScope(SearchScope.ONELEVEL).base(searchBase).attributes(ATTRIBUTE_MODIFY_TIMESTAMP, "*").where(LHM_OBJECT_PATH).is(node.getDistinguishedName());
+            return query().searchScope(SearchScope.ONELEVEL).base(searchBase).attributes(ATTRIBUTE_LIST)
+                    .where(LHM_OBJECT_PATH).is(node.getDistinguishedName());
     }
 
 }

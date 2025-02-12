@@ -1,4 +1,4 @@
-package de.muenchen.zammad.ldap;
+package de.muenchen.zammad;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import de.muenchen.zammad.ldap.config.RoleIds;
-import de.muenchen.zammad.ldap.sync.TreeControl;
+import de.muenchen.zammad.ldap.sync.OrganizationalBranchControl;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -20,7 +20,7 @@ public class SyncApplication {
 
 		RoleIds complementRoleIds = context.getBean(RoleIds.class);
 		if (complementRoleIds.isAddAllRoleIdsSuccessful()) {
-		    TreeControl syncService = context.getBean(TreeControl.class);
+		    OrganizationalBranchControl syncService = context.getBean(OrganizationalBranchControl.class);
 			syncService.synchronizationControl();;
 		}
 		else

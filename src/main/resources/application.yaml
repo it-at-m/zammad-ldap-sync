@@ -1,6 +1,12 @@
 ldap:
   url:
 
+active-directory:
+  url:
+  userDn:
+  password:
+  distinguished-name:
+
 sync:
   organizational-units-common:
     mail-starts-with: Landeshauptstadt München

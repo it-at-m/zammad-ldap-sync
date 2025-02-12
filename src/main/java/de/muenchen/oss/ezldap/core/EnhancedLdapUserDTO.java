@@ -24,6 +24,6 @@ public class EnhancedLdapUserDTO extends LdapUserDTO {
 
     @Override public String toString() {
         return this.getClass().getSimpleName() + "(lhmObjectId=" + super.getLhmObjectId() + ")";
-      }
+    }
 
 }
