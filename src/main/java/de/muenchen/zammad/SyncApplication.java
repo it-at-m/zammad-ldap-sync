@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import de.muenchen.zammad.ldap.config.RoleIds;
+import de.muenchen.zammad.ldap.property.ZammadRolePropertyComplementation;
 import de.muenchen.zammad.ldap.sync.OrgUnitBranchControl;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,10 +18,10 @@ public class SyncApplication {
 
 		ConfigurableApplicationContext context = SpringApplication.run(SyncApplication.class, args);
 
-		RoleIds complementRoleIds = context.getBean(RoleIds.class);
-		if (complementRoleIds.isAddAllRoleIdsSuccessful()) {
+		ZammadRolePropertyComplementation complementRoleIds = context.getBean(ZammadRolePropertyComplementation.class);
+		if (complementRoleIds.completeRoleIdentifierWithRoleId()) {
 		    OrgUnitBranchControl syncService = context.getBean(OrgUnitBranchControl.class);
-			syncService.synchronizationControl();;
+			syncService.synchronizationControl();
 		}
 		else
 			log.error("Roles not found. Check if roles referenced in application properties exist in Zammad (e.g. Agent, Erstellen, Vollzugriff).");

@@ -1,8 +1,10 @@
-package de.muenchen.zammad.ldap.config;
+package de.muenchen.zammad.ldap.property;
+
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import de.muenchen.zammad.ldap.property.ZammadProperties;
+import de.muenchen.zammad.domain.Role;
 import de.muenchen.zammad.ldap.sync.ZammadService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,17 +12,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class RoleIds {
+public class ZammadRolePropertyComplementation {
 
     private ZammadProperties zammadProperties;
     private ZammadService zammadService;
 
-    public boolean isAddAllRoleIdsSuccessful() {
+    public boolean completeRoleIdentifierWithRoleId() {
 
         var roleProperty = zammadProperties.getAssignment().getRole();
         var zammadRoles = zammadService.getZammadRoles();
 
-        var agentRole = zammadRoles.stream()
+        Optional<Role> agentRole = zammadRoles.stream()
                 .filter(role -> roleProperty.getNameAgent().strip().compareToIgnoreCase(role.getName().strip()) == 0)
                 .findAny();
         if (agentRole.isEmpty()) {
@@ -30,7 +32,7 @@ public class RoleIds {
 
         roleProperty.setIdAgent(Integer.valueOf(agentRole.get().getId()));
 
-        var erstellenRole = zammadRoles.stream().filter(
+        Optional<Role> erstellenRole = zammadRoles.stream().filter(
                 role -> roleProperty.getNameErstellen().strip().compareToIgnoreCase(role.getName().strip()) == 0)
                 .findAny();
         if (erstellenRole.isEmpty()) {
@@ -40,7 +42,7 @@ public class RoleIds {
 
         roleProperty.setIdErstellen(Integer.valueOf(erstellenRole.get().getId()));
 
-        var vollzugriffRole = zammadRoles.stream().filter(
+        Optional<Role> vollzugriffRole = zammadRoles.stream().filter(
                 role -> roleProperty.getNameVollzugriff().strip().compareToIgnoreCase(role.getName().strip()) == 0)
                 .findAny();
         if (vollzugriffRole.isEmpty()) {
