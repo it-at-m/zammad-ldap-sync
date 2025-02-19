@@ -19,13 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class OrganizationalBranchControl {
+public class OrgUnitBranchControl {
 
     private RequestedOrganizationalUnits requestedOrgUnits;
 
     private LdapTreeService ldapTreeService;
 
-    private OrganizationalBranchSynchronization subtree;
+    private OrgUnitBranchSynchronization subtree;
 
     private EliminatedLdapUser deletedLdapUser;
 

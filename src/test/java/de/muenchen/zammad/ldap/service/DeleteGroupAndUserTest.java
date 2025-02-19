@@ -20,7 +20,7 @@ import org.mockito.quality.Strictness;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.sync.EliminatedLdapUser;
-import de.muenchen.zammad.ldap.sync.OrganizationalBranchControl;
+import de.muenchen.zammad.ldap.sync.OrgUnitBranchControl;
 import de.muenchen.zammad.ldap.sync.ZammadService;
 
 
@@ -61,7 +61,7 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
 		var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
 		assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-		var reducedEnhancedLdapUserDTO = OrganizationalBranchControl.collectUserFromAllBranches(reducedLdapTree);
+		var reducedEnhancedLdapUserDTO = OrgUnitBranchControl.collectUserFromAllBranches(reducedLdapTree);
 
 		deletedLdapUser.checkForRemoval(rootNode, reducedEnhancedLdapUserDTO);
 
@@ -89,7 +89,7 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
         var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
         assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-        var reducedEnhancedLdapUserDTO = OrganizationalBranchControl.collectUserFromAllBranches(reducedLdapTree);
+        var reducedEnhancedLdapUserDTO = OrgUnitBranchControl.collectUserFromAllBranches(reducedLdapTree);
 
         deletedLdapUser.checkForRemoval(rootNode, reducedEnhancedLdapUserDTO);
 

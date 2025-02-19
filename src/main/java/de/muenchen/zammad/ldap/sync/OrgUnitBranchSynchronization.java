@@ -20,12 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class OrganizationalBranchSynchronization extends AbstractTree {
+public class OrgUnitBranchSynchronization extends AbstractTree {
 
     private EmailAddressCache emailAddressCache;
     private SignatureCache signatureCache;
 
-    public OrganizationalBranchSynchronization(ZammadService zammadService, ZammadProperties zammadProperties, EmailAddressCache emailAddress, SignatureCache signature) {
+    public OrgUnitBranchSynchronization(ZammadService zammadService, ZammadProperties zammadProperties, EmailAddressCache emailAddress, SignatureCache signature) {
         this.zammadService = zammadService;
         this.zammadProperties = zammadProperties;
         this.emailAddressCache = emailAddress;
