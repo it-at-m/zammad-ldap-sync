@@ -2,6 +2,7 @@ package de.muenchen.zammad.ad;
 
 import java.io.Serial;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import de.muenchen.oss.ezldap.core.LdapOuSearchResultDTO;
@@ -22,9 +23,9 @@ public class EnhancedActiveDirectoryGroupDTO extends LdapOuSearchResultDTO {
     private static final long serialVersionUID = 1L;
     private String cn;
     private String displayName;
-    private String distinguishedName;
+    private String adDistinguishedName;
     private String name;
-    private ArrayList<String> member;
-    private Map<String, ActiveDirectoryUserDTO> userByLhmObjectId;
+    private List<String> member;
+    private Map<String, ActiveDirectoryUserDTO> adUserByLhmObjectId;
 
 }

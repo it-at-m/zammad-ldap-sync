@@ -46,12 +46,12 @@ import de.muenchen.oss.ezldap.core.LdapUserAttributesMapper;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LdapService<T> extends AbstractLdap<T> {
+public class LdapService extends AbstractLdap {
 
     private static final String ATTRIBUTE_MODIFY_TIMESTAMP = "modifyTimestamp";
     private static final String LHM_ORGANIZATIONAL_UNIT = "lhmOrganizationalUnit";
     private static final String LHM_OBJECT_PATH = "lhmObjectPath";
-    private static final String[] ATTRIBUTE_LIST = new String[] { ATTRIBUTE_MODIFY_TIMESTAMP, "*" };
+     private static final String[] ATTRIBUTE_LIST = new String[] { ATTRIBUTE_MODIFY_TIMESTAMP, "*" };
 
     private final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper;
     private final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper;
@@ -192,7 +192,7 @@ public class LdapService<T> extends AbstractLdap<T> {
                 node.setNode(o);
                 node.setDistinguishedName(dn);
                 node.setOrganizationalUnit(organizationalUnit);
-                parent.getChildNodes().put(o.getOu(), node);
+                parent.getChildNodes().ifPresent(childNodes -> childNodes.put(o.getOu(), node));
                 addUsers(this.userSearchBase, node, modifyTimeStamp);
                 addSubtree(organizationalUnit, dn, node, modifyTimeStamp);
             });
@@ -230,7 +230,7 @@ public class LdapService<T> extends AbstractLdap<T> {
 
         final List<EnhancedLdapUserDTO> searchResults = this.ldapTemplate.search(ouObjectReferenceQuery,
                 this.enhancedLdapUserAttributesMapper);
-        node.setUsers(searchResults);
+        node.setUsers(Optional.of(searchResults));
     }
 
     /**
@@ -248,6 +248,15 @@ public class LdapService<T> extends AbstractLdap<T> {
         else
             return query().searchScope(SearchScope.ONELEVEL).base(searchBase).attributes(ATTRIBUTE_LIST)
                     .where(LHM_OBJECT_PATH).is(node.getDistinguishedName());
+    }
+
+    public Optional<EnhancedLdapUserDTO> lookupUser(String distinguishedName) {
+        try {
+           return Optional.of(this.ldapTemplate.lookup(distinguishedName, enhancedLdapUserAttributesMapper));
+        } catch (Exception ex) {
+            log.error(String.format("LDAP user not found with dn='%s'", distinguishedName), ex);
+            return Optional.empty();
+        }
     }
 
 }

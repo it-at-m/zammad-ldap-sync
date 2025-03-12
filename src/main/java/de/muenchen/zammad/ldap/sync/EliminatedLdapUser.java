@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -22,44 +23,59 @@ public class EliminatedLdapUser extends AbstractTree {
         this.zammadService = zammadService;
     }
 
-    public void checkForRemoval(LdapOuNode rootNode, Map<String, EnhancedLdapUserDTO> completeLdapUsers) {
+    public void checkForRemoval(Map.Entry<String, LdapOuNode> ldapBranchEntry,
+            Optional<Map<String, EnhancedLdapUserDTO>> allBranchesUsers) {
 
-        try {
-
-            var zammadBranchGroupUsers = findAllZammadBranchGroupUsers(rootNode.getNode().getLhmObjectId());
-
-            zammadBranchGroupUsers.forEach((lhmObjectId, list) -> {
-
-                if (list.size() > 1) {
-                    log.error("Inconsistent Zammad state. More than one zammad user found for lhmObjectId '{}' :",
-                            lhmObjectId);
-                    list.forEach(item -> log.error(LOG_ID, item.getId()));
-                    return;
-                }
-
-                var zammadUser = list.get(0);
-                log.debug("---------------------------");
-                log.debug("Checking ZammadUser with lhmObjectId '{}'.", zammadUser.getLhmobjectid());
-
-                if (zammadUser.isLdapsyncupdate()) {
-
-                    if (lhmObjectId == null || lhmObjectId.isEmpty()) {
-                        log.debug("No lhmObjectId - skipping.");
-                    } else {
-                        assignDeletion(completeLdapUsers, lhmObjectId, zammadUser);
-                    }
-                } else {
-                    log.debug("isLdapsyncupdate is '{}' - skipping.", zammadUser.isLdapsyncupdate());
-                }
-            });
-
-        } catch (Exception ex) {
-            log.error(ex.getMessage(), ex);
-        }
+       if (allBranchesUsers.isPresent()) {
+           var allUsers = allBranchesUsers.get();
+            if (allUsers.isEmpty())
+                log.warn("Ldap branch user list is empty. The execution would set all found zammad users inactive.");
+            else
+                checkLdapUsers(ldapBranchEntry, allUsers);
+    } else
+        log.warn("Ldap user list is null. Can not compare zammad and ldap users.");
     }
 
-    private void assignDeletion(Map<String, EnhancedLdapUserDTO> allLdapUsers, String lhmObjectId,
-            User zammadUser) {
+    protected void checkLdapUsers(Map.Entry<String, LdapOuNode> entry, Map<String, EnhancedLdapUserDTO> allLdapUsers) {
+
+        Optional<LdapOuNode> optionalNode = findNode(entry);
+        optionalNode.ifPresent(node -> {
+            try {
+
+                var zammadBranchGroupUsers = findAllZammadBranchGroupUsers(node.getNode().getLhmObjectId());
+
+                zammadBranchGroupUsers.forEach((lhmObjectId, list) -> {
+
+                    if (list.size() > 1) {
+                        log.error("Inconsistent Zammad state. More than one zammad user found for lhmObjectId '{}' :",
+                                lhmObjectId);
+                        list.forEach(item -> log.error(LOG_ID, item.getId()));
+                        return;
+                    }
+
+                    var zammadUser = list.get(0);
+                    log.debug("---------------------------");
+                    log.debug("Checking ZammadUser with lhmObjectId '{}'.", zammadUser.getLhmobjectid());
+
+                    if (zammadUser.isLdapsyncupdate()) {
+
+                        if (lhmObjectId == null || lhmObjectId.isEmpty()) {
+                            log.debug("No lhmObjectId - skipping.");
+                        } else {
+                            assignDeletion(allLdapUsers, lhmObjectId, zammadUser);
+                        }
+                    } else {
+                        log.debug("isLdapsyncupdate is '{}' - skipping.", zammadUser.isLdapsyncupdate());
+                    }
+                });
+
+            } catch (Exception ex) {
+                log.error(ex.getMessage(), ex);
+            }
+        });
+    }
+
+    private void assignDeletion(Map<String, EnhancedLdapUserDTO> allLdapUsers, String lhmObjectId, User zammadUser) {
         var ldapBaseUserDTO = allLdapUsers.get(lhmObjectId);
         if (ldapBaseUserDTO == null) {
             log.debug("Do not find ZammadUser in LDAP-Users.");
@@ -123,6 +139,15 @@ public class EliminatedLdapUser extends AbstractTree {
 
     private List<User> findUsers(List<User> zammadServiceUsers, String zammadGroupId) {
         return zammadServiceUsers.stream().filter(u -> u.getGroupIds().containsKey(zammadGroupId)).toList();
+    }
+
+    private Optional<LdapOuNode> findNode(Map.Entry<String, LdapOuNode> entry) {
+
+        var optional = entry.getValue().findLdapOuNode(entry.getKey());
+        if (optional.isEmpty()) {
+            log.error("User removal check failed. No ldap node found with key '{}' !", entry.getKey());
+        }
+        return optional;
     }
 
 }

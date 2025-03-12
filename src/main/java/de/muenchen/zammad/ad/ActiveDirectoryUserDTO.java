@@ -24,5 +24,6 @@ public class ActiveDirectoryUserDTO implements Serializable{
     private String displayName;
     private String name;
     private String uid;
+    private String lhmReferatName;
 
 }

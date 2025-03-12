@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -82,12 +83,11 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
                     currentZammadGroupId = createNewZammadGroup(zammadGroupCompare, lhmObjectIdToFind);
                 }
 
-                if (node.getUsers() != null) {
-                    handleGroupUser(node, ldapOuDto, currentZammadGroupId);
-                }
+                handleGroupUser(node, ldapOuDto, currentZammadGroupId);
 
-                if (node.getChildNodes() != null && !node.getChildNodes().isEmpty())
-                    handleChildBranch(node.getChildNodes(), zammadCurrentGroupName, currentZammadGroupId);
+                Optional<Optional<Map<String, LdapOuNode>>>  optionalValue = Optional.ofNullable(node.getChildNodes()).filter(value -> !value.isEmpty());
+                if (!optionalValue.isEmpty())
+                  handleChildBranch(node.getChildNodes().get(), zammadCurrentGroupName, currentZammadGroupId);
 
                 statistic.getCurrentOuCount().getAndIncrement();
                 statistic.logInfoProcessStatusOuAndUser();
@@ -105,8 +105,10 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
         if (currentZammadGroupId == null)
             log.error("'{}' : GROUP_ID is NULL for user: '{}'.", ldapOuDto.getLhmOULongname(),
                     node.getUsers().stream().map(String::valueOf).collect(Collectors.joining("; ")));
-        updateZammadGroupUsers(node.getUsers(), currentZammadGroupId);
-        statistic.getCurrentUserCount().addAndGet(node.getUsers().size());
+        node.getUsers().ifPresent(
+                nodeUsers -> { updateZammadGroupUsers(nodeUsers, currentZammadGroupId);
+                               statistic.getCurrentUserCount().addAndGet(nodeUsers.size());});
+
     }
 
     private String createGroupName(String zammadGroupName, EnhancedLdapOuSearchResultDTO ldapOuDto) {

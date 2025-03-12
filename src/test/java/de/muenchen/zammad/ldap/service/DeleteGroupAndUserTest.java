@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,10 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import de.muenchen.zammad.ad.ldap.mediator.ActiveDirectoryShadeTreeInclusion;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.sync.EliminatedLdapUser;
-import de.muenchen.zammad.ldap.sync.OrgUnitBranchControl;
 import de.muenchen.zammad.ldap.sync.ZammadService;
 
 
@@ -59,11 +61,12 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
 
 		var reducedLdapTree = reducedLdapTree();
 		var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
+
 		assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-		var reducedEnhancedLdapUserDTO = OrgUnitBranchControl.collectUserFromAllBranches(reducedLdapTree);
+		var reducedEnhancedLdapUserDTO = ActiveDirectoryShadeTreeInclusion.collectUserFromAllBranches(reducedLdapTree);
 
-		deletedLdapUser.checkForRemoval(rootNode, reducedEnhancedLdapUserDTO);
+		deletedLdapUser.checkForRemoval(Map.of(rootNode.getDistinguishedName(), rootNode).entrySet().iterator().next(), Optional.of(reducedEnhancedLdapUserDTO));
 
 		verify(zammadService, times(1)).updateZammadUser(updateUserCaptor.capture());
 		assertEquals("delete", updateUserCaptor.getAllValues().get(0).getLdapsyncstate());
@@ -89,9 +92,9 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
         var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
         assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-        var reducedEnhancedLdapUserDTO = OrgUnitBranchControl.collectUserFromAllBranches(reducedLdapTree);
+        var reducedEnhancedLdapUserDTO = ActiveDirectoryShadeTreeInclusion.collectUserFromAllBranches(reducedLdapTree);
 
-        deletedLdapUser.checkForRemoval(rootNode, reducedEnhancedLdapUserDTO);
+        deletedLdapUser.checkForRemoval(Map.of(rootNode.getDistinguishedName(), rootNode).entrySet().iterator().next(), Optional.of(reducedEnhancedLdapUserDTO));
 
         verify(zammadService, times(4)).updateZammadUser(updateUserCaptor.capture());
         assertEquals("delete", updateUserCaptor.getAllValues().get(0).getLdapsyncstate());

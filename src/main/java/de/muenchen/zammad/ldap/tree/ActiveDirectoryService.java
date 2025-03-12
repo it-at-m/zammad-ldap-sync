@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class ActiveDirectoryService<T> extends AbstractLdap<T> {
+public class ActiveDirectoryService extends AbstractLdap {
 
     private static final String[] ATTRIBUTE_LIST = new String[] {"*"};
     private ActiveDirectoryProperty adProperty;

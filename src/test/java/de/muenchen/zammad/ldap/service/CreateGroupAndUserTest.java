@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
@@ -91,21 +92,21 @@ class CreateGroupAndUserTest extends PrepareTestEnvironment {
         var number = 1;
         var level = 2;
         var dn = String.format("dn_level_%d_no_%d", level, number);
-        var child_level_2 = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL,  dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
+        var child_level_2 = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL,  dn, createEnhancedLdapOuSearchResultDTO(level,number), Optional.of(new TreeMap<String, LdapOuNode>()), Optional.ofNullable(null));
         childTree_level_2.put(dn,  child_level_2);
 
         var childTree_level_1 = new TreeMap<String, LdapOuNode>();
         level = 1;
         dn = String.format("dn_level_%d_no_%d", level, number);
-        var child_level_1 = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
-        child_level_1.setChildNodes(childTree_level_2);
+        var child_level_1 = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(level,number), Optional.of(new TreeMap<String, LdapOuNode>()), Optional.ofNullable(null));
+        child_level_1.setChildNodes(Optional.of(childTree_level_2));
         childTree_level_1.put(dn,  child_level_1);
 
         var childTree_level_0 = new TreeMap<String, LdapOuNode>();
         level = 0;
         dn = String.format("dn_level_%d_no_%d", level, number);
-        var child_level_0 = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(level,number), new TreeMap<String, LdapOuNode>(), null);
-        child_level_0.setChildNodes(childTree_level_1);
+        var child_level_0 = new LdapOuNode(ORGANIZATIONAL_UNIT_CHANNEL, dn, createEnhancedLdapOuSearchResultDTO(level,number), Optional.of(new TreeMap<String, LdapOuNode>()), Optional.ofNullable(null));
+        child_level_0.setChildNodes(Optional.of(childTree_level_1));
         childTree_level_0.put(dn,  child_level_0);
 
         log.info(child_level_0.toString());

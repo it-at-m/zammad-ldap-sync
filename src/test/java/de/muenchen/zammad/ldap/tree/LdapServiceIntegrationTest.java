@@ -46,7 +46,7 @@ import org.testcontainers.utility.MountableFile;
 @Testcontainers
 class LdapServiceIntegrationTest {
 
-    private LdapService<?> ldapService;
+    private LdapService ldapService;
 
     private static final int OPENLDAP_EXPOSED_PORT = 389;
     private static final String USER_BASE = "o=users,dc=example,dc=org";
@@ -104,13 +104,13 @@ class LdapServiceIntegrationTest {
         Assertions.assertEquals("o=oubase,dc=example,dc=org", rootNode.getDistinguishedName());
         Assertions.assertEquals("342", rootNode.getNode().getLhmObjectId());
 
-        var rbs = rootNode.getChildNodes().values().iterator().next();
+        var rbs = rootNode.getChildNodes().get().values().iterator().next();
         Assertions.assertEquals("Referat für Bildung und Sport", rbs.getNode().getOu());
 
-        var departments = rbs.getChildNodes();
+        var departments = rbs.getChildNodes().get();
         var abt_1 = departments.get("Abteilung 1");
         Assertions.assertEquals("ou=Abteilung 1,ou=Referat für Bildung und Sport,o=oubase,dc=example,dc=org", abt_1.getDistinguishedName());
-        Assertions.assertEquals("ou=Abteilung 1,ou=Referat für Bildung und Sport,o=oubase,dc=example,dc=org", abt_1.getUsers().get(0).getLhmObjectPath());
+        Assertions.assertEquals("ou=Abteilung 1,ou=Referat für Bildung und Sport,o=oubase,dc=example,dc=org", abt_1.getUsers().get().get(0).getLhmObjectPath());
 
     }
 
@@ -122,16 +122,16 @@ class LdapServiceIntegrationTest {
         Assertions.assertEquals(1, shadetree.get().size());
         var rootNode = shadetree.get().values().iterator().next();
         Assertions.assertNotNull(rootNode.getNode().getModifyTimeStamp(), "Operational ldap ou attribute modifyTimestamp not selected.");
-        var rbs = rootNode.getChildNodes().values().iterator().next();
-        Assertions.assertEquals(1, rbs.getUsers().size(), "User expected. All users were created after the timestamp");
-        Assertions.assertNotNull(rbs.getUsers().get(0).getModifyTimeStamp(), "Operational ldap user attribute modifyTimestamp not selected.");
+        var rbs = rootNode.getChildNodes().get().values().iterator().next();
+        Assertions.assertEquals(1, rbs.getUsers().get().size(), "User expected. All users were created after the timestamp");
+        Assertions.assertNotNull(rbs.getUsers().get().get(0).getModifyTimeStamp(), "Operational ldap user attribute modifyTimestamp not selected.");
 
         shadetree = this.ldapService.buildSubtree("orgUnit","o=oubase,dc=example,dc=org", "30000000000000Z");
         Assertions.assertTrue(shadetree.isPresent());
         Assertions.assertEquals(1, shadetree.get().size());
         rootNode = shadetree.get().values().iterator().next();
-        rbs = rootNode.getChildNodes().values().iterator().next();
-        Assertions.assertEquals(0, rbs.getUsers().size(), "No user expected. The timestamp is too far in the future.");
+        rbs = rootNode.getChildNodes().get().values().iterator().next();
+        Assertions.assertEquals(0, rbs.getUsers().get().size(), "No user expected. The timestamp is too far in the future.");
 
     }
 

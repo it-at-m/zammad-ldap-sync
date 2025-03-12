@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ActiveDirectoryGroupService {
 
-    private ActiveDirectoryService<?> adService;
+    private ActiveDirectoryService adService;
 
     public Optional<List<EnhancedActiveDirectoryGroupDTO>> crossOrganizationalGroups() {
 
@@ -30,7 +30,7 @@ public class ActiveDirectoryGroupService {
                       var user = this.adService.lookupUser(distinguishedName);
                       users.put(user.getLhmObjectId(), user);
                  }
-                 groupDTO.setUserByLhmObjectId(users);
+                 groupDTO.setAdUserByLhmObjectId(users);
             }
          }
          return optionalGroups;

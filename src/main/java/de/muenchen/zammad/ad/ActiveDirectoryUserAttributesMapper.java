@@ -20,6 +20,7 @@ public class ActiveDirectoryUserAttributesMapper implements AttributesMapper<Act
         user.setName(safelyGet("name", attributes));
         user.setLhmObjectId(safelyGet("lhmObjectID", attributes));
         user.setUid(safelyGet("uid", attributes));
+        user.setLhmReferatName(user.getDistinguishedName().split(",")[2].split("=")[1]);
 
         return user;
     }

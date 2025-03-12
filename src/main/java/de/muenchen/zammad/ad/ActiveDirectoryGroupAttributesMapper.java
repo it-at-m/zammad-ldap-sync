@@ -2,8 +2,10 @@ package de.muenchen.zammad.ad;
 
 import static de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper.safelyGet;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.UUID;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
@@ -19,12 +21,20 @@ public class ActiveDirectoryGroupAttributesMapper implements AttributesMapper<En
 
         group.setCn(safelyGet("cn", attributes));
         group.setDisplayName(safelyGet("displayName", attributes));
-        group.setDistinguishedName(safelyGet("distinguishedName", attributes));
+        group.setAdDistinguishedName(safelyGet("distinguishedName", attributes));
         group.setName(safelyGet("name", attributes));
+        group.setLhmObjectId(getGuidFromByteArray(safelyGet("objectguid", attributes).getBytes()));
         var member = attributes.get("member");
         group.setMember((ArrayList<String>) Collections.list(member.getAll()));
 
         return group;
+    }
+
+    private static String getGuidFromByteArray(byte[] bytes)
+    {
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        UUID uuid = new UUID(bb.getLong(), bb.getLong());
+        return uuid.toString();
     }
 
 }

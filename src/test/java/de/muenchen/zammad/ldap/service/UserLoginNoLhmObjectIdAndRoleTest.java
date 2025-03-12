@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -106,7 +107,7 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
     private Map<String, LdapOuNode> createResetLdapTree() {
 
         var dn = "dn_level_0_no_1";
-        var rootNode = new LdapOuNode("orgUnit", dn, createEnhancedLdapOuSearchResultDTO(0, 1), null, createResetLdapOuUser(0, 0));
+        var rootNode = new LdapOuNode("orgUnit", dn, createEnhancedLdapOuSearchResultDTO(0, 1), Optional.ofNullable(null), Optional.of(createResetLdapOuUser(0, 0)));
 
         var root = new HashMap<String, LdapOuNode>();
         root.put(dn, rootNode);

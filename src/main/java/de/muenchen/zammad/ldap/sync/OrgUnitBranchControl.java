@@ -3,14 +3,13 @@ package de.muenchen.zammad.ldap.sync;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
-import de.muenchen.oss.ezldap.core.LdapUserDTO;
+import de.muenchen.zammad.ad.ActiveDirectoryGroupService;
+import de.muenchen.zammad.ad.EnhancedActiveDirectoryGroupDTO;
+import de.muenchen.zammad.ad.ldap.mediator.ActiveDirectoryShadeTreeInclusion;
 import de.muenchen.zammad.ldap.property.RequestedOrganizationalUnits;
 import de.muenchen.zammad.ldap.tree.LdapOuNode;
 import lombok.AllArgsConstructor;
@@ -33,6 +32,10 @@ public class OrgUnitBranchControl {
 
     private DistinguishedNameCheck dnValidation;
 
+    private ActiveDirectoryGroupService activeDirectoryGroupService;
+
+    private ActiveDirectoryShadeTreeInclusion activeDirectoryGroups;
+
     /**
      * Use the requested ldap distinguished names to determine the organizational unit ldap (shade) trees.
      * Warn if not for all required distinguished names a shade tree exists.
@@ -49,11 +52,15 @@ public class OrgUnitBranchControl {
 
         log.info("Start sychronize Zammad groups, user and roles ...");
 
-        log.debug("1/4 Start LDAP operations ...");
+        log.debug("1/6 Start LDAP operations ...");
         Map<String, LdapOuNode> ldapShadeTrees = ldapTreeService.buildLdapTrees(null, requestedOrgUnits);
-        Map<String, EnhancedLdapUserDTO> completeLdapUser = collectUserFromAllBranches(ldapShadeTrees);
 
+        log.debug("2/6 Check completeness of the requested ldap ous ...");
         dnValidation.warnIncompleteness(ldapDistinguishedNames, ldapShadeTrees);
+
+        log.info("3/6 Merge cross functional groups from active directory into 'ldapShadeTree' ...");
+        Optional<List<EnhancedActiveDirectoryGroupDTO>> crossOrgGroups = activeDirectoryGroupService.crossOrganizationalGroups();
+        activeDirectoryGroups.merge(crossOrgGroups.get(), ldapShadeTrees);
 
         for (Map.Entry<String, LdapOuNode> entry : ldapShadeTrees.entrySet()) {
 
@@ -61,19 +68,19 @@ public class OrgUnitBranchControl {
 
             log.trace(entry.getValue().toString());
 
-            log.debug("2/4 Update zammad groups and users ...");
+            log.debug("4/6 Update zammad groups and users ...");
             var map = new HashMap<String, LdapOuNode>();
             map.put(entry.getKey(), entry.getValue());
             subtree.updateZammadGroupsWithUsers(map);
 
-            log.debug("3/4 Mark user for deletion ...");
-            deletedLdapUser.checkForRemoval(entry.getValue().findLdapOuNode(entry.getKey()), completeLdapUser);
+            log.debug("5/6 Mark user for deletion ...");
+            deletedLdapUser.checkForRemoval(entry, Optional.ofNullable(activeDirectoryGroups.getAllUsersFromAllBranches()));
 
             log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
         }
 
         if (!ldapShadeTrees.isEmpty()) {
-            log.debug("4/4 Sync assignment roles for all ouBases ...");
+            log.debug("6/6 Sync assignment roles for all ouBases ...");
             groupAssignmentAuthorizations.assignRoleAuthorizations();
         }
 
@@ -81,15 +88,5 @@ public class OrgUnitBranchControl {
 
     }
 
-    public static Map<String, EnhancedLdapUserDTO> collectUserFromAllBranches(
-            Map<String, LdapOuNode> ldapShadetrees) {
-
-        Map<String, EnhancedLdapUserDTO> collection = new TreeMap<>();
-        for (Map.Entry<String, LdapOuNode> entry : ldapShadetrees.entrySet()) {
-            collection.putAll(entry.getValue().flatListLdapUserDTO().stream()
-                    .collect(Collectors.toMap(LdapUserDTO::getLhmObjectId, Function.identity())));
-        }
-        return collection;
-    }
 
 }
