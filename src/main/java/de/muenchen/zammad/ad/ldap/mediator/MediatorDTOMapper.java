@@ -5,6 +5,7 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +13,12 @@ import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
 import de.muenchen.zammad.ad.EnhancedActiveDirectoryGroupDTO;
 
 @Service
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface MediatorDTOMapper {
 
     MediatorDTOMapper INSTANCE = Mappers.getMapper(MediatorDTOMapper.class);
 
+    @Mapping(target = "parentLdapDistinguishedName", ignore = true)
     List<EnhancedActiveDirectoryGroupMediatorDTO> mediatorDTO(List<EnhancedActiveDirectoryGroupDTO> adGroups);
 
     @Mapping(target = "modifyTimeStamp", ignore = true)

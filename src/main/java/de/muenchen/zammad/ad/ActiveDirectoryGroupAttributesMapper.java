@@ -3,7 +3,6 @@ package de.muenchen.zammad.ad;
 import static de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper.safelyGet;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -25,7 +24,7 @@ public class ActiveDirectoryGroupAttributesMapper implements AttributesMapper<En
         group.setName(safelyGet("name", attributes));
         group.setLhmObjectId(getGuidFromByteArray(safelyGet("objectguid", attributes).getBytes()));
         var member = attributes.get("member");
-        group.setMember((ArrayList<String>) Collections.list(member.getAll()));
+        group.setMember(Collections.list(member.getAll()).stream().map(o -> (String) o).toList());
 
         return group;
     }
