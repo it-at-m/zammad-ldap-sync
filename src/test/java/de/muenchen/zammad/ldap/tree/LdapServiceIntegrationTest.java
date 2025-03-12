@@ -25,6 +25,8 @@ package de.muenchen.zammad.ldap.tree;
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuAttributesMapper;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserAttributesMapper;
 import de.muenchen.oss.ezldap.core.LdapBaseUserAttributesMapper;
+import de.muenchen.userservice.LdapOuNode;
+import de.muenchen.userservice.LdapService;
 
 import java.util.Map;
 import java.util.Optional;

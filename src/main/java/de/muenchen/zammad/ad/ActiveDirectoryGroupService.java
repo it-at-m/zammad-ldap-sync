@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
-import de.muenchen.zammad.ldap.tree.ActiveDirectoryService;
+import de.muenchen.userservice.ActiveDirectoryService;
 import lombok.AllArgsConstructor;
 
 

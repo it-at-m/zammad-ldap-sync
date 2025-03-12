@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
+import de.muenchen.userservice.LdapOuNode;
+import de.muenchen.userservice.LdapService;
 import de.muenchen.zammad.ad.ActiveDirectoryUserDTO;
 import de.muenchen.zammad.ad.EnhancedActiveDirectoryGroupDTO;
-import de.muenchen.zammad.ldap.property.LdapProperty;
-import de.muenchen.zammad.ldap.property.RequestedOrganizationalUnits;
-import de.muenchen.zammad.ldap.tree.LdapOuNode;
-import de.muenchen.zammad.ldap.tree.LdapService;
+import de.muenchen.zammad.property.LdapProperty;
+import de.muenchen.zammad.property.RequestedOrganizationalUnits;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

@@ -15,11 +15,11 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
+import de.muenchen.userservice.LdapOuNode;
+import de.muenchen.userservice.LdapService;
 import de.muenchen.zammad.ad.ldap.mediator.ActiveDirectoryShadeTreeInclusion;
-import de.muenchen.zammad.ldap.property.OrganizationalUnitProperties;
-import de.muenchen.zammad.ldap.property.RequestedOrganizationalUnits;
-import de.muenchen.zammad.ldap.tree.LdapOuNode;
-import de.muenchen.zammad.ldap.tree.LdapService;
+import de.muenchen.zammad.property.OrganizationalUnitProperties;
+import de.muenchen.zammad.property.RequestedOrganizationalUnits;
 
 
 @ExtendWith(MockitoExtension.class)

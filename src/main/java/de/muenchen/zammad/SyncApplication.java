@@ -4,14 +4,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
-import de.muenchen.zammad.ldap.property.ZammadRolePropertyComplementation;
-import de.muenchen.zammad.ldap.sync.OrgUnitBranchControl;
+import de.muenchen.zammad.ldap.branch.OrgUnitBranchControl;
+import de.muenchen.zammad.property.ZammadRolePropertyComplementation;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootApplication
 @ConfigurationPropertiesScan()
+@ComponentScan(basePackages = {"de.muenchen.userservice", "de.muenchen.zammad" })
 public class SyncApplication {
 
 	public static void main(String[] args) {
