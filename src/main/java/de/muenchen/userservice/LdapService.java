@@ -46,15 +46,12 @@ import de.muenchen.oss.ezldap.core.LdapUserAttributesMapper;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LdapService extends AbstractLdap {
+public class LdapService extends ParentCollectorTree {
 
-    private static final String ATTRIBUTE_MODIFY_TIMESTAMP = "modifyTimestamp";
-    private static final String LHM_ORGANIZATIONAL_UNIT = "lhmOrganizationalUnit";
     private static final String LHM_OBJECT_PATH = "lhmObjectPath";
-     private static final String[] ATTRIBUTE_LIST = new String[] { ATTRIBUTE_MODIFY_TIMESTAMP, "*" };
+    private static final String[] ATTRIBUTE_LIST = new String[] { ATTRIBUTE_MODIFY_TIMESTAMP, "*" };
 
     private final EnhancedLdapUserAttributesMapper enhancedLdapUserAttributesMapper;
-    private final EnhancedLdapOuAttributesMapper enhancedLdapOuAttributesMapper;
     private final LdapBaseUserAttributesMapper ldapBaseUserAttributesMapper;
 
     /**
@@ -76,7 +73,7 @@ public class LdapService extends AbstractLdap {
         this.ldapTemplate = ldapTemplate;
         this.enhancedLdapUserAttributesMapper = enhancedLdapUserAttributesMapper;
         this.ldapBaseUserAttributesMapper = ldapBaseUserAttributesMapper;
-        this.enhancedLdapOuAttributesMapper = enhancedLdapOuAttributesMapper;
+        super.enhancedLdapOuAttributesMapper = enhancedLdapOuAttributesMapper;
         this.userSearchBase = userSearchBase;
         this.ouSearchBase = ouSearchBase;
     }
@@ -112,9 +109,22 @@ public class LdapService extends AbstractLdap {
         if (directoryServiceEntryNotExists(distinguishedName))
             return Optional.empty();
 
-        return Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp,
-                LdapAttribute.fromIdentifier(LdapAttribute.LHM_ORGANIZATIONAL_UNIT.getIdentifier()),
-                this.enhancedLdapOuAttributesMapper));
+       if (distinguishedName.endsWith(ouSearchBase)
+                && distinguishedName.trim().length() > ouSearchBase.trim().length()) {
+            var rootNode = buildParentCollectorTree(organizationalUnit, distinguishedName, null);
+            rootNode.setOrganizationalUnit(organizationalUnit);
+            var collectorTreeNodes = rootNode.flatListLdapOuNode();
+            var lastCollectorTreeNode = collectorTreeNodes.get(collectorTreeNodes.size() - 1);
+            lastCollectorTreeNode.setChildNodes(
+                    Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp,
+                            LdapAttribute.fromIdentifier(LdapAttribute.LHM_ORGANIZATIONAL_UNIT.getIdentifier()),
+                            this.enhancedLdapOuAttributesMapper)));
+            return Optional.of(Map.of(distinguishedName, rootNode));
+        } else {
+            return Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp,
+                    LdapAttribute.fromIdentifier(LdapAttribute.LHM_ORGANIZATIONAL_UNIT.getIdentifier()),
+                    this.enhancedLdapOuAttributesMapper));
+        }
 
     }
 
