@@ -19,10 +19,6 @@ import org.mockito.quality.Strictness;
 
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
-import de.muenchen.zammad.ldap.branch.EmailAddressCache;
-import de.muenchen.zammad.ldap.branch.OrgUnitBranchSynchronization;
-import de.muenchen.zammad.ldap.branch.SignatureCache;
-import de.muenchen.zammad.ldap.branch.ZammadService;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)

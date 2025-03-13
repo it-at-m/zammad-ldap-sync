@@ -70,32 +70,37 @@ public class ActiveDirectoryShadeTreeInclusion {
 
     private Map<String, LdapOuNode> mergeAdGroups(Map<String, LdapOuNode> ldapShadeTrees) {
 
+        boolean showMessageOnce = true;
         for (Entry<String, LdapOuNode> entry : ldapShadeTrees.entrySet()) {
             var node = entry.getValue();
             for (EnhancedActiveDirectoryGroupMediatorDTO mediatorGroup : mediatorGroups) {
-                Optional<LdapOuNode> mediatorParentNode = node
-                        .findLdapOuNode(mediatorGroup.getParentLdapDistinguishedName());
-
-                mediatorParentNode.ifPresentOrElse(ouNode -> {
-                    var crossFunctionalGroup = new LdapOuNode();
-                    crossFunctionalGroup.setDistinguishedName(mediatorGroup.getLdapDistinguishedName());
-                    crossFunctionalGroup.setOrganizationalUnit(ouNode.getOrganizationalUnit());
-                    EnhancedLdapOuSearchResultDTO ldapOuDTO = MediatorDTOMapper.INSTANCE.ldapOuDTO(mediatorGroup);
-                    crossFunctionalGroup.setNode(ldapOuDTO);
-                    crossFunctionalGroup.setUsers(Optional.of(mergeUsers(mediatorGroup.getAdUserByLhmObjectId())));
-                    crossFunctionalGroup.getUsers()
-                            .ifPresent(nodUsers -> removeCrossFunctionalUsersFromTheirOriginalLdapOu(nodUsers, node));
-                    ouNode.getChildNodes()
-                            .ifPresent(childNodes -> childNodes.put(mediatorGroup.getName(), crossFunctionalGroup));
-                    log.info("AD group added : {}", crossFunctionalGroup.toString());
-                }, () ->
-                {
+                if (mediatorGroup.getParentLdapDistinguishedName() != null) {
+                    if (mediatorGroup.getParentLdapDistinguishedName().contains(node.getDistinguishedName())) {
+                        Optional<LdapOuNode> mediatorParentNode = node
+                                .findLdapOuNode(mediatorGroup.getParentLdapDistinguishedName());
+                        mediatorParentNode.ifPresentOrElse(ouNode -> {
+                            var crossFunctionalGroup = new LdapOuNode();
+                            crossFunctionalGroup.setDistinguishedName(mediatorGroup.getLdapDistinguishedName());
+                            crossFunctionalGroup.setOrganizationalUnit(ouNode.getOrganizationalUnit());
+                            EnhancedLdapOuSearchResultDTO ldapOuDTO = MediatorDTOMapper.INSTANCE
+                                    .ldapOuDTO(mediatorGroup);
+                            crossFunctionalGroup.setNode(ldapOuDTO);
+                            crossFunctionalGroup
+                                    .setUsers(Optional.of(mergeUsers(mediatorGroup.getAdUserByLhmObjectId())));
+                            crossFunctionalGroup.getUsers().ifPresent(
+                                    nodUsers -> removeCrossFunctionalUsersFromTheirOriginalLdapOu(nodUsers, node));
+                            ouNode.getChildNodes().ifPresent(
+                                    childNodes -> childNodes.put(mediatorGroup.getName(), crossFunctionalGroup));
+                            log.info("AD group added to shade tree : {}", crossFunctionalGroup.toString());
+                        }, () ->   log.error("AdGroup '{}' is not added to shade tree! ", mediatorGroup.getName()));
+                    } else {
+                        log.debug("AdGroup does not belong to ldap branch '{}' - skipping.", node.getDistinguishedName());
+                    }
+                } else if (showMessageOnce) { // No need to show the message more than once.
+                    showMessageOnce = false;
                     var keys = new ArrayList<>(mediatorGroup.getAdUserByLhmObjectId().keySet());
-                    log.error(
-                            "AdGroup '{}' is not added ! Please check the validity of the ldap.lhmObjectPaths of the users ('{}') from the AdGroup'.",
-                             mediatorGroup.getName(), keys);
+                    log.error("Cannot determine the insertion position of the new adGroup {}. (1) Check if adGroup members ('{}') are included in the configured ldap organizational units. (2) Check the validity of the ldap.lhmObjectPaths of the users from the AdGroup.", mediatorGroup.getName(), keys);
                 }
-                );
             }
         }
         return ldapShadeTrees;

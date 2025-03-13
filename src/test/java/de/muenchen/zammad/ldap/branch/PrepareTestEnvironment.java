@@ -14,7 +14,6 @@ import de.muenchen.zammad.PrepareTestShadetree;
 import de.muenchen.zammad.domain.ChannelsEmail;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
-import de.muenchen.zammad.ldap.branch.ZammadService;
 import de.muenchen.zammad.property.Assignment;
 import de.muenchen.zammad.property.OrganizationalUnitsCommonProperties;
 import de.muenchen.zammad.property.ZammadProperties;
@@ -30,17 +29,17 @@ class PrepareTestEnvironment extends PrepareTestShadetree {
 
     protected void userAndGroupMocks(ZammadService zammadService) {
         // Groups
-        when(zammadService.createZammadGroup(new Group(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null))).thenReturn(new Group("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
+        when(zammadService.createZammadGroup(new Group(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null))).thenReturn(Optional.of(new Group("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
 
-        when(zammadService.createZammadGroup(new Group(null, "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null))).thenReturn(new Group("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
+        when(zammadService.createZammadGroup(new Group(null, "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null))).thenReturn(Optional.of(new Group("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null)));
         when(zammadService.updateZammadGroup(zammadGroup_lhmobjectId_1_1_reset())).thenReturn(new Group("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
-        when(zammadService.createZammadGroup(new Group(null, "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null, null, null))).thenReturn(new Group("3", "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null, null, null));
-        when(zammadService.createZammadGroup(new Group(null, "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null, null, null))).thenReturn(new Group("4", "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null, null, null));
+        when(zammadService.createZammadGroup(new Group(null, "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null, null, null))).thenReturn(Optional.of(new Group("3", "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null, null, null)));
+        when(zammadService.createZammadGroup(new Group(null, "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null, null, null))).thenReturn(Optional.of(new Group("4", "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null, null, null)));
 
-        when(zammadService.createZammadGroup(new Group(null, "3", "shortname_0_1::shortname_1_2::shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null))).thenReturn(new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null));
-        when(zammadService.createZammadGroup(new Group(null, "3", "shortname_0_1::shortname_1_2::shortname_2_2", true, true, "lhmobjectId_2_2", null, null, null))).thenReturn(new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2", true, true, "lhmobjectId_2_2", null, null, null));
+        when(zammadService.createZammadGroup(new Group(null, "3", "shortname_0_1::shortname_1_2::shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null))).thenReturn(Optional.of(new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null)));
+        when(zammadService.createZammadGroup(new Group(null, "3", "shortname_0_1::shortname_1_2::shortname_2_2", true, true, "lhmobjectId_2_2", null, null, null))).thenReturn(Optional.of(new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2", true, true, "lhmobjectId_2_2", null, null, null)));
         when(zammadService.updateZammadGroup(zammadGroup_lhmobjectId_2_2_2_reset())).thenReturn(new Group("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
-        when(zammadService.createZammadGroup(new Group(null, "3", "shortname_0_1::shortname_1_2::shortname_2_3", true, true, "lhmobjectId_2_3", null, null, null))).thenReturn(new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_3", true, true, "lhmobjectId_2_3", null, null, null));
+        when(zammadService.createZammadGroup(new Group(null, "3", "shortname_0_1::shortname_1_2::shortname_2_3", true, true, "lhmobjectId_2_3", null, null, null))).thenReturn(Optional.of(new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_3", true, true, "lhmobjectId_2_3", null, null, null)));
 
         // User
         when(zammadService.createZammadUser(new User(null, "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, "lhmobjectId_0_0_1", List.of(0, 1), Map.of("1", List.of("full")), null, true, null))).thenReturn(new User("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, "lhmobjectId_0_0_1", List.of(0, 1), Map.of("1", List.of("full")), null, true, null));
@@ -76,9 +75,9 @@ class PrepareTestEnvironment extends PrepareTestShadetree {
 
     protected void groupMocksCreateParentNodeTest(ZammadService zammadService) {
 
-      when(zammadService.createZammadGroup(new Group(null, null, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null))).thenReturn(new Group("1", null, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null));
-      when(zammadService.createZammadGroup(new Group(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null))).thenReturn(new Group("2", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
-      when(zammadService.createZammadGroup(new Group(null, "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null))).thenReturn(new Group("3", "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
+      when(zammadService.createZammadGroup(new Group(null, null, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null))).thenReturn(Optional.of(new Group("1", null, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null)));
+      when(zammadService.createZammadGroup(new Group(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null))).thenReturn(Optional.of(new Group("2", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
+      when(zammadService.createZammadGroup(new Group(null, "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null))).thenReturn(Optional.of(new Group("3", "2", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null)));
     }
 
     protected void channelsMock(ZammadService zammadService) {

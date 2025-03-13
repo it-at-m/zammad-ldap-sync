@@ -22,8 +22,6 @@ import org.mockito.quality.Strictness;
 import de.muenchen.zammad.ad.ldap.mediator.ActiveDirectoryShadeTreeInclusion;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
-import de.muenchen.zammad.ldap.branch.EliminatedLdapUser;
-import de.muenchen.zammad.ldap.branch.ZammadService;
 
 
 /*

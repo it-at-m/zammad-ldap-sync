@@ -3,6 +3,7 @@ package de.muenchen.zammad.ldap.branch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -82,22 +83,24 @@ public class ZammadService {
         return responseEntity.getBody();
     }
 
-    public Group createZammadGroup(Group zammadGroup) {
+    public Optional<Group> createZammadGroup(Group zammadGroup) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(AUTHORIZATION, zammadProperties.getToken());
 
         HttpEntity<Group> requestEntity = new HttpEntity<>(zammadGroup, headers);
+        ResponseEntity<Group> responseEntity = null;
 
-        ResponseEntity<Group> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups(), HttpMethod.POST, requestEntity,
+        try {
+            responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups(), HttpMethod.POST, requestEntity,
                 Group.class);
+            log.trace(responseEntity.toString());
+            return Optional.of(responseEntity.getBody());
 
-        log.trace(responseEntity.toString());
-
-        if (!responseEntity.hasBody())
-            log.error("Create Zammad Group failed. Response code : {}", responseEntity.getStatusCode());
-
-        return responseEntity.getBody();
-
+        } catch (Exception ex)
+        {
+            log.error("Create Zammad Group '{}' failed. Message : {}", zammadGroup.toString(), ex.getMessage());
+            return Optional.empty();
+        }
     }
 
     public List<User> getZammadUsers() {

@@ -80,7 +80,11 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
                     currentZammadGroupId = updateZammadGroup(zammadGroupCompare, lhmObjectIdToFind, zammadGroupList,
                             currentZammadGroupId);
                 } else {
-                    currentZammadGroupId = createNewZammadGroup(zammadGroupCompare, lhmObjectIdToFind);
+                    var zammadId = createNewZammadGroup(zammadGroupCompare, lhmObjectIdToFind);
+                    if (zammadId.isEmpty())
+                        return;
+
+                    currentZammadGroupId = zammadId.orElseThrow();
                 }
 
                 handleGroupUser(node, ldapOuDto, currentZammadGroupId);
@@ -117,16 +121,19 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
                 : ldapOuDto.getLhmOUShortname();
     }
 
-    private String createNewZammadGroup(Group zammadGroupCompare, String lhmObjectIdToFind) {
+    private Optional<String> createNewZammadGroup(Group zammadGroupCompare, String lhmObjectIdToFind) {
 
-        String currentZammadGroupId;
+        StringBuilder zammadId = new StringBuilder();
         log.debug("Group not found in Zammad with lhmObjectId '{}' - creating.", lhmObjectIdToFind);
         // Not found: create new with isLdapsyncupdate=true
-        Group createdZammadGroupDTO = zammadService.createZammadGroup(zammadGroupCompare);
-        log.trace("Zammad group created : '{}'", createdZammadGroupDTO);
-        currentZammadGroupId = createdZammadGroupDTO.getId();
-        log.debug("Zammad group with ID '{}' created.", currentZammadGroupId);
-        return currentZammadGroupId;
+        Optional<Group> zammadGroup = zammadService.createZammadGroup(zammadGroupCompare);
+        zammadGroup.ifPresent(createdZammadGroupDTO -> {
+            log.trace("Zammad group created : '{}'", createdZammadGroupDTO);
+            var currentZammadGroupId = createdZammadGroupDTO.getId();
+            log.debug("Zammad group with ID '{}' created.", currentZammadGroupId);
+            zammadId.append(currentZammadGroupId);
+        } );
+        return Optional.ofNullable(zammadId.toString().isBlank() ? null : zammadId.toString());
     }
 
     private String updateZammadGroup(Group zammadGroupCompare, String lhmObjectIdToFind, List<Group> zammadGroupList,
