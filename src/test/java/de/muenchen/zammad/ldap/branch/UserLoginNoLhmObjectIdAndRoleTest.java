@@ -25,10 +25,6 @@ import de.muenchen.userservice.LdapOuNode;
 import de.muenchen.zammad.domain.ChannelsEmail;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
-import de.muenchen.zammad.ldap.branch.EmailAddressCache;
-import de.muenchen.zammad.ldap.branch.OrgUnitBranchSynchronization;
-import de.muenchen.zammad.ldap.branch.SignatureCache;
-import de.muenchen.zammad.ldap.branch.ZammadService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

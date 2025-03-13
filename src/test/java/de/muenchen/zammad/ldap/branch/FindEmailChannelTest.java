@@ -19,8 +19,6 @@ import de.muenchen.zammad.domain.Assets;
 import de.muenchen.zammad.domain.Channel;
 import de.muenchen.zammad.domain.ChannelsEmail;
 import de.muenchen.zammad.domain.EmailAddress;
-import de.muenchen.zammad.ldap.branch.EmailAddressCache;
-import de.muenchen.zammad.ldap.branch.ZammadService;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)

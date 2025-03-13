@@ -19,8 +19,6 @@ import org.mockito.quality.Strictness;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import de.muenchen.zammad.ldap.branch.DistinguishedNameCheck;
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DistinguishedNameEMailTest {

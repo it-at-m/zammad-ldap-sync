@@ -16,8 +16,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import de.muenchen.zammad.domain.Signatures;
-import de.muenchen.zammad.ldap.branch.SignatureCache;
-import de.muenchen.zammad.ldap.branch.ZammadService;
 import de.muenchen.zammad.property.OrganizationalUnitsCommonProperties;
 
 @ExtendWith(MockitoExtension.class)
