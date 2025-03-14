@@ -96,12 +96,12 @@ public class ActiveDirectoryShadeTreeInclusion {
                     } else {
                         log.debug("AdGroup does not belong to ldap branch '{}' - skipping.", node.getDistinguishedName());
                     }
-                } else if (showMessageOnce) { // No need to show the message more than once.
-                    showMessageOnce = false;
+                } else if (showMessageOnce) { // No need to show the messages in more than one ou iteration.
                     var keys = new ArrayList<>(mediatorGroup.getAdUserByLhmObjectId().keySet());
                     log.error("Cannot determine the insertion position of the new adGroup {}. (1) Check if adGroup members ('{}') are included in the configured ldap organizational units. (2) Check the validity of the ldap.lhmObjectPaths of the users from the AdGroup.", mediatorGroup.getName(), keys);
                 }
             }
+            showMessageOnce = false;
         }
         return ldapShadeTrees;
     }
