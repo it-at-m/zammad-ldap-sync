@@ -17,6 +17,7 @@ import de.muenchen.zammad.domain.Role;
 import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.ldap.branch.SimpleZammadUserFactory;
 import de.muenchen.zammad.ldap.branch.ZammadService;
+import de.muenchen.zammad.property.ActiveDirectoryProperty;
 import de.muenchen.zammad.property.LdapProperty;
 import de.muenchen.zammad.property.RequestedOrganizationalUnits;
 import de.muenchen.zammad.property.ZammadProperties;
@@ -29,12 +30,13 @@ public class ActiveDirectoryGroupZammadRoleMapper {
     private ActiveDirectoryGroupService activeDirectoryGroupService;
     private ZammadService zammadService;
     private ZammadProperties zammadProperties;
+    private ActiveDirectoryProperty activeDirectoryProperties;
 
     private RequestedOrganizationalUnits requestedOuUnits;
     private LdapService ldapService;
 
     @Autowired
-    public ActiveDirectoryGroupZammadRoleMapper(LdapProperty ldapProperty, ZammadProperties zammadProperties,
+    public ActiveDirectoryGroupZammadRoleMapper(LdapProperty ldapProperty, ZammadProperties zammadProperties, ActiveDirectoryProperty activeDirectoryProperties,
             ActiveDirectoryGroupService activeDirectoryGroupService, ZammadService zammadService,
             RequestedOrganizationalUnits requestedOuUnits) {
         super();
@@ -43,6 +45,7 @@ public class ActiveDirectoryGroupZammadRoleMapper {
         this.zammadService = zammadService;
         this.requestedOuUnits = requestedOuUnits;
         this.zammadProperties = zammadProperties;
+        this.activeDirectoryProperties = activeDirectoryProperties;
 
     }
 
@@ -56,13 +59,13 @@ public class ActiveDirectoryGroupZammadRoleMapper {
                 .crossOrganizationalGroups();
 
         Map<String, Role> zammadRoles = zammadService.getZammadRoles().stream()
-                .collect(Collectors.toMap(Role::getName, role -> role));
+                .collect(Collectors.toMap(role -> role.getName().replace(activeDirectoryProperties.getGroupNamePrefix(), ""), role -> role));
 
         adGroups.ifPresent(activeDirectoryGroups -> {
 
             for (EnhancedActiveDirectoryGroupDTO adGroup : activeDirectoryGroups) {
 
-                var zammadRole = Optional.ofNullable(zammadRoles.get(adGroup.getName()));
+                var zammadRole = Optional.ofNullable(zammadRoles.get(adGroup.getName().replace(activeDirectoryProperties.getGroupNamePrefix(), "")));
                 zammadRole.ifPresentOrElse(role -> {
 
                     var zammadRoleId = Optional.of(Integer.parseInt(role.getId()));
@@ -73,6 +76,8 @@ public class ActiveDirectoryGroupZammadRoleMapper {
 
                         List<EnhancedLdapUserDTO> activeDirectoryLdapUsers = lookupLdapUsers(
                                 adGroup.getAdUserByLhmObjectId());
+
+                        log.debug("'{}' Users found in role name '{}' with zammad id '{}'.", activeDirectoryLdapUsers.size(), role.getName(), roleId);
 
                         activeDirectoryLdapUsers.forEach(activeDirectoryLdapUser -> {
 
