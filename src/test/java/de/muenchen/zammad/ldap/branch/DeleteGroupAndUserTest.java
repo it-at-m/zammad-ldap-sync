@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import de.muenchen.zammad.ad.ldap.mediator.ActiveDirectoryShadeTreeInclusion;
+import de.muenchen.userservice.ShadeTree;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
 
@@ -62,7 +62,7 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
 
 		assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-		var reducedEnhancedLdapUserDTO = ActiveDirectoryShadeTreeInclusion.collectUserFromAllBranches(reducedLdapTree);
+		var reducedEnhancedLdapUserDTO = ShadeTree.collectUserFromAllBranches(reducedLdapTree);
 
 		deletedLdapUser.checkForRemoval(Map.of(rootNode.getDistinguishedName(), rootNode).entrySet().iterator().next(), Optional.of(reducedEnhancedLdapUserDTO));
 
@@ -90,7 +90,7 @@ class DeleteGroupAndUserTest extends PrepareTestEnvironment {
         var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
         assertEquals(17, rootNode.flatListLdapUserDTO().size());
 
-        var reducedEnhancedLdapUserDTO = ActiveDirectoryShadeTreeInclusion.collectUserFromAllBranches(reducedLdapTree);
+        var reducedEnhancedLdapUserDTO = ShadeTree.collectUserFromAllBranches(reducedLdapTree);
 
         deletedLdapUser.checkForRemoval(Map.of(rootNode.getDistinguishedName(), rootNode).entrySet().iterator().next(), Optional.of(reducedEnhancedLdapUserDTO));
 

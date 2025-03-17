@@ -8,9 +8,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import de.muenchen.userservice.LdapOuNode;
-import de.muenchen.zammad.ad.ActiveDirectoryGroupService;
-import de.muenchen.zammad.ad.EnhancedActiveDirectoryGroupDTO;
-import de.muenchen.zammad.ad.ldap.mediator.ActiveDirectoryShadeTreeInclusion;
+import de.muenchen.userservice.ShadeTree;
+import de.muenchen.zammad.ad.ldap.mediator.ActiveDirectoryGroupZammadRoleMapper;
 import de.muenchen.zammad.property.RequestedOrganizationalUnits;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +31,7 @@ public class OrgUnitBranchControl {
 
     private DistinguishedNameCheck dnValidation;
 
-    private ActiveDirectoryGroupService activeDirectoryGroupService;
-
-    private ActiveDirectoryShadeTreeInclusion activeDirectoryGroups;
+   private ActiveDirectoryGroupZammadRoleMapper activeDirectoryRoleMapper;
 
     /**
      * Use the requested ldap distinguished names to determine the organizational unit ldap (shade) trees.
@@ -58,26 +55,25 @@ public class OrgUnitBranchControl {
         log.debug("2/6 Check completeness of the requested ldap ous ...");
         dnValidation.warnIncompleteness(ldapDistinguishedNames, ldapShadeTrees);
 
-        log.info("3/6 Merge cross functional groups from active directory into 'ldapShadeTree' ...");
-        Optional<List<EnhancedActiveDirectoryGroupDTO>> crossOrgGroups = activeDirectoryGroupService.crossOrganizationalGroups();
-        activeDirectoryGroups.merge(crossOrgGroups.get(), ldapShadeTrees);
-
         for (Map.Entry<String, LdapOuNode> entry : ldapShadeTrees.entrySet()) {
 
             log.info("Begin synchronize Zammad groups and users with ouBase : {}. ", entry.getKey());
 
             log.trace(entry.getValue().toString());
 
-            log.debug("4/6 Update zammad groups and users ...");
+            log.debug("3/6 Update zammad groups and users ...");
             var map = new HashMap<String, LdapOuNode>();
             map.put(entry.getKey(), entry.getValue());
             subtree.updateZammadGroupsWithUsers(map);
 
-            log.debug("5/6 Mark user for deletion ...");
-            deletedLdapUser.checkForRemoval(entry, Optional.ofNullable(activeDirectoryGroups.getAllUsersFromAllBranches()));
+            log.debug("4/6 Mark user for deletion ...");
+            deletedLdapUser.checkForRemoval(entry, Optional.ofNullable(ShadeTree.collectUserFromAllBranches(ldapShadeTrees)));
 
             log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
         }
+
+        log.info("5/6 Sync active directory groups and zammad roles ...");
+        activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
 
         if (!ldapShadeTrees.isEmpty()) {
             log.debug("6/6 Sync assignment roles for all ouBases ...");

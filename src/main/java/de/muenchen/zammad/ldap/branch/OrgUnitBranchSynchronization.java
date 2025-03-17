@@ -174,8 +174,8 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
                 log.debug("Processing: lhmObjectId: '{}'.", user.getLhmObjectId());
 
                 // Create new LdapBaseUserDTO out of LDAP-OU and create zammadGroupId
-                var zammadUserCompare = mapToZammadUser(user);
-                setDefaultRoleIdAndGroupId(zammadUserCompare, zammadUserGroupId);
+                SimpleZammadUserFactory userFactory = new SimpleZammadUserFactory(zammadProperties);
+                var zammadUserCompare = userFactory.mapToZammadUser(user, Optional.of(zammadUserGroupId));
                 log.trace(zammadUserCompare.toString());
                 // Find zammad-user with lhmObjectID
                 String lhmObjectIdToFind = user.getLhmObjectId();
@@ -204,7 +204,7 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
     private void createZammadUser(User zammadUserCompare, String lhmObjectIdToFind) {
         log.debug("User not found in Zammad with lhmObjectid '{}' - creating.", lhmObjectIdToFind);
         // Not found: create new with isLdapsyncupdate=true
-        prepareUserForCreation(zammadUserCompare);
+        SimpleZammadUserFactory.activate(zammadUserCompare);
         User zammadUserDTO = zammadService.createZammadUser(zammadUserCompare);
         log.trace("Zammad user created : '{}'", zammadUserDTO);
         log.debug("Zammad user with ID '{}' created.", zammadUserDTO.getId());
@@ -257,24 +257,24 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
         return listLhmobjectid;
     }
 
-    private User mapToZammadUser(LdapUserDTO ldapBaseUserDTO) {
+//    private User mapToZammadUser(LdapUserDTO ldapBaseUserDTO) {
+//
+//        User zammadUser = new User();
+//        zammadUser.setDepartment(ldapBaseUserDTO.getOu());
+//        zammadUser.setLhmobjectid(ldapBaseUserDTO.getLhmObjectId());
+//        zammadUser.setLogin(ldapBaseUserDTO.getLhmObjectId());
+//        zammadUser.setEmail(ldapBaseUserDTO.getMail());
+//        zammadUser.setFirstname(ldapBaseUserDTO.getVorname());
+//        zammadUser.setLastname(ldapBaseUserDTO.getNachname());
+//        return zammadUser;
+//    }
 
-        User zammadUser = new User();
-        zammadUser.setDepartment(ldapBaseUserDTO.getOu());
-        zammadUser.setLhmobjectid(ldapBaseUserDTO.getLhmObjectId());
-        zammadUser.setLogin(ldapBaseUserDTO.getLhmObjectId());
-        zammadUser.setEmail(ldapBaseUserDTO.getMail());
-        zammadUser.setFirstname(ldapBaseUserDTO.getVorname());
-        zammadUser.setLastname(ldapBaseUserDTO.getNachname());
-        return zammadUser;
-    }
-
-    private void setDefaultRoleIdAndGroupId(User user, String zammadGroupId) {
-        user.setRoleIds(defaultSynchronizationRoles());
-        Map<String, List<String>> newGroupIds = new HashMap<>();
-        newGroupIds.put(zammadGroupId, List.of("full"));
-        user.setGroupIds(newGroupIds);
-    }
+//    private void setDefaultRoleIdAndGroupId(User user, String zammadGroupId) {
+//        user.setRoleIds(defaultSynchronizationRoles());
+//        Map<String, List<String>> newGroupIds = new HashMap<>();
+//        newGroupIds.put(zammadGroupId, List.of("full"));
+//        user.setGroupIds(newGroupIds);
+//    }
 
     private void prepareUserForComparison(User zammadUserCompare, User foundZammadUser) {
         zammadUserCompare.setId(foundZammadUser.getId());
@@ -283,16 +283,16 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
         zammadUserCompare.setLdapsyncupdate(true);
     }
 
-    private void prepareUserForCreation(User zammadUser) {
-        zammadUser.setActive(true);
-        zammadUser.setLdapsyncupdate(true);
-    }
+//    private void prepareUserForCreation(User zammadUser) {
+//        zammadUser.setActive(true);
+//        zammadUser.setLdapsyncupdate(true);
+//    }
 
-    private List<Integer> defaultSynchronizationRoles() {
-        List<Integer> roleIds = new ArrayList<>();
-        roleIds.add(zammadProperties.getAssignment().getRole().getIdAgent());
-        roleIds.add(zammadProperties.getAssignment().getRole().getIdErstellen());
-        return roleIds;
-    }
+//    private List<Integer> defaultSynchronizationRoles() {
+//        List<Integer> roleIds = new ArrayList<>();
+//        roleIds.add(zammadProperties.getAssignment().getRole().getIdAgent());
+//        roleIds.add(zammadProperties.getAssignment().getRole().getIdErstellen());
+//        return roleIds;
+//    }
 
 }
