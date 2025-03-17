@@ -6,6 +6,7 @@ active-directory:
   user-dn:
   password:
   distinguished-name:
+  group-name-prefix:
 
 sync:
   organizational-units-common:

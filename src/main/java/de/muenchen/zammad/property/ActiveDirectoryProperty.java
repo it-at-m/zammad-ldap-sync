@@ -14,5 +14,6 @@ public class ActiveDirectoryProperty {
     private String userDn;
     private String password;
     private String distinguishedName;
+    private String groupNamePrefix;
 
 }
