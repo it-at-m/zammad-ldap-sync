@@ -112,8 +112,8 @@ public class ActiveDirectoryGroupZammadRoleMapper {
                         });
 
                     });
-                }, () -> log.warn("Active directory group/role '{}' not found in current zammad instance.",
-                        adGroup.getName()));
+                }, () -> log.warn("Active directory group/role '{}' not found in current zammad instance. The search applies 'group-name-pefix' : '{}'",
+                        adGroup.getName().replace(activeDirectoryProperties.getGroupNamePrefix(), ""), activeDirectoryProperties.getGroupNamePrefix()));
             }
         });
     }
