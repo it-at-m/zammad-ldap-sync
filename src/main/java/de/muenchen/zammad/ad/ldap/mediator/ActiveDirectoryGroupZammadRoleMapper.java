@@ -95,10 +95,15 @@ public class ActiveDirectoryGroupZammadRoleMapper {
                             Optional<User> currentUser = Optional
                                     .ofNullable(zammadUsers.get(activeDirectoryLdapUser.getLhmObjectId()));
                             currentUser.ifPresentOrElse(user -> {
-                                user.getRoleIds().add(roleId);
-                                zammadService.updateZammadUser(user);
-                                log.debug("User '{}' with zammad id '{}' roleIds '{}' updated.", user.getLhmobjectid(),
-                                        user.getId(), user.getRoleIds().toString());
+                                if (! user.getRoleIds().contains(roleId)) {
+                                    user.getRoleIds().add(roleId);
+                                    zammadService.updateZammadUser(user);
+                                    log.debug("User '{}' with zammad id '{}' roleIds '{}' updated.", user.getLhmobjectid(),
+                                            user.getId(), user.getRoleIds().toString());
+                                } else {
+                                    log.debug("User '{}' with zammad id '{}' already has roleIds '{}' ({}).", user.getLhmobjectid(),
+                                            user.getId(), roleId, user.getRoleIds().toString());
+                                }
                             }, () -> {
                                 SimpleZammadUserFactory simpleBuilder = new SimpleZammadUserFactory(
                                         this.zammadProperties);
