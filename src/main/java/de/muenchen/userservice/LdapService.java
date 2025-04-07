@@ -109,13 +109,9 @@ public class LdapService extends AbstractLdap {
     public Optional<Map<String, LdapOuNode>> buildSubtree(String organizationalUnit, String distinguishedName,
             String modifyTimeStamp) {
 
-        if (directoryServiceEntryNotExists(distinguishedName))
-            return Optional.empty();
-
-        return Optional.of(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp,
+        return optionalize(buildSubtreeWithUsers(organizationalUnit, distinguishedName, modifyTimeStamp,
                 LdapAttribute.fromIdentifier(LdapAttribute.LHM_ORGANIZATIONAL_UNIT.getIdentifier()),
                 this.enhancedLdapOuAttributesMapper));
-
     }
 
     /**
@@ -257,6 +253,15 @@ public class LdapService extends AbstractLdap {
             log.error(String.format("LDAP user not found with dn='%s'", distinguishedName), ex);
             return Optional.empty();
         }
+    }
+
+    private Optional<Map<String, LdapOuNode>> optionalize(Map<String, LdapOuNode> values) {
+
+        if (values.isEmpty())
+            return Optional.empty();
+        else
+            return Optional.of(values);
+
     }
 
 }

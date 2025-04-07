@@ -11,17 +11,4 @@ public abstract class AbstractLdap {
     protected String userSearchBase;
     protected LdapTemplate ldapTemplate;
 
-    protected boolean directoryServiceEntryNotExists(String distinguishedName) {
-        try {
-            if (ldapTemplate.lookup(distinguishedName) == null) {
-                log.warn("Distinguished name lookup is null");
-                return true;
-            }
-        } catch (Exception e) {
-            log.warn(String.format("Distinguished name not found '%s'", distinguishedName), e);
-            return true;
-        }
-        return false;
-    }
-
 }

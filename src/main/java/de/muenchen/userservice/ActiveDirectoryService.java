@@ -47,9 +47,6 @@ public class ActiveDirectoryService extends AbstractLdap {
 
     public Optional<List<EnhancedActiveDirectoryGroupDTO>> groupsWithoutLdapEquivalent() {
 
-        if (directoryServiceEntryNotExists(adProperty.getDistinguishedName()))
-            return Optional.empty();
-
         var attribute = LdapAttribute.fromIdentifier(LdapAttribute.GROUP.getIdentifier());
         final LdapQuery ouObjectReferenceQuery = query().searchScope(SearchScope.ONELEVEL).base(adProperty.getDistinguishedName()).attributes(ATTRIBUTE_LIST).where(attribute.getDescription())
                 .is(attribute.getIdentifier());
