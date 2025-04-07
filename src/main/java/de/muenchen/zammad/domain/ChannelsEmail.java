@@ -8,7 +8,7 @@ import lombok.Data;
 public class ChannelsEmail {
 
     @JsonProperty("assets")
-    private Assets assets;
+    private final Assets assets;
 
     public Integer findEmailsAddressId(String name, String defaultName) {
 

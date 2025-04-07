@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ActiveDirectoryService extends AbstractLdap {
 
     private static final String[] ATTRIBUTE_LIST = new String[] {"*"};
-    private ActiveDirectoryProperty adProperty;
+    private final ActiveDirectoryProperty adProperty;
 
     private final ActiveDirectoryGroupAttributesMapper activeDirectoryGroupAttributesMapper;
     private final ActiveDirectoryUserAttributesMapper activeDirectoryUserAttributesMapper;

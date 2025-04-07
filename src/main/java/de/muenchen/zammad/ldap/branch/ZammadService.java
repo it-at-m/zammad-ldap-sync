@@ -209,7 +209,7 @@ public class ZammadService {
         ResponseEntity<ChannelsEmail> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getChannelsEmail(), HttpMethod.GET, requestEntity,
                 ChannelsEmail.class);
 
-        return (ChannelsEmail) responseEntity.getBody();
+        return responseEntity.getBody();
     }
 
     public List<Signatures> getZammadEmailSignatures() {

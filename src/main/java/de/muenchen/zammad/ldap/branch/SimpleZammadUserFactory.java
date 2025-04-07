@@ -17,13 +17,13 @@ public class SimpleZammadUserFactory {
 
     public User mapToZammadUser(LdapUserDTO ldapBaseUserDTO, Optional<String> zammadGroupId) {
 
-        User zammadUser = new User();
-        zammadUser.setDepartment(ldapBaseUserDTO.getOu());
-        zammadUser.setLhmobjectid(ldapBaseUserDTO.getLhmObjectId());
-        zammadUser.setLogin(ldapBaseUserDTO.getLhmObjectId());
-        zammadUser.setEmail(ldapBaseUserDTO.getMail());
-        zammadUser.setFirstname(ldapBaseUserDTO.getVorname());
-        zammadUser.setLastname(ldapBaseUserDTO.getNachname());
+        User zammadUser = new User(
+                                    ldapBaseUserDTO.getVorname(),
+                                    ldapBaseUserDTO.getNachname(),
+                                    ldapBaseUserDTO.getLhmObjectId(),
+                                    ldapBaseUserDTO.getMail(),
+                                    ldapBaseUserDTO.getOu(),
+                                    ldapBaseUserDTO.getLhmObjectId());
 
         zammadUser.setRoleIds(defaultSynchronizationRoles());
         zammadGroupId.ifPresent(id -> zammadUser.setGroupIds(Map.of(id, List.of("full"))));

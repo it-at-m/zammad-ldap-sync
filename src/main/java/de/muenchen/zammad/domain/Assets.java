@@ -10,10 +10,10 @@ import lombok.Data;
 public class Assets {
 
     @JsonProperty("EmailAddress")
-    private Map<String, EmailAddress> emailAddress;
+    private final Map<String, EmailAddress> emailAddress;
 
     @JsonProperty("Channel")
-    private Map<Integer, Channel> channel;
+    private final Map<Integer, Channel> channel;
 
     public Integer findID(String name, String defaultName) {
 

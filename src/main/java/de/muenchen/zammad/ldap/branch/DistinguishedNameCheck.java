@@ -33,10 +33,10 @@ public class DistinguishedNameCheck {
 
         if (ldapShadetrees.size() != ldapSyncDistinguishedNames.size()) {
 
-            var trees = Arrays.asList(ldapShadetrees.keySet().toArray());
-            var differences = ldapSyncDistinguishedNames.stream().filter(element -> !trees.contains(element)).toList();
+            final var trees = Arrays.asList(ldapShadetrees.keySet().toArray());
+            final var differences = ldapSyncDistinguishedNames.stream().filter(element -> !trees.contains(element)).toList();
 
-            var sb = new StringBuilder();
+            final var sb = new StringBuilder();
             sb.append(System.lineSeparator()).append(System.lineSeparator());
             sb.append(" !!!  No ldap nodes for all ouBases found. Please check the ouBase(s) (ldap distinguished name) availability. Maybe part of a distinguished name was renamed in ldap :");
             sb.append(System.lineSeparator());
@@ -48,7 +48,7 @@ public class DistinguishedNameCheck {
 
             log.error(sb.toString());
 
-            var message = new SimpleMailMessage();
+            final var message = new SimpleMailMessage();
             message.setFrom(from);
             message.setSubject(subject);
             message.setTo(to);

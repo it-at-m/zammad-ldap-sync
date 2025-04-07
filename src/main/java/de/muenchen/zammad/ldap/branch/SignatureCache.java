@@ -28,7 +28,7 @@ public class SignatureCache {
         }
 
         if (cache.containsKey(signatureName.toUpperCase())) {
-            var signature = cache.get(signatureName.toUpperCase());
+            final var signature = cache.get(signatureName.toUpperCase());
             log.debug("Fetch signature from cache : {}={}", signatureName, signature);
             return signature;
         } else {

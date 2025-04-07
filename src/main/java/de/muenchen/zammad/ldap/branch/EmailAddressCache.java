@@ -26,11 +26,11 @@ public class EmailAddressCache {
         }
 
         if (cache.containsKey(emailAddressName.toUpperCase())) {
-            var emailAddressID = cache.get(emailAddressName.toUpperCase());
+            final var emailAddressID = cache.get(emailAddressName.toUpperCase());
             log.debug("Fetch emaildAddressId from cache : {}={}", emailAddressName, emailAddressID);
             return emailAddressID;
         } else {
-            var zammadServiceResponse = zammadService.getZammadChannelsEmail();
+            final var zammadServiceResponse = zammadService.getZammadChannelsEmail();
             if (zammadServiceResponse == null)
                 cache.put(emailAddressName.toUpperCase(), null);
             else

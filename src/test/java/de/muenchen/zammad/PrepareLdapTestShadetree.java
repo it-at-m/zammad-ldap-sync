@@ -15,7 +15,7 @@ import de.muenchen.zammad.domain.User;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class PrepareTestShadetree {
+public class PrepareLdapTestShadetree {
 
     public static final String ORGANIZATIONAL_UNIT_CHANNEL = "ITM";
     public static final String STANDARD_EMAIL_CHANNEL = "LHM";

@@ -31,15 +31,15 @@ public class OrgUnitBranchControl {
 
     private DistinguishedNameCheck dnValidation;
 
-   private ActiveDirectoryGroupZammadRoleMapper activeDirectoryRoleMapper;
+    private ActiveDirectoryGroupZammadRoleMapper activeDirectoryRoleMapper;
 
     /**
-     * Use the requested ldap distinguished names to determine the organizational unit ldap (shade) trees.
-     * Warn if not for all required distinguished names a shade tree exists.
-     * Synchronize each shade tree branching with Zammad parent group attribute.
-     * Synchronize Zammad domain group attributes and assigned group users with organizational units in each shade tree.
-     * Add/update Zammad domain user attributes.
-     * Update Zammad assignment role for each role.
+     * Use the requested ldap distinguished names to determine the organizational
+     * unit ldap (shade) trees. Warn if not for all required distinguished names a
+     * shade tree exists. Synchronize each shade tree branching with Zammad parent
+     * group attribute. Synchronize Zammad domain group attributes and assigned
+     * group users with organizational units in each shade tree. Add/update Zammad
+     * domain user attributes. Update Zammad assignment role for each role.
      */
     public void synchronizationControl() {
 
@@ -62,12 +62,13 @@ public class OrgUnitBranchControl {
             log.trace(entry.getValue().toString());
 
             log.debug("3/6 Update zammad groups and users ...");
-            var map = new HashMap<String, LdapOuNode>();
+            final var map = new HashMap<String, LdapOuNode>();
             map.put(entry.getKey(), entry.getValue());
             subtree.updateZammadGroupsWithUsers(map);
 
             log.debug("4/6 Mark user for deletion ...");
-            deletedLdapUser.checkForRemoval(entry, Optional.ofNullable(ShadeTree.collectUserFromAllBranches(ldapShadeTrees)));
+            deletedLdapUser.checkForRemoval(entry,
+                    Optional.ofNullable(ShadeTree.collectUserFromAllBranches(ldapShadeTrees)));
 
             log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
         }
@@ -83,6 +84,5 @@ public class OrgUnitBranchControl {
         log.info("End sychronize Zammad groups, user and roles all ouBases.");
 
     }
-
 
 }

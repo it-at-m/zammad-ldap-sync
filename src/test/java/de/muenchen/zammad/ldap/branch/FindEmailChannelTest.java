@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import de.muenchen.zammad.PrepareZammadTestEnvironment;
 import de.muenchen.zammad.domain.Assets;
 import de.muenchen.zammad.domain.Channel;
 import de.muenchen.zammad.domain.ChannelsEmail;
@@ -22,7 +23,7 @@ import de.muenchen.zammad.domain.EmailAddress;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class FindEmailChannelTest extends PrepareTestEnvironment {
+class FindEmailChannelTest extends PrepareZammadTestEnvironment {
 
     final static Integer ORGANIZATIONAL_UNIT_CHANNEL_ID = 1;
     final static Integer STANDARD_UNIT_CHANNEL_ID = 2;
@@ -37,7 +38,7 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail());
+        when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail(null));
 
         var cache = new EmailAddressCache(zammadService, standardDefaultMock());
 
@@ -69,15 +70,7 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        var mockChannelIsActive = mockChannelsEmailResponse();
-        var organizationalUnitChannel = new Channel();
-        organizationalUnitChannel.setActive(false);
-        organizationalUnitChannel.setId(ORGANIZATIONAL_UNIT_CHANNEL_ID);
-        var standardChannel = new Channel();
-        standardChannel.setActive(false);
-        standardChannel.setId(STANDARD_UNIT_CHANNEL_ID);
-        mockChannelIsActive.getAssets().setChannel(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, organizationalUnitChannel, STANDARD_UNIT_CHANNEL_ID, standardChannel));
-
+        var mockChannelIsActive = mockChannelsEmailResponse(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, new Channel(ORGANIZATIONAL_UNIT_CHANNEL_ID, false), STANDARD_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, false)));
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelIsActive);
 
         var cache = new EmailAddressCache(zammadService, standardDefaultMock());
@@ -96,15 +89,7 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        var mockChannelIsActive = mockChannelsEmailResponse();
-        var organizationalUnitChannel = new Channel();
-        organizationalUnitChannel.setActive(true);
-        organizationalUnitChannel.setId(ORGANIZATIONAL_UNIT_CHANNEL_ID);
-        var standardChannel = new Channel();
-        standardChannel.setActive(true);
-        standardChannel.setId(STANDARD_UNIT_CHANNEL_ID);
-        mockChannelIsActive.getAssets().setChannel(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, organizationalUnitChannel, STANDARD_UNIT_CHANNEL_ID, standardChannel));
-
+        var mockChannelIsActive = mockChannelsEmailResponse(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, new Channel(ORGANIZATIONAL_UNIT_CHANNEL_ID, true), STANDARD_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, true)));
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelIsActive);
 
         var cache = new EmailAddressCache(zammadService, standardDefaultMock());
@@ -123,15 +108,7 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        var mockChannelIsActive = mockChannelsEmailResponse();
-        var organizationalUnitChannel = new Channel();
-        organizationalUnitChannel.setActive(false);
-        organizationalUnitChannel.setId(ORGANIZATIONAL_UNIT_CHANNEL_ID);
-        var standardChannel = new Channel();
-        standardChannel.setActive(true);
-        standardChannel.setId(STANDARD_UNIT_CHANNEL_ID);
-        mockChannelIsActive.getAssets().setChannel(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, organizationalUnitChannel, STANDARD_UNIT_CHANNEL_ID, standardChannel));
-
+        var mockChannelIsActive = mockChannelsEmailResponse(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, new Channel(ORGANIZATIONAL_UNIT_CHANNEL_ID, false), STANDARD_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, true)));
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelIsActive);
 
         var cache = new EmailAddressCache(zammadService, standardDefaultMock());
@@ -150,15 +127,7 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        var onlyStandardEmailChannelExists = mockChannelsEmailResponse();
-        var organizationalUnitChannel = new Channel();
-        organizationalUnitChannel.setActive(false);
-        organizationalUnitChannel.setId(ORGANIZATIONAL_UNIT_CHANNEL_ID);
-        var standardChannel = new Channel();
-        standardChannel.setActive(true);
-        standardChannel.setId(STANDARD_UNIT_CHANNEL_ID);
-        onlyStandardEmailChannelExists.getAssets().setChannel(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, standardChannel, STANDARD_UNIT_CHANNEL_ID, standardChannel));
-
+        var onlyStandardEmailChannelExists = mockChannelsEmailResponse(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, true), STANDARD_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, true)));
         when(zammadService.getZammadChannelsEmail()).thenReturn(onlyStandardEmailChannelExists);
 
         var cache = new EmailAddressCache(zammadService, standardDefaultMock());
@@ -175,7 +144,7 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelsEmailResponse());
+        when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelsEmailResponse(null));
 
         var cache = new EmailAddressCache(zammadService, standardDefaultMock());
         assertNull(cache.findEmailAdressId(null));
@@ -183,24 +152,8 @@ class FindEmailChannelTest extends PrepareTestEnvironment {
         verify(zammadService, times(0)).getZammadChannelsEmail();
     }
 
-    private ChannelsEmail mockChannelsEmailResponse() {
-
-        var emailChannels = new ChannelsEmail();
-        var organizationalUnitEmailAddress = new EmailAddress();
-        organizationalUnitEmailAddress.setId(ORGANIZATIONAL_EMAIL_ID);
-        organizationalUnitEmailAddress.setChannelId(ORGANIZATIONAL_UNIT_CHANNEL_ID);
-        organizationalUnitEmailAddress.setName(ORGANIZATIONAL_UNIT_CHANNEL);
-
-        var standardEmailAddress = new EmailAddress();
-        standardEmailAddress.setId(STANDARD_EMAIL_ID);
-        standardEmailAddress.setChannelId(STANDARD_UNIT_CHANNEL_ID);
-        standardEmailAddress.setName(STANDARD_EMAIL_CHANNEL);
-
-        emailChannels.setAssets(new Assets());
-        emailChannels.getAssets().setEmailAddress(Map.of("5", organizationalUnitEmailAddress, "6", standardEmailAddress));
-
-        return emailChannels;
-
+    private ChannelsEmail mockChannelsEmailResponse(Map<Integer, Channel> channels) {
+        return new ChannelsEmail(new Assets(Map.of("5", new EmailAddress(ORGANIZATIONAL_EMAIL_ID,ORGANIZATIONAL_UNIT_CHANNEL_ID, ORGANIZATIONAL_UNIT_CHANNEL), "6", new EmailAddress(STANDARD_EMAIL_ID, STANDARD_UNIT_CHANNEL_ID, STANDARD_EMAIL_CHANNEL)), channels));
     }
 
 }

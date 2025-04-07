@@ -15,12 +15,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import de.muenchen.zammad.PrepareZammadTestEnvironment;
 import de.muenchen.zammad.domain.Signatures;
 import de.muenchen.zammad.property.OrganizationalUnitsCommonProperties;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class FindSignatureTest extends PrepareTestEnvironment {
+class FindSignatureTest extends PrepareZammadTestEnvironment {
 
     private static final String DEFAULT_SIGNATURE_STARTS_WITH = "LHM";
 
@@ -101,14 +102,8 @@ class FindSignatureTest extends PrepareTestEnvironment {
 
 	private List<Signatures> mockSignatureResponse() {
 
-	    var signatureITM = new Signatures();
-        signatureITM.setId(5);
-
-        signatureITM.setName(ORGANIZATIONAL_UNIT_CHANNEL);
-
-        var signatureDefault = new Signatures();
-        signatureDefault.setId(6);
-        signatureDefault.setName(DEFAULT_SIGNATURE_STARTS_WITH);
+	    var signatureITM = new Signatures(5, ORGANIZATIONAL_UNIT_CHANNEL);
+        var signatureDefault = new Signatures(6, DEFAULT_SIGNATURE_STARTS_WITH);
 
         return List.of(signatureITM, signatureDefault);
 

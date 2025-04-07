@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import de.muenchen.userservice.ShadeTree;
+import de.muenchen.zammad.PrepareZammadTestEnvironment;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
 
@@ -31,7 +32,7 @@ import de.muenchen.zammad.domain.User;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class DeleteGroupAndUserTest extends PrepareTestEnvironment {
+class DeleteGroupAndUserTest extends PrepareZammadTestEnvironment {
 
 
     @Captor

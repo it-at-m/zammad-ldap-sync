@@ -15,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GroupAssignmentAuthorizations {
 
-    private ZammadProperties zammadProperties;
-    private ZammadService zammadService;
+    private final ZammadProperties zammadProperties;
+    private final ZammadService zammadService;
 
     public GroupAssignmentAuthorizations(ZammadProperties zammadProperties, ZammadService zammadService) {
         super();

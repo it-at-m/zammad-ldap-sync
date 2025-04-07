@@ -27,7 +27,7 @@ public class EliminatedLdapUser extends AbstractTree {
             Optional<Map<String, EnhancedLdapUserDTO>> allBranchesUsers) {
 
        if (allBranchesUsers.isPresent()) {
-           var allUsers = allBranchesUsers.get();
+           final var allUsers = allBranchesUsers.get();
             if (allUsers.isEmpty())
                 log.warn("Ldap branch user list is empty. The execution would set all found zammad users inactive.");
             else
@@ -76,7 +76,7 @@ public class EliminatedLdapUser extends AbstractTree {
     }
 
     private void assignDeletion(Map<String, EnhancedLdapUserDTO> allLdapUsers, String lhmObjectId, User zammadUser) {
-        var ldapBaseUserDTO = allLdapUsers.get(lhmObjectId);
+        final var ldapBaseUserDTO = allLdapUsers.get(lhmObjectId);
         if (ldapBaseUserDTO == null) {
             log.debug("Do not find ZammadUser in LDAP-Users.");
             if (zammadUser.isActive()) {
@@ -93,7 +93,7 @@ public class EliminatedLdapUser extends AbstractTree {
 
     private Map<String, List<User>> findAllZammadBranchGroupUsers(String ldapOuRootLhmObjectId) {
 
-        var zammadGroups = new ArrayList<>(findRootZammadGroup(ldapOuRootLhmObjectId));
+        final var zammadGroups = new ArrayList<>(findRootZammadGroup(ldapOuRootLhmObjectId));
 
         if (zammadGroups.isEmpty())
             return new HashMap<>();
@@ -101,8 +101,8 @@ public class EliminatedLdapUser extends AbstractTree {
 
             findChildGroups(zammadService.getZammadGroups(), zammadGroups.get(0).getId(), zammadGroups);
 
-            var zammadBranchUsers = new ArrayList<User>();
-            var zammadUsers = zammadService.getZammadUsers();
+            final var zammadBranchUsers = new ArrayList<User>();
+            final var zammadUsers = zammadService.getZammadUsers();
             zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
 
             return zammadBranchUsers.stream().filter(u -> u.getLhmobjectid() != null && !u.getLhmobjectid().isBlank())
@@ -112,7 +112,7 @@ public class EliminatedLdapUser extends AbstractTree {
 
     private List<Group> findRootZammadGroup(String ldapOuRootLhmObjectId) {
 
-        var rootZammadGroups = getCurrentZammadGroups().get(ldapOuRootLhmObjectId);
+        final var rootZammadGroups = getCurrentZammadGroups().get(ldapOuRootLhmObjectId);
         if (rootZammadGroups == null) {
             log.debug("No zammad root group found '{}'.", ldapOuRootLhmObjectId);
             return new ArrayList<>();
@@ -129,7 +129,7 @@ public class EliminatedLdapUser extends AbstractTree {
     private void findChildGroups(List<Group> zammadServiceGroups, String zammadGroupId,
             List<Group> allZammadBranchGroups) {
 
-        var childGroups = zammadServiceGroups.stream()
+        final var childGroups = zammadServiceGroups.stream()
                 .filter(g -> (g.getParentId() != null && g.getParentId().equals(zammadGroupId))).toList();
         if (!childGroups.isEmpty()) {
             allZammadBranchGroups.addAll(childGroups);
@@ -143,7 +143,7 @@ public class EliminatedLdapUser extends AbstractTree {
 
     private Optional<LdapOuNode> findNode(Map.Entry<String, LdapOuNode> entry) {
 
-        var optional = entry.getValue().findLdapOuNode(entry.getKey());
+        final var optional = entry.getValue().findLdapOuNode(entry.getKey());
         if (optional.isEmpty()) {
             log.error("User removal check failed. No ldap node found with key '{}' !", entry.getKey());
         }

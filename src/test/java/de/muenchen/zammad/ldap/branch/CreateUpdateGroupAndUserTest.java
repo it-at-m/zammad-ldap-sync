@@ -17,12 +17,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import de.muenchen.zammad.PrepareZammadTestEnvironment;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class CreateUpdateGroupAndUserTest extends PrepareTestEnvironment {
+class CreateUpdateGroupAndUserTest extends PrepareZammadTestEnvironment {
 
     @Captor
     private ArgumentCaptor<Group> createGroupCaptor;

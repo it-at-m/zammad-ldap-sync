@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class Channel {
 
-    private Integer id;
-    private Boolean active;
+    private final Integer id;
+    private final Boolean active;
 
 }

@@ -27,13 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ActiveDirectoryGroupZammadRoleMapper {
 
-    private ActiveDirectoryGroupService activeDirectoryGroupService;
-    private ZammadService zammadService;
-    private ZammadProperties zammadProperties;
-    private ActiveDirectoryProperty activeDirectoryProperties;
+    private final ActiveDirectoryGroupService activeDirectoryGroupService;
+    private final ZammadService zammadService;
+    private final ZammadProperties zammadProperties;
+    private final ActiveDirectoryProperty activeDirectoryProperties;
 
-    private RequestedOrganizationalUnits requestedOuUnits;
-    private LdapService ldapService;
+    private final RequestedOrganizationalUnits requestedOuUnits;
+    private final LdapService ldapService;
 
     @Autowired
     public ActiveDirectoryGroupZammadRoleMapper(LdapProperty ldapProperty, ZammadProperties zammadProperties, ActiveDirectoryProperty activeDirectoryProperties,
@@ -46,7 +46,18 @@ public class ActiveDirectoryGroupZammadRoleMapper {
         this.requestedOuUnits = requestedOuUnits;
         this.zammadProperties = zammadProperties;
         this.activeDirectoryProperties = activeDirectoryProperties;
+    }
 
+   public ActiveDirectoryGroupZammadRoleMapper(LdapService ldapService, ZammadProperties zammadProperties, ActiveDirectoryProperty activeDirectoryProperties,
+            ActiveDirectoryGroupService activeDirectoryGroupService, ZammadService zammadService,
+            RequestedOrganizationalUnits requestedOuUnits) {
+        super();
+        this.ldapService = ldapService;
+        this.activeDirectoryGroupService = activeDirectoryGroupService;
+        this.zammadService = zammadService;
+        this.requestedOuUnits = requestedOuUnits;
+        this.zammadProperties = zammadProperties;
+        this.activeDirectoryProperties = activeDirectoryProperties;
     }
 
     public void syncAdGroupsToLdapRoles() {
@@ -59,13 +70,13 @@ public class ActiveDirectoryGroupZammadRoleMapper {
                 .crossOrganizationalGroups();
 
         Map<String, Role> zammadRoles = zammadService.getZammadRoles().stream()
-                .collect(Collectors.toMap(role -> role.getName().replace(activeDirectoryProperties.getGroupNamePrefix(), ""), role -> role));
+                .collect(Collectors.toMap(role -> role.getName().replace(groupNamePrefixNullCheck(), ""), role -> role));
 
         adGroups.ifPresent(activeDirectoryGroups -> {
 
             for (EnhancedActiveDirectoryGroupDTO adGroup : activeDirectoryGroups) {
 
-                var zammadRole = Optional.ofNullable(zammadRoles.get(adGroup.getName().replace(activeDirectoryProperties.getGroupNamePrefix(), "")));
+                var zammadRole = Optional.ofNullable(zammadRoles.get(adGroup.getName().replace(groupNamePrefixNullCheck(), "")));
                 zammadRole.ifPresentOrElse(role -> {
 
                     var zammadRoleId = Optional.of(Integer.parseInt(role.getId()));
@@ -118,6 +129,10 @@ public class ActiveDirectoryGroupZammadRoleMapper {
         });
     }
 
+    protected CharSequence groupNamePrefixNullCheck() {
+        return activeDirectoryProperties.getGroupNamePrefix() != null ? activeDirectoryProperties.getGroupNamePrefix() : "";
+    }
+
     private List<EnhancedLdapUserDTO> lookupLdapUsers(Map<String, ActiveDirectoryUserDTO> adUserByLhmObjectId) {
         return adUserByLhmObjectId.entrySet().stream()
                 .map(entry -> ldapService.lookupUser(investigateLdapUserDn(entry.getValue())).get()).toList();
@@ -131,7 +146,7 @@ public class ActiveDirectoryGroupZammadRoleMapper {
      */
     private String investigateLdapUserDn(ActiveDirectoryUserDTO user) {
         return String.join(",", "uid=" + user.getUid(),
-                requestedOuUnits.getOrganizationalUnits().get(user.getLhmReferatName()).getUserSearchBase());
+                requestedOuUnits.getOrganizationalUnits().get(user.getLhmReferatName().toUpperCase()).getUserSearchBase());
     }
 
 }

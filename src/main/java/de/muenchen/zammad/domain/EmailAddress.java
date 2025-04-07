@@ -24,6 +24,25 @@ public class EmailAddress {
     @JsonProperty("updated_at")
     private String updatedAt;
     @JsonProperty("group_ids")
-    private List<Integer> groupIds;
+    private final List<Integer> groupIds;
+
+    public EmailAddress(Integer id, Integer channelId, String name) {
+
+        super();
+        this.id = id;
+        this.channelId = channelId;
+        this.name = name;
+
+        this.email = "";
+        this.note = "";
+        this.preferences = "";
+        this.updatedById = null;
+        this.createdById = null;
+        this.createdAt = "";
+        this.updatedAt = "";
+        this.groupIds = null;
+    }
+
+
 
 }

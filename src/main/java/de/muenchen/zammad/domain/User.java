@@ -40,4 +40,26 @@ public class User {
     private boolean active;
     private String ldapsyncstate;
 
+    public User(String firstname, String lastname, String login, String email,
+            String department, String lhmobjectid) {
+        super();
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.login = login;
+        this.email = email;
+        this.department = department;
+        this.lhmobjectid = lhmobjectid;
+    }
+
+    public User(String id, String firstname, String lastname, String login, String department, String lhmobjectid, List<Integer> roleIds) {
+        super();
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.login = login;
+        this.department = department;
+        this.lhmobjectid = lhmobjectid;
+        this.roleIds = roleIds;
+    }
+
 }

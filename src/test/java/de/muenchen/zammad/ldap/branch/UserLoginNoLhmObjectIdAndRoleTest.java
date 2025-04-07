@@ -22,6 +22,7 @@ import org.mockito.quality.Strictness;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
 import de.muenchen.userservice.LdapOuNode;
+import de.muenchen.zammad.PrepareZammadTestEnvironment;
 import de.muenchen.zammad.domain.ChannelsEmail;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
@@ -30,7 +31,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
+class UserLoginNoLhmObjectIdAndRoleTest extends PrepareZammadTestEnvironment {
 
     @Captor
     private ArgumentCaptor<Group> createGroupCaptor;
@@ -56,7 +57,7 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(
                 List.of(new User("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
-        when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail());
+        when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail(null));
         when(zammadService.getZammadEmailSignatures()).thenReturn(List.of());
 
         var zammadSyncService = new OrgUnitBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));

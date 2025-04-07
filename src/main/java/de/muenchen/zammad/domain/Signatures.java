@@ -24,4 +24,17 @@ public class Signatures {
     @JsonProperty("group_ids")
     private List<Integer> groupIds;
 
+    public Signatures(Integer id, String name) {
+        super();
+        this.id = id;
+        this.name = name;
+
+        this.body = "";
+        this.active = false;
+        this.updatedById = null;
+        this.createdById = null;
+        this.createdAt = "";
+        this.updatedAt = "";
+        this.groupIds = null;
+    }
 }

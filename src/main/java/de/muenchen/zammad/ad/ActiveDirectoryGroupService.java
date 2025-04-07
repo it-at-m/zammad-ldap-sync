@@ -21,7 +21,7 @@ public class ActiveDirectoryGroupService {
 
     public Optional<List<EnhancedActiveDirectoryGroupDTO>> crossOrganizationalGroups() {
 
-         Optional<List<EnhancedActiveDirectoryGroupDTO>>  optionalGroups = adService.groupsWithoutLdapEquivalent();
+         Optional<List<EnhancedActiveDirectoryGroupDTO>> optionalGroups = adService.groupsWithoutLdapEquivalent();
          if (optionalGroups.isPresent() ) {
              List<EnhancedActiveDirectoryGroupDTO> groupDTOs = optionalGroups.get();
              for (EnhancedActiveDirectoryGroupDTO groupDTO : groupDTOs) {
@@ -35,7 +35,4 @@ public class ActiveDirectoryGroupService {
          }
          return optionalGroups;
     }
-
-
-
 }

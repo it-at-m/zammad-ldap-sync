@@ -26,4 +26,8 @@ public class EnhancedLdapUserDTO extends LdapUserDTO {
         return this.getClass().getSimpleName() + "(lhmObjectId=" + super.getLhmObjectId() + ")";
     }
 
+    public EnhancedLdapUserDTO(LdapBaseUserDTO baseUser) {
+        super(baseUser);
+    }
+
 }

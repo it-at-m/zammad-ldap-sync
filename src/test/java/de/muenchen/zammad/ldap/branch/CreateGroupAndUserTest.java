@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import de.muenchen.userservice.LdapOuNode;
+import de.muenchen.zammad.PrepareZammadTestEnvironment;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
 import lombok.extern.log4j.Log4j2;
@@ -27,7 +28,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class CreateGroupAndUserTest extends PrepareTestEnvironment {
+class CreateGroupAndUserTest extends PrepareZammadTestEnvironment {
 
     @Captor
     private ArgumentCaptor<Group> createGroupCaptor;
