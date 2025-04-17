@@ -79,7 +79,7 @@ public class ActiveDirectoryGroupZammadRoleMapper {
                 var zammadRole = Optional.ofNullable(zammadRoles.get(adGroup.getName().replace(groupNamePrefixNullCheck(), "")));
                 zammadRole.ifPresentOrElse(role -> {
 
-                    var zammadRoleId = Optional.of(Integer.parseInt(role.getId()));
+                    var zammadRoleId = Optional.of(role.getId());
 
                     zammadRoleId.ifPresent(roleId -> {
 

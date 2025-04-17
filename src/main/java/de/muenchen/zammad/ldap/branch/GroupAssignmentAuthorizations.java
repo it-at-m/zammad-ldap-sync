@@ -44,7 +44,7 @@ public class GroupAssignmentAuthorizations {
                 .getZammadRole(zammadProperties.getAssignment().getRole().getIdErstellen());
 
         // Create group-map
-        Map<String, List<String>> groupIdsAuthorization = new HashMap<>();
+        Map<Integer, List<String>> groupIdsAuthorization = new HashMap<>();
         for (Group zammadGroup : zammadGroups) {
             groupIdsAuthorization.put(zammadGroup.getId(), List.of("create"));
         }
@@ -64,7 +64,7 @@ public class GroupAssignmentAuthorizations {
                 .getZammadRole(zammadProperties.getAssignment().getRole().getIdVollzugriff());
 
         // Create group-map
-        Map<String, List<String>> groupIdsAuthorization = new HashMap<>();
+        Map<Integer, List<String>> groupIdsAuthorization = new HashMap<>();
         for (Group zammadGroup : zammadGroups) {
             groupIdsAuthorization.put(zammadGroup.getId(), List.of("full"));
         }

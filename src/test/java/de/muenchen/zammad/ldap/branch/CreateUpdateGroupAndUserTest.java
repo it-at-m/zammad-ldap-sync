@@ -104,7 +104,8 @@ class CreateUpdateGroupAndUserTest extends PrepareZammadTestEnvironment {
         assertEquals(0, zammadService.getZammadGroups().size());
         assertEquals(21, zammadService.getZammadUsers().size());
 
-        verify(zammadService, times(4)).updateZammadUser(updateUserCaptor.capture());
+        verify(zammadService, times(5)).updateZammadUser(updateUserCaptor.capture());
+
         assertEquals("lhmobjectId_0_0_1", updateUserCaptor.getAllValues().get(0).getLhmobjectid());
         assertEquals("nachname_0_0_1", updateUserCaptor.getAllValues().get(0).getLastname());
         assertEquals("lhmobjectId_1_1_2", updateUserCaptor.getAllValues().get(1).getLhmobjectid());

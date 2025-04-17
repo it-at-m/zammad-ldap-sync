@@ -74,7 +74,7 @@ class CreateGroupAndUserTest extends PrepareZammadTestEnvironment {
     void createParentNodeTest() {
 
         var zammadService = mock(ZammadService.class);
-        when(zammadService.getZammadGroups()).thenReturn(List.of( new Group("1", "1", "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null)));
+        when(zammadService.getZammadGroups()).thenReturn(List.of( new Group(1, 0, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null)));
         when(zammadService.getZammadUsers()).thenReturn(List.of());
 
         assertEquals(1, zammadService.getZammadGroups().size());
@@ -112,12 +112,12 @@ class CreateGroupAndUserTest extends PrepareZammadTestEnvironment {
         verify(zammadService, times(2)).createZammadGroup(createGroupCaptor.capture());
         assertNull(createGroupCaptor.getAllValues().get(0).getParentId());
         assertEquals("shortname_0_1", createGroupCaptor.getAllValues().get(0).getName());
-        assertEquals("2", createGroupCaptor.getAllValues().get(1).getParentId());
+        assertEquals(2, createGroupCaptor.getAllValues().get(1).getParentId());
         assertEquals("shortname_0_1::shortname_1_1", createGroupCaptor.getAllValues().get(1).getName());
 
         verify(zammadService, times(1)).updateZammadGroup(updateGroupCaptor.capture());
         assertEquals("shortname_0_1::shortname_1_1::shortname_2_1", updateGroupCaptor.getAllValues().get(0).getName());
-        assertEquals("3", updateGroupCaptor.getAllValues().get(0).getParentId());
+        assertEquals(3, updateGroupCaptor.getAllValues().get(0).getParentId());
 
     }
 

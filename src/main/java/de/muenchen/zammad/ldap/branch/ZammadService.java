@@ -63,7 +63,7 @@ public class ZammadService {
 
         HttpEntity<Group> requestEntity = new HttpEntity<>(zammadGroup, headers);
 
-        String userId = zammadGroup.getId();
+        Integer userId = zammadGroup.getId();
 
         ResponseEntity<Group> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "/" + userId, HttpMethod.PUT, requestEntity,
                 Group.class);
@@ -130,7 +130,7 @@ public class ZammadService {
 
         HttpEntity<User> requestEntity = new HttpEntity<>(zammadUser, headers);
 
-        String userId = zammadUser.getId();
+        Integer userId = zammadUser.getId();
 
         ResponseEntity<User> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers() + "/" + userId, HttpMethod.PUT, requestEntity,
                 User.class);
@@ -192,7 +192,7 @@ public class ZammadService {
 
         HttpEntity<Role> requestEntity = new HttpEntity<>(zammadRole, headers);
 
-        String userId = zammadRole.getId();
+        Integer userId = zammadRole.getId();
 
         ResponseEntity<Role> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getRoles() + "/" + userId, HttpMethod.PUT, requestEntity,
                 Role.class);

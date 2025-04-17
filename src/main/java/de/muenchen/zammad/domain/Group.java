@@ -10,9 +10,9 @@ import lombok.Data;
 public class Group {
 
     @JsonProperty("id")
-    private String id;
+    private Integer id;
     @JsonProperty("parent_id")
-    private final String parentId;
+    private final Integer parentId;
     @JsonProperty("name")
     private final String name;
     @JsonProperty("ldapsyncupdate_group")

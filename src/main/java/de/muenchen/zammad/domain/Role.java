@@ -15,10 +15,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Role {
 
-    private final String id;
+    private final Integer id;
     private final String name;
 
     @Setter
     @JsonProperty("group_ids")
-    private Map<String, List<String>> groupIds;
+    private Map<Integer, List<String>> groupIds;
 }
