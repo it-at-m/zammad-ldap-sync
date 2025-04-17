@@ -139,7 +139,7 @@ public class ActiveDirectoryGroupZammadRoleMapper {
     }
 
     private List<EnhancedLdapUserDTO> lookupLdapUsers(Map<String, ActiveDirectoryUserDTO> adUserByLhmObjectId) {
-        return adUserByLhmObjectId.entrySet().stream()
+        return adUserByLhmObjectId.entrySet().stream().filter(entry -> investigateLdapUserDn(entry.getValue()) != null)
                 .map(entry -> ldapService.lookupUser(investigateLdapUserDn(entry.getValue())).get()).toList();
     }
 
@@ -150,8 +150,12 @@ public class ActiveDirectoryGroupZammadRoleMapper {
      * department AD identifiers.
      */
     private String investigateLdapUserDn(ActiveDirectoryUserDTO user) {
-        return String.join(",", "uid=" + user.getUid(),
-                requestedOuUnits.getOrganizationalUnits().get(user.getLhmReferatName().toUpperCase()).getUserSearchBase());
+        var propertiesOuAbbrevationExists = Optional.ofNullable(requestedOuUnits.getOrganizationalUnits().get(user.getLhmReferatName().toUpperCase()));
+        if (propertiesOuAbbrevationExists.isPresent())
+            return String.join(",", "uid=" + user.getUid(), propertiesOuAbbrevationExists.get().getUserSearchBase());
+        else {
+            log.warn("Organizational unit abbrevation '{}' of active directory user ('lhmObjectId={}') contained in 'distinguished name' attribute of the user is not configured in application properties. The active directory user is not synced with 'zammad role authorization'.", user.getLhmReferatName(), user.getLhmObjectId());
+            return null;}
     }
 
 }
