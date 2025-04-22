@@ -51,7 +51,7 @@ public class EliminatedLdapUser extends AbstractTree {
                     if (users.size() > 1) {
                         log.error("Inconsistent Zammad state. More than one zammad user found for lhmObjectId '{}' :",
                                 lhmObjectId);
-                        users.forEach(item -> log.error(LOG_ID, item.getId()));
+                        log.error("List without dublicate users: {}." , users.toString());
                         return;
                     }
 
