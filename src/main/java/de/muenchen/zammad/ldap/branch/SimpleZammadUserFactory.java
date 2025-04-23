@@ -15,7 +15,7 @@ public class SimpleZammadUserFactory {
 
     ZammadProperties zammadProperties;
 
-    public User mapToZammadUser(LdapUserDTO ldapBaseUserDTO, Optional<String> zammadGroupId) {
+    public User mapToZammadUser(LdapUserDTO ldapBaseUserDTO, Optional<Integer> zammadGroupId) {
 
         User zammadUser = new User(
                                     ldapBaseUserDTO.getVorname(),
@@ -26,7 +26,7 @@ public class SimpleZammadUserFactory {
                                     ldapBaseUserDTO.getLhmObjectId());
 
         zammadUser.setRoleIds(defaultSynchronizationRoles());
-        zammadGroupId.ifPresent(id -> zammadUser.setGroupIds(Map.of(id, List.of("full"))));
+        zammadGroupId.ifPresent(id -> zammadUser.setGroupIds(Map.of(id.toString(), List.of("full"))));
           return zammadUser;
     }
 

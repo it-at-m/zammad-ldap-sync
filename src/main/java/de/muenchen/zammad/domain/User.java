@@ -16,7 +16,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class User {
 
-    private String id;
+    private Integer id;
     @EqualsAndHashCode.Include
     private String firstname;
     @EqualsAndHashCode.Include
@@ -51,7 +51,7 @@ public class User {
         this.lhmobjectid = lhmobjectid;
     }
 
-    public User(String id, String firstname, String lastname, String login, String department, String lhmobjectid, List<Integer> roleIds) {
+    public User(Integer id, String firstname, String lastname, String login, String department, String lhmobjectid, List<Integer> roleIds) {
         super();
         this.id = id;
         this.firstname = firstname;

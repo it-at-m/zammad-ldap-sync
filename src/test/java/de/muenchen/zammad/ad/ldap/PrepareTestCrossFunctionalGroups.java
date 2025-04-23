@@ -75,10 +75,10 @@ public abstract class PrepareTestCrossFunctionalGroups extends PrepareZammadTest
 
     protected void mockZammadServiceActions(ZammadService zammadService) {
 
-        when(zammadService.createZammadUser(new User(null, "Trick", "Duck", "lhmObjectIdTrickDuck", true, null, null, "lhmObjectIdTrickDuck", List.of(0, 1, 998), null, null, true, null))).thenReturn(new User("1", "Trick", "Duck", "lhmObjectIdTrickDuck", true, null, null, "lhmObjectIdTrickDuck", List.of(0, 1, 998), null, null, true, null));
+        when(zammadService.createZammadUser(new User(null, "Trick", "Duck", "lhmObjectIdTrickDuck", true, null, null, "lhmObjectIdTrickDuck", List.of(0, 1, 998), null, null, true, null))).thenReturn(new User(1, "Trick", "Duck", "lhmObjectIdTrickDuck", true, null, null, "lhmObjectIdTrickDuck", List.of(0, 1, 998), null, null, true, null));
 
-        when(zammadService.updateZammadUser(new User("2", "Tick", "Duck", "lhmObjectIdTickDuck", false, null, "ITM", "lhmObjectIdTickDuck", List.of(0, 1), null, null, false, null))).thenReturn(new User("2", "Tick", "Duck", "lhmObjectIdTickDuck", false, null, "ITM", "lhmObjectIdTickDuck", List.of(0, 1), null, null, false, null));
-        when(zammadService.updateZammadUser(new User("3", "Track", "Duck", "lhmObjectIdTrackDuck", false, null, "ITM", "lhmObjectIdTrackDuck", List.of(0, 1), null, null, false, null))).thenReturn(new User("3", "Track", "Duck", "lhmObjectIdTrackDuck", false, null, "ITM", "lhmObjectIdTrackDuck", List.of(0, 1), null, null, false, null));
+        when(zammadService.updateZammadUser(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", false, null, "ITM", "lhmObjectIdTickDuck", List.of(0, 1), null, null, false, null))).thenReturn(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", false, null, "ITM", "lhmObjectIdTickDuck", List.of(0, 1), null, null, false, null));
+        when(zammadService.updateZammadUser(new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", false, null, "ITM", "lhmObjectIdTrackDuck", List.of(0, 1), null, null, false, null))).thenReturn(new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", false, null, "ITM", "lhmObjectIdTrackDuck", List.of(0, 1), null, null, false, null));
     }
 
 }

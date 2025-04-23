@@ -36,28 +36,28 @@ public class PrepareLdapTestShadetree {
 	}
 
 	protected Group zammadGroup_lhmobjectId_1_1_reset() {
-        return new Group("5", "1", "shortname_0_1::shortname_1_1_reset", true, true, "lhmobjectId_1_1", "changed", null, null);
+        return new Group(5, 1, "shortname_0_1::shortname_1_1_reset", true, true, "lhmobjectId_1_1", "changed", null, null);
     }
 
 	protected Group zammadGroup_lhmobjectId_2_2_2_reset() {
-        return new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2_reset", true, true, "lhmobjectId_2_2", null, null, null);
+        return new Group(3, 2, "shortname_0_1::shortname_1_1::shortname_2_2_reset", true, true, "lhmobjectId_2_2", null, null, null);
     }
 
     protected User zammadUser_lhmobjectId_2_2_3_reset() {
-        return new User("6", "vorname_2_2_3", "nachname_2_2_3_reset", "lhmobjectId_2_2_3", true, null, null, "lhmobjectId_2_2_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null);
+        return new User(6, "vorname_2_2_3", "nachname_2_2_3_reset", "lhmobjectId_2_2_3", true, null, null, "lhmobjectId_2_2_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null);
     }
 
 	protected List<Group> zammadGroups() {
 
         var zammadGroup = new ArrayList<Group>();
-        zammadGroup.add(new Group("1", null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
-        zammadGroup.add(new Group("5", "1", "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
-        zammadGroup.add(new Group("3", "1", "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null, null, null));
-        zammadGroup.add(new Group("4", "1", "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null, null, null));
+        zammadGroup.add(new Group(1, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
+        zammadGroup.add(new Group(2, 1, "shortname_0_1::shortname_1_1", true, true, "lhmobjectId_1_1", null, null, null));
+        zammadGroup.add(new Group(3, 1, "shortname_0_1::shortname_1_2", true, true, "lhmobjectId_1_2", null, null, null));
+        zammadGroup.add(new Group(4, 1, "shortname_0_1::shortname_1_3", true, true, "lhmobjectId_1_3", null, null, null));
 
-        zammadGroup.add(new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null));
-        zammadGroup.add(new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_2", true, true, "lhmobjectId_2_2", null, null, null));
-        zammadGroup.add(new Group("3", "2", "shortname_0_1::shortname_1_1::shortname_2_3", true, true, "lhmobjectId_2_3", null, null, null));
+        zammadGroup.add(new Group(5, 2, "shortname_0_1::shortname_1_1::shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null));
+        zammadGroup.add(new Group(6, 2, "shortname_0_1::shortname_1_1::shortname_2_2", true, true, "lhmobjectId_2_2", null, null, null));
+        zammadGroup.add(new Group(7, 2, "shortname_0_1::shortname_1_1::shortname_2_3", true, true, "lhmobjectId_2_3", null, null, null));
 
         return zammadGroup;
     }
@@ -66,33 +66,33 @@ public class PrepareLdapTestShadetree {
 	protected List<User> zammadUsers() {
 
 	    var zammadUser = new ArrayList<User>();
-	    zammadUser.add(new User("1", "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(0, 1), Map.of("1", List.of("full")), null, true, null));
-	    zammadUser.add(new User("2", "vorname_0_0_2", "nachname_0_0_2", "lhmobjectId_0_0_2", true, null, null, "lhmobjectId_0_0_2", List.of(0, 1), Map.of("1", List.of("full")), null, true, null));
-	    zammadUser.add(new User("3", "vorname_0_0_3", "nachname_0_0_3", "lhmobjectId_0_0_3", true, null, null, "lhmobjectId_0_0_3", List.of(0, 1), Map.of("1", List.of("full")), null, true, null));
+	    zammadUser.add(new User(1, "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(0, 1), Map.of("1", List.of("full")), null, true, null));
+	    zammadUser.add(new User(2, "vorname_0_0_2", "nachname_0_0_2", "lhmobjectId_0_0_2", true, null, null, "lhmobjectId_0_0_2", List.of(0, 1), Map.of("1", List.of("full")), null, true, null));
+	    zammadUser.add(new User(3, "vorname_0_0_3", "nachname_0_0_3", "lhmobjectId_0_0_3", true, null, null, "lhmobjectId_0_0_3", List.of(0, 1), Map.of("1", List.of("full")), null, true, null));
 
-	    zammadUser.add(new User("4", "vorname_1_1_1", "nachname_1_1_1", "lhmobjectId_1_1_1", true, null, null, "lhmobjectId_1_1_1", List.of(0, 1), Map.of("5", List.of("full")), null, true, null));
-	    zammadUser.add(new User("5", "vorname_1_1_2", "nachname_1_1_2", "lhmobjectId_1_1_2", true, null, null, null, List.of(0, 1), Map.of("5", List.of("full")), null, true, null));
-	    zammadUser.add(new User("6", "vorname_1_1_3", "nachname_1_1_3", "lhmobjectId_1_1_3", true, null, null, "lhmobjectId_1_1_3", List.of(0, 1), Map.of("5", List.of("full")), null, true, null));
+	    zammadUser.add(new User(4, "vorname_1_1_1", "nachname_1_1_1", "lhmobjectId_1_1_1", true, null, null, "lhmobjectId_1_1_1", List.of(0, 1), Map.of("5", List.of("full")), null, true, null));
+	    zammadUser.add(new User(5, "vorname_1_1_2", "nachname_1_1_2", "lhmobjectId_1_1_2", true, null, null, null, List.of(0, 1), Map.of("5", List.of("full")), null, true, null));
+	    zammadUser.add(new User(6, "vorname_1_1_3", "nachname_1_1_3", "lhmobjectId_1_1_3", true, null, null, "lhmobjectId_1_1_3", List.of(0, 1), Map.of("5", List.of("full")), null, true, null));
 
-	    zammadUser.add(new User("4", "vorname_1_2_1", "nachname_1_2_1", "lhmobjectId_1_2_1", true, null, null, "lhmobjectId_1_2_1", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
-	    zammadUser.add(new User("5", "vorname_1_2_2", "nachname_1_2_2", "lhmobjectId_1_2_2", true, null, null, "lhmobjectId_1_2_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
-	    zammadUser.add(new User("6", "vorname_1_2_3", "nachname_1_2_3", "lhmobjectId_1_2_3", true, null, null, "lhmobjectId_1_2_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(7, "vorname_1_2_1", "nachname_1_2_1", "lhmobjectId_1_2_1", true, null, null, "lhmobjectId_1_2_1", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(8, "vorname_1_2_2", "nachname_1_2_2", "lhmobjectId_1_2_2", true, null, null, "lhmobjectId_1_2_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(9, "vorname_1_2_3", "nachname_1_2_3", "lhmobjectId_1_2_3", true, null, null, "lhmobjectId_1_2_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
 
-	    zammadUser.add(new User("4", "vorname_1_3_1", "nachname_1_3_1", "lhmobjectId_1_3_1", true, null, null, "lhmobjectId_1_3_1", List.of(0, 1), Map.of("4", List.of("full")), null, true, null));
-	    zammadUser.add(new User("5", "vorname_1_3_2", "nachname_1_3_2", "lhmobjectId_1_3_2", true, null, null, "lhmobjectId_1_3_2", List.of(0, 1), Map.of("4", List.of("full")), null, true, null));
-	    zammadUser.add(new User("6", "vorname_1_3_3", "nachname_1_3_3", "lhmobjectId_1_3_3", true, null, null, "lhmobjectId_1_3_3", List.of(0, 1), Map.of("4", List.of("full")), null, true, null));
+	    zammadUser.add(new User(10, "vorname_1_3_1", "nachname_1_3_1", "lhmobjectId_1_3_1", true, null, null, "lhmobjectId_1_3_1", List.of(0, 1), Map.of("3", List.of("full"), "4", List.of("full")), null, true, null));
+	    zammadUser.add(new User(11, "vorname_1_3_2", "nachname_1_3_2", "lhmobjectId_1_3_2", true, null, null, "lhmobjectId_1_3_2", List.of(0, 1), Map.of("4", List.of("full")), null, true, null));
+	    zammadUser.add(new User(12, "vorname_1_3_3", "nachname_1_3_3", "lhmobjectId_1_3_3", true, null, null, "lhmobjectId_1_3_3", List.of(0, 1), Map.of("4", List.of("full")), null, true, null));
 
-	    zammadUser.add(new User("6", "vorname_2_1_1", "nachname_2_1_1", "lhmobjectId_2_1_1", true, null, null, null, List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
-	    zammadUser.add(new User("6", "vorname_2_1_2", "nachname_2_1_2", "lhmobjectId_2_1_2", true, null, null, "lhmobjectId_2_1_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
-	    zammadUser.add(new User("6", "vorname_2_1_3", "nachname_2_1_3", "lhmobjectId_2_1_3", true, null, null, "lhmobjectId_2_1_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(13, "vorname_2_1_1", "nachname_2_1_1", "lhmobjectId_2_1_1", true, null, null, null, List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(14, "vorname_2_1_2", "nachname_2_1_2", "lhmobjectId_2_1_2", true, null, null, "lhmobjectId_2_1_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(15, "vorname_2_1_3", "nachname_2_1_3", "lhmobjectId_2_1_3", true, null, null, "lhmobjectId_2_1_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
 
-	    zammadUser.add(new User("6", "vorname_2_2_1", "nachname_2_2_1", "lhmobjectId_2_2_1", true, null, null, "lhmobjectId_2_2_1", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
-	    zammadUser.add(new User("6", "vorname_2_2_2", "nachname_2_2_2", "lhmobjectId_2_2_2", true, null, null, "lhmobjectId_2_2_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
-	    zammadUser.add(new User("6", "vorname_2_2_3", "nachname_2_2_3", "lhmobjectId_2_2_3", true, null, null, "lhmobjectId_2_2_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(16, "vorname_2_2_1", "nachname_2_2_1", "lhmobjectId_2_2_1", true, null, null, "lhmobjectId_2_2_1", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(17, "vorname_2_2_2", "nachname_2_2_2", "lhmobjectId_2_2_2", true, null, null, "lhmobjectId_2_2_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(18, "vorname_2_2_3", "nachname_2_2_3", "lhmobjectId_2_2_3", true, null, null, "lhmobjectId_2_2_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
 
-	    zammadUser.add(new User("6", "vorname_2_3_1", "nachname_2_3_1", "lhmobjectId_2_3_1", true, null, null, "lhmobjectId_2_3_1", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
-	    zammadUser.add(new User("6", "vorname_2_3_2", "nachname_2_3_2", "lhmobjectId_2_3_2", true, null, null, "lhmobjectId_2_3_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
-	    zammadUser.add(new User("6", "vorname_2_3_3", "nachname_2_3_3", "lhmobjectId_2_3_3", true, null, null, "lhmobjectId_2_3_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(19, "vorname_2_3_1", "nachname_2_3_1", "lhmobjectId_2_3_1", true, null, null, "lhmobjectId_2_3_1", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(20, "vorname_2_3_2", "nachname_2_3_2", "lhmobjectId_2_3_2", true, null, null, "lhmobjectId_2_3_2", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
+	    zammadUser.add(new User(21, "vorname_2_3_3", "nachname_2_3_3", "lhmobjectId_2_3_3", true, null, null, "lhmobjectId_2_3_3", List.of(0, 1), Map.of("3", List.of("full")), null, true, null));
 
 	    return zammadUser;
 

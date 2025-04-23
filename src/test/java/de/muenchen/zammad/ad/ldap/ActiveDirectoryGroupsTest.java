@@ -47,9 +47,9 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
 
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
-        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role("998", "rit-testrolle1-ig", null), new Role("999", "rit-testrolle2-ig", null)));
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new User("2", "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1))),
-                                                                new User("3", "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1)))));
+        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
+        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1))),
+                                                                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1)))));
         mockZammadServiceActions(zammadService);
 
         var ldapService = mock(LdapService.class);
@@ -78,9 +78,9 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
 
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
-        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role("998", "rit-testrolle1-ig", null), new Role("999", "rit-testrolle2-ig", null)));
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new User("2", "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1,998))),
-                                                                new User("3", "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1,999)))));
+        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
+        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1,998))),
+                                                                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1,999)))));
         mockZammadServiceActions(zammadService);
 
         var ldapService = mock(LdapService.class);
@@ -110,8 +110,8 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
         when(zammadService.getZammadRoles()).thenReturn(List.of());
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new User("2", "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1))),
-                                                                new User("3", "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1)))));
+        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1))),
+                                                                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1)))));
         mockZammadServiceActions(zammadService);
 
         var ldapService = mock(LdapService.class);
@@ -136,9 +136,9 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
 
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
-        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role("998", "rit-testrolle1-ig", null), new Role("999", "rit-testrolle2-ig", null)));
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new User("2", "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1,998))),
-                                                                new User("3", "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1,999)))));
+        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
+        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1,998))),
+                                                                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1,999)))));
         mockZammadServiceActions(zammadService);
 
         var ldapService = mock(LdapService.class);

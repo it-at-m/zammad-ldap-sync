@@ -17,110 +17,110 @@ class ZammadUserDTOTest {
 
     @Test
     void testEqualsAndHashCode() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_Id() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("newId", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(2, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
     }
     @Test
     void testEqualsAndHashCode_Firstname() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "Jane", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "Jane", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_Lastname() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Smith", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Smith", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_Login() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "jane.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "jane.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_Ldapsyncupdate() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", false, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", false, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_Email() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", true, "jane.smith@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", true, "jane.smith@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_Department() {   // Test changing department
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "HR", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "HR", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_LhmObjectId() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "789012", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "789012", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_RoleIds() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(1, 2, 3), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(1, 2, 3), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
         assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_GroupIds() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of("group1", List.of("member1")), "1970-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of("group1", List.of("member1")), "1970-01-01T00:00:00Z", false, "unsynced");
         assertFalse(userA.equals(userB), "Objects are equal unexpectedly");
         assertNotEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_UpdatedAt() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "2023-01-01T00:00:00Z", false, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "2023-01-01T00:00:00Z", false, "unsynced");
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are not equal unexpectedly");
     }
 
     @Test
     void testEqualsAndHashCode_Active() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", true, "unsynced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", true, "unsynced");
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }
     @Test
     void testEqualsAndHashCode_LdapSyncState() {
-        val userA = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
-        var userB = new User("id", "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "synced");
+        val userA = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "unsynced");
+        var userB = new User(1, "John", "Doe", "john.doe", true, "john.doe@example.com", "IT", "123456", List.of(), Map.of(), "1970-01-01T00:00:00Z", false, "synced");
         assertTrue(userA.equals(userB), "Objects are not equal unexpectedly");
         assertEquals(userA.hashCode(), userB.hashCode(), "Hashcodes are equal unexpectedly");
     }

@@ -1,6 +1,8 @@
 package de.muenchen.zammad.ldap.branch;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,16 +46,16 @@ public class EliminatedLdapUser extends AbstractTree {
 
                 var zammadBranchGroupUsers = findAllZammadBranchGroupUsers(node.getNode().getLhmObjectId());
 
-                zammadBranchGroupUsers.forEach((lhmObjectId, list) -> {
+                zammadBranchGroupUsers.forEach((lhmObjectId, users) -> {
 
-                    if (list.size() > 1) {
+                    if (users.size() > 1) {
                         log.error("Inconsistent Zammad state. More than one zammad user found for lhmObjectId '{}' :",
                                 lhmObjectId);
-                        list.forEach(item -> log.error(LOG_ID, item.getId()));
+                        log.error("The list should not contain dublicate users: {}." , users.toString());
                         return;
                     }
 
-                    var zammadUser = list.get(0);
+                    var zammadUser = users.get(0);
                     log.debug("---------------------------");
                     log.debug("Checking ZammadUser with lhmObjectId '{}'.", zammadUser.getLhmobjectid());
 
@@ -105,7 +107,11 @@ public class EliminatedLdapUser extends AbstractTree {
             final var zammadUsers = zammadService.getZammadUsers();
             zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
 
-            return zammadBranchUsers.stream().filter(u -> u.getLhmobjectid() != null && !u.getLhmobjectid().isBlank())
+            Collections.sort(zammadBranchUsers, Comparator.comparing(User::getId));
+            var uniqueZammadBranchUsers = zammadBranchUsers.stream().collect(Collectors.toMap(User::getId, p -> p, (existing, replacement) -> existing))
+                    .values().stream().toList();
+
+            return uniqueZammadBranchUsers.stream().filter(u -> u.getLhmobjectid() != null && !u.getLhmobjectid().isBlank())
                     .collect(Collectors.groupingBy(User::getLhmobjectid));
         }
     }
@@ -126,7 +132,7 @@ public class EliminatedLdapUser extends AbstractTree {
 
     }
 
-    private void findChildGroups(List<Group> zammadServiceGroups, String zammadGroupId,
+    private void findChildGroups(List<Group> zammadServiceGroups, Integer zammadGroupId,
             List<Group> allZammadBranchGroups) {
 
         final var childGroups = zammadServiceGroups.stream()
@@ -137,8 +143,8 @@ public class EliminatedLdapUser extends AbstractTree {
         }
     }
 
-    private List<User> findUsers(List<User> zammadServiceUsers, String zammadGroupId) {
-        return zammadServiceUsers.stream().filter(u -> u.getGroupIds().containsKey(zammadGroupId)).toList();
+    private List<User> findUsers(List<User> zammadServiceUsers, Integer zammadGroupId) {
+        return zammadServiceUsers.stream().filter(u -> u.getGroupIds().containsKey(zammadGroupId.toString())).toList();
     }
 
     private Optional<LdapOuNode> findNode(Map.Entry<String, LdapOuNode> entry) {
