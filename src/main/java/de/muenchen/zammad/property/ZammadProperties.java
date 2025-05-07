@@ -15,7 +15,7 @@ public class ZammadProperties {
     private Assignment assignment;
 
     public String getToken() {
-        return "Token token=" + this.token;
+        return "Token token=".concat(token);
     }
 
 }
