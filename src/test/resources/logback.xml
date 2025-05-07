@@ -27,7 +27,6 @@
   	<timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
   	<property name="logFileName" value="log/zammadLdapSync-${bySecond}" />
 
-	<springProfile name="local">
 
 		<!-- Log appender -->
 		<appender name="STDOUT"
@@ -72,34 +71,9 @@
 			<appender-ref ref="STDOUT" />
 			<appender-ref ref="FILE" />
 		</root>
-	</springProfile>
 
 
-	<springProfile name="dev,test,prelive,prod">
 
-		<!-- Log appender -->
-		<appender name="STDOUT"
-			class="ch.qos.logback.core.ConsoleAppender">
-			<encoder>
-				<pattern>
-					%date{yyyy.MM.dd HH:mm:ss.SSS} | ${springAppName} | TraceId: %X{traceId:-} | SpanId: %X{spanId:-}] | %level | [%thread] | %logger{0} | [%file :	%line] - %msg%n
-				</pattern>
-			</encoder>
-		</appender>
-
-		<!-- Logger -->
-		<logger name="de.muenchen.zammad" level="info"
-			additivity="false">
-			<appender-ref ref="STDOUT" />
-		</logger>
-		<logger name="de.muenchen.oss" level="error" additivity="false">
-			<appender-ref ref="STDOUT" />
-		</logger>
-		<root level="error">
-			<appender-ref ref="STDOUT" />
-		</root>
-
-	</springProfile>
 
 
 </configuration>

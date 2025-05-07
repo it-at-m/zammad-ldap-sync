@@ -6,7 +6,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import org.springframework.ldap.core.AttributesMapper;
 
-public class EnhancedLdapUserAttributesMapper implements AttributesMapper<EnhancedLdapUserDto> {
+public class EnhancedLdapUserAttributesMapper implements AttributesMapper<EnhancedLdapUserDTO> {
 
     private final LdapUserAttributesMapper ldapUserAttributesMapper;
 
@@ -15,10 +15,10 @@ public class EnhancedLdapUserAttributesMapper implements AttributesMapper<Enhanc
     }
 
     @Override
-    public EnhancedLdapUserDto mapFromAttributes(Attributes attributes) throws NamingException {
+    public EnhancedLdapUserDTO mapFromAttributes(Attributes attributes) throws NamingException {
         LdapUserDTO ldapUserDTO = ldapUserAttributesMapper.mapFromAttributes(attributes);
 
-        EnhancedLdapUserDto userDto = new EnhancedLdapUserDto(
+        EnhancedLdapUserDTO userDto = new EnhancedLdapUserDTO(
                 safelyGet("modifyTimestamp", attributes),
                 safelyGet("lhmObjectReference", attributes)
         );

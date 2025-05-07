@@ -34,11 +34,7 @@ application.yaml:
 - Connect zammad-ldap-sync with Zammad REST-API (Url, Token).
 - Connect zammad-ldap-sync with your LDAP.
 
-Start Zammad-Ldap-Synchronisation application.
-
-Request Openapi documentation http(s)://[url:port]/swagger-ui/index.html.
-
-Start synchronisation process with correct rest ressource.
+Start Zammad-Ldap-Synchronisation as java main() application.
 
 ## Documentation
 Why don't we use the [Zammad LDAP](https://admin-docs.zammad.org/en/latest/system/integrations/ldap/index.html) integration?

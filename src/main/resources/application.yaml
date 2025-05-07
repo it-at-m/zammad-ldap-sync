@@ -1,7 +1,17 @@
 ldap:
   url:
 
+active-directory:
+  url:
+  user-dn:
+  password:
+  distinguished-name:
+  group-name-prefix:
+
 sync:
+  organizational-units-common:
+    mail-starts-with: Landeshauptstadt München
+    signature-starts-with: LHM
   organizational-units:
     identifier-1:
       distinguished-names:
@@ -34,6 +44,8 @@ zammad:
     groups: groups
     users: users
     roles: roles
+    channels-email: channels_email
+    signatures: signatures
 
 spring:
   main:
