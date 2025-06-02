@@ -60,6 +60,8 @@ public class User {
         this.department = department;
         this.lhmobjectid = lhmobjectid;
         this.roleIds = roleIds;
+        this.active = true;
+        this.ldapsyncupdate= true;
     }
 
 }
