@@ -58,7 +58,7 @@ public class GroupAssignmentAuthorizations {
 
     private void assignRolesTechnicalUser() {
 
-        // Fetch Assignmentrole Vollzugriff
+        // Fetch Assignmentrole Ticket-Zugriff EAI
         log.debug("Getting assignment role Vollzugriff");
         Role technicalUserRole = zammadService
                 .getZammadRole(zammadProperties.getAssignment().getRole().getIdTicketAccess());
@@ -66,11 +66,11 @@ public class GroupAssignmentAuthorizations {
         // Create group-map
         Map<Integer, List<String>> groupIdsAuthorization = new HashMap<>();
         for (Group zammadGroup : zammadGroups) {
-            groupIdsAuthorization.put(zammadGroup.getId(), List.of("full"));
+            groupIdsAuthorization.put(zammadGroup.getId(), List.of("read", "create", "change"));
         }
 
         // Update AssignmentRole
-        log.debug("Updating assignment role Vollzugriff with \"full\" for all groups");
+        log.debug("Updating assignment role 'Ticket-Zugriff EAI' with \"read\", \"create\", \"change\" for all groups");
         technicalUserRole.setGroupIds(groupIdsAuthorization);
         zammadService.updateZammadRole(technicalUserRole);
 
