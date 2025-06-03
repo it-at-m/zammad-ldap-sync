@@ -26,7 +26,7 @@ public class SyncApplication {
 			syncService.synchronizationControl();
 		}
 		else
-			log.error("Roles not found. Check if roles referenced in application properties exist in Zammad (e.g. Agent, Erstellen, Vollzugriff).");
+			log.error("Roles not found. Check if roles referenced in application properties exist in Zammad (e.g. Agent, Erstellen, Ticket-Zugriff EAI).");
 	}
 
 }

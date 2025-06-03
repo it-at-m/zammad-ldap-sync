@@ -14,10 +14,10 @@ public class ZammadRoleProperties {
 	 */
 	private String nameAgent;
 	private String nameErstellen;
-	private String nameVollzugriff;
+	private String nameTicketAccess;
 
 	private Integer idAgent;
 	private Integer idErstellen;
-	private Integer idVollzugriff;
+	private Integer idTicketAccess;
 
 }
