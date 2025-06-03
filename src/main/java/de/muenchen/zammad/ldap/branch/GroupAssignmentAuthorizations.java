@@ -61,7 +61,7 @@ public class GroupAssignmentAuthorizations {
         // Fetch Assignmentrole Vollzugriff
         log.debug("Getting assignment role Vollzugriff");
         Role technicalUserRole = zammadService
-                .getZammadRole(zammadProperties.getAssignment().getRole().getIdVollzugriff());
+                .getZammadRole(zammadProperties.getAssignment().getRole().getIdTicketAccess());
 
         // Create group-map
         Map<Integer, List<String>> groupIdsAuthorization = new HashMap<>();

@@ -42,16 +42,16 @@ public class ZammadRolePropertyComplementation {
 
         roleProperty.setIdErstellen(Integer.valueOf(erstellenRole.get().getId()));
 
-        Optional<Role> vollzugriffRole = zammadRoles.stream().filter(
-                role -> roleProperty.getNameVollzugriff().strip().compareToIgnoreCase(role.getName().strip()) == 0)
+        Optional<Role> ticketAccessRole = zammadRoles.stream().filter(
+                role -> roleProperty.getNameTicketAccess().strip().compareToIgnoreCase(role.getName().strip()) == 0)
                 .findAny();
-        if (vollzugriffRole.isEmpty()) {
-            log.error("Zammad role 'Vollzugriff' not found with property value '{}'.",
-                    roleProperty.getNameVollzugriff());
+        if (ticketAccessRole.isEmpty()) {
+            log.error("Zammad role 'Ticket-Zugriff EAI' not found with property value '{}'.",
+                    roleProperty.getNameTicketAccess());
             return false;
         }
 
-        roleProperty.setIdVollzugriff(Integer.valueOf(vollzugriffRole.get().getId()));
+        roleProperty.setIdTicketAccess(Integer.valueOf(ticketAccessRole.get().getId()));
 
         log.info("Zammad role ids found : {} .", roleProperty);
 

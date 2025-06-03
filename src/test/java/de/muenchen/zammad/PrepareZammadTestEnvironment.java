@@ -135,8 +135,8 @@ class PrepareZammadTestEnvironment extends PrepareLdapTestShadetree {
         zammadRoleProperties.setNameAgent("Agent");
         zammadRoleProperties.setIdErstellen(1);
         zammadRoleProperties.setNameErstellen("Erstellen");
-        zammadRoleProperties.setIdVollzugriff(2);
-        zammadRoleProperties.setNameVollzugriff("Vollzugriff");
+        zammadRoleProperties.setIdTicketAccess(2);
+        zammadRoleProperties.setNameTicketAccess("Vollzugriff");
 
         var assignment = new Assignment();
         assignment.setRole(zammadRoleProperties);
