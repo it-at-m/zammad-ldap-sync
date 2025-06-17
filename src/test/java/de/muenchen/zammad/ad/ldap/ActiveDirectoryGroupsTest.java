@@ -56,7 +56,7 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
         mockUserLookUps(ldapService);
 
         var activeDirectoryGroupService = mock(ActiveDirectoryGroupService.class);
-        when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(createAndUpdateZammadRoles()));
+        when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(createAndUpdateZammadRolesEveryUserOnlyInOneRole()));
 
         var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(ldapService, createZammadProperties(), new ActiveDirectoryProperty(null, null, null,null, "lhm-ab-dbsticketing-"), activeDirectoryGroupService, zammadService, new RequestedOrganizationalUnits(Map.of("ITM", new OrganizationalUnitProperties(null, LDAP_USER_SEARCH_BASE, null))));
         activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
@@ -118,7 +118,7 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
         mockUserLookUps(ldapService);
 
         var activeDirectoryGroupService = mock(ActiveDirectoryGroupService.class);
-        when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(createAndUpdateZammadRoles()));
+        when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(createAndUpdateZammadRolesEveryUserOnlyInOneRole()));
 
         var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(ldapService, createZammadProperties(), new ActiveDirectoryProperty(null, null, null,null, "lhm-ab-dbsticketing-"), activeDirectoryGroupService, zammadService, new RequestedOrganizationalUnits(Map.of("ITM", new OrganizationalUnitProperties(null, LDAP_USER_SEARCH_BASE, null))));
         activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
@@ -152,6 +152,38 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
 
         verify(zammadService, times(0)).createZammadUser(createUserCaptor.capture());
         verify(zammadService, times(0)).updateZammadUser(updateUserCaptor.capture());
+    }
+
+    /*
+     * Add users not exist in ldap and are present in more than one active directory group.
+     */
+    @Test
+    void userExistsInManyActiveDirectoryGroups() {
+
+        var zammadService = mock(ZammadService.class);
+        when(zammadService.getZammadGroups()).thenReturn(List.of());
+        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
+        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1,998)))));
+
+        mockZammadServiceActions(zammadService);
+
+        var ldapService = mock(LdapService.class);
+        mockUserLookUps(ldapService);
+
+        var activeDirectoryGroupService = mock(ActiveDirectoryGroupService.class);
+        when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(createAndUpdateZammadRolesUserInManyRoles()));
+
+        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(ldapService, createZammadProperties(), new ActiveDirectoryProperty(null, null, null,null, "lhm-ab-dbsticketing-"), activeDirectoryGroupService, zammadService, new RequestedOrganizationalUnits(Map.of("ITM", new OrganizationalUnitProperties(null, LDAP_USER_SEARCH_BASE, null))));
+        activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
+
+        verify(zammadService, times(2)).createZammadUser(createUserCaptor.capture());
+        var track = createUserCaptor.getAllValues().stream().filter(user -> user.getFirstname().equals("Track")).toList();
+        assertEquals("Track", track.get(0).getFirstname());
+        assertEquals(List.of(0,1,998), track.get(0).getRoleIds());
+        verify(zammadService, times(1)).updateZammadUser(updateUserCaptor.capture());
+        assertEquals("Track", updateUserCaptor.getAllValues().get(0).getFirstname());
+        assertEquals(List.of(0,1,998,999), updateUserCaptor.getAllValues().get(0).getRoleIds());
+
     }
 
 }
