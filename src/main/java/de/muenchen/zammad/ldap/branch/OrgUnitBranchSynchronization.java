@@ -185,7 +185,7 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
     private void updateUsers(User zammadUserCompare, List<User> users, String lhmObjectIdToFind) {
         if (users.size() > 1) {
           log.warn("Inconsistent Zammad state. More than one zammad group entry found for lhmObjectId '{}' :", lhmObjectIdToFind);
-                  users.forEach(item -> log.error(LOG_ID, item.getId()));
+                  users.forEach(item -> log.warn(LOG_ID, item.getId()));
         }
         users.forEach(user -> updateZammadUser(zammadUserCompare, lhmObjectIdToFind, user));
     }
