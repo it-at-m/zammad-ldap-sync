@@ -230,7 +230,7 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
         return generatelhmObjectIdZammadUserMap(zammadService.getZammadUsers());
     }
 
-    private Map<String, List<User>> generatelhmObjectIdZammadUserMap(List<User> zammadUsers) {
+    public static Map<String, List<User>> generatelhmObjectIdZammadUserMap(List<User> zammadUsers) {
         var listLhmobjectid = zammadUsers.stream()
                 .filter(u -> u.getLhmobjectid() != null && !u.getLhmobjectid().isBlank())
                 .collect(Collectors.groupingBy(User::getLhmobjectid));
