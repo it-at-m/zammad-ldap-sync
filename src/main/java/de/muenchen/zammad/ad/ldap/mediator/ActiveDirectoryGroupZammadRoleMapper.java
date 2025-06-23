@@ -36,6 +36,8 @@ public class ActiveDirectoryGroupZammadRoleMapper {
     private final RequestedOrganizationalUnits requestedOuUnits;
     private final LdapService ldapService;
 
+    private Map<String, User> zammadUsers;
+
     @Autowired
     public ActiveDirectoryGroupZammadRoleMapper(LdapProperty ldapProperty, ZammadProperties zammadProperties, ActiveDirectoryProperty activeDirectoryProperties,
             ActiveDirectoryGroupService activeDirectoryGroupService, ZammadService zammadService,
@@ -63,7 +65,7 @@ public class ActiveDirectoryGroupZammadRoleMapper {
 
     public void syncAdGroupsToLdapRoles() {
 
-        Map<String, User> zammadUsers = zammadService.getZammadUsers().stream()
+        zammadUsers = zammadService.getZammadUsers().stream()
                 .filter(user -> user.getLhmobjectid() != null && !user.getLhmobjectid().isEmpty() && user.isLdapsyncupdate() && user.isActive())
                 .collect(Collectors.toMap(User::getLhmobjectid, user -> user));
 
@@ -144,6 +146,8 @@ public class ActiveDirectoryGroupZammadRoleMapper {
       var addedUser = zammadService.createZammadUser(newUser);
       log.debug("New user '{}' with zammad id '{}' added.", addedUser.getLhmobjectid(),
         addedUser.getId());
+      var shouldBeNull = Optional.ofNullable(zammadUsers.putIfAbsent(addedUser.getLhmobjectid(), addedUser));
+      shouldBeNull.ifPresent(user -> log.warn("User '{}' already exists.", user.getLhmobjectid()));
 
     }
 

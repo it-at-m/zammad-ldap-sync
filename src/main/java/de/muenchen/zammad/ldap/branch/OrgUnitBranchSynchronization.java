@@ -172,20 +172,8 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
                 log.trace(zammadUserCompare.toString());
                 // Find zammad-user with lhmObjectID
                 String lhmObjectIdToFind = user.getLhmObjectId();
-                final var foundZammadUser = zammadUsersByLhmObjectId.get(lhmObjectIdToFind);
-                if (foundZammadUser != null && foundZammadUser.size() > 1) {
-                    log.error(
-                            "Inconsistent Zammad state. More than one zammad group entry found for lhmObjectId '{}' :",
-                            lhmObjectIdToFind);
-                    foundZammadUser.forEach(item -> log.error(LOG_ID, item.getId()));
-                } else if (foundZammadUser != null && foundZammadUser.size() == 1) {
-                    final var zammadLdapSyncUser = foundZammadUser.get(0);
-                    if (zammadLdapSyncUser != null) {
-                        updateZammadUser(zammadUserCompare, lhmObjectIdToFind, zammadLdapSyncUser);
-                    }
-                } else {
-                    createZammadUser(zammadUserCompare, lhmObjectIdToFind);
-                }
+                final var foundZammadUser = Optional.ofNullable(zammadUsersByLhmObjectId.get(lhmObjectIdToFind));
+                foundZammadUser.ifPresentOrElse(users ->  this.updateUsers(zammadUserCompare, users, lhmObjectIdToFind), () -> createZammadUser(zammadUserCompare, lhmObjectIdToFind));
                 log.debug(LOG_DIVIDER);
             });
 
@@ -193,6 +181,15 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
             log.error(ex.getMessage(), ex);
         }
     }
+
+    private void updateUsers(User zammadUserCompare, List<User> users, String lhmObjectIdToFind) {
+        if (users.size() > 1) {
+          log.warn("Inconsistent Zammad state. More than one zammad group entry found for lhmObjectId '{}' :", lhmObjectIdToFind);
+                  users.forEach(item -> log.warn(LOG_ID, item.getId()));
+        }
+        users.forEach(user -> updateZammadUser(zammadUserCompare, lhmObjectIdToFind, user));
+    }
+
 
     private void createZammadUser(User zammadUserCompare, String lhmObjectIdToFind) {
         log.debug("User not found in Zammad with lhmObjectid '{}' - creating.", lhmObjectIdToFind);
