@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
-import de.muenchen.oss.ezldap.core.LdapBaseUserDTO;
-import de.muenchen.userservice.LdapService;
+import de.muenchen.userservice.ActiveDirectoryService;
 import de.muenchen.zammad.PrepareZammadTestEnvironment;
 import de.muenchen.zammad.ad.ActiveDirectoryUserDTO;
 import de.muenchen.zammad.ad.EnhancedActiveDirectoryGroupDTO;
@@ -32,11 +29,11 @@ public abstract class PrepareTestCrossFunctionalGroups extends PrepareZammadTest
                 Map.of("lhmObjectIdTrickDuck",
                         new ActiveDirectoryUserDTO("trick.duck", "lhmObjectIdTrickDuck",
                                 activeDirectoryUsers.get("trick.duck"),
-                                "Trick Duck", "trick.duck", "trick.duck", "ITM"),
+                                "Trick Duck", "trick.duck", "trick.duck", "Trick", "Duck", "mail@", "ou"),
                         "lhmObjectIdTickDuck",
                         new ActiveDirectoryUserDTO("tick.duck", "lhmObjectIdTickDuck",
                                 activeDirectoryUsers.get("tick.duck"), "Tick Duck",
-                                "tick.duck", "tick.duck", "ITM"))),
+                                "tick.duck", "tick.duck", "Tick", "Duck", "mail@", "ou"))),
                 new EnhancedActiveDirectoryGroupDTO("lhm-ab-dbsticketing-rit-testrolle2-ig",
                         "lhm-ab-dbsticketing-rit-testrolle2-ig",
                         "CN=lhm-ab-dbsticketing-rit-testrolle2-ig,OU=f,OU=d,OU=c,DC=b,DC=a",
@@ -45,7 +42,7 @@ public abstract class PrepareTestCrossFunctionalGroups extends PrepareZammadTest
                         Map.of("lhmObjectIdTrackDuck",
                                 new ActiveDirectoryUserDTO("track.duck", "lhmObjectIdTrackDuck",
                                         activeDirectoryUsers.get("track.duck"),
-                                        "Track Duck", "track.duck", "track.duck", "ITM"))));
+                                        "Track Duck", "track.duck", "track.duck", "Track", "Duck", "mail@", "ou"))));
     }
 
     protected List<EnhancedActiveDirectoryGroupDTO> createAndUpdateZammadRolesUserInManyRoles() {
@@ -60,15 +57,15 @@ public abstract class PrepareTestCrossFunctionalGroups extends PrepareZammadTest
                 Map.of("lhmObjectIdTrickDuck",
                         new ActiveDirectoryUserDTO("trick.duck", "lhmObjectIdTrickDuck",
                                 activeDirectoryUsers.get("trick.duck"),
-                                "Trick Duck", "trick.duck", "trick.duck", "ITM"),
+                                "Trick Duck", "trick.duck", "trick.duck", "Trick", "Duck", "mail@", "ou"),
                         "lhmObjectIdTickDuck",
                         new ActiveDirectoryUserDTO("tick.duck", "lhmObjectIdTickDuck",
                                 activeDirectoryUsers.get("tick.duck"), "Tick Duck",
-                                "tick.duck", "tick.duck", "ITM"),
+                                "tick.duck", "tick.duck", "Tick", "Duck", "mail@", "ou"),
                         "lhmObjectIdTrackDuck",
                         new ActiveDirectoryUserDTO("track.duck", "lhmObjectIdTrackDuck",
                                 activeDirectoryUsers.get("track.duck"),
-                                "Track Duck", "track.duck", "track.duck", "ITM"))),
+                                "Track Duck", "track.duck", "track.duck", "Track", "Duck", "mail@", "ou"))),
                 new EnhancedActiveDirectoryGroupDTO("lhm-ab-dbsticketing-rit-testrolle2-ig",
                         "lhm-ab-dbsticketing-rit-testrolle2-ig",
                         "CN=lhm-ab-dbsticketing-rit-testrolle2-ig,OU=f,OU=d,OU=c,DC=b,DC=a",
@@ -77,7 +74,7 @@ public abstract class PrepareTestCrossFunctionalGroups extends PrepareZammadTest
                         Map.of("lhmObjectIdTrackDuck",
                                 new ActiveDirectoryUserDTO("track.duck", "lhmObjectIdTrackDuck",
                                         activeDirectoryUsers.get("track.duck"),
-                                        "Track Duck", "track.duck", "track.duck", "ITM"))));
+                                        "Track Duck", "track.duck", "track.duck", "Track", "Duck", "mail@", "ou"))));
     }
 
     protected List<EnhancedActiveDirectoryGroupDTO> removedZammadRoleUsers() {
@@ -90,7 +87,7 @@ public abstract class PrepareTestCrossFunctionalGroups extends PrepareZammadTest
                 Map.of("lhmObjectIdTrickDuck",
                         new ActiveDirectoryUserDTO("trick.duck", "lhmObjectIdTrickDuck",
                                 activeDirectoryUsers.get("trick.duck"),
-                                "Trick Duck", "trick.duck", "trick.duck", "ITM"))),
+                                "Trick Duck", "trick.duck", "trick.duck", "Trick", "Duck", "mail@", "ou"))),
         new EnhancedActiveDirectoryGroupDTO("lhm-ab-dbsticketing-rit-testrolle2-ig",
                 "lhm-ab-dbsticketing-rit-testrolle2-ig",
                 "CN=lhm-ab-dbsticketing-rit-testrolle2-ig,OU=f,OU=d,OU=c,DC=b,DC=a",
@@ -99,18 +96,18 @@ public abstract class PrepareTestCrossFunctionalGroups extends PrepareZammadTest
                 Map.of()));
     }
 
-    protected void mockUserLookUps(LdapService ldapService) {
+    protected void mockUserLookUps(ActiveDirectoryService activeDirectoryService) {
 
-        when(ldapService.lookupUser("uid=tick.duck,".concat(ActiveDirectoryGroupsTest.LDAP_USER_SEARCH_BASE))).thenReturn(Optional.of(new EnhancedLdapUserDTO(new LdapBaseUserDTO("lhmObjectIdTickDuck", null, null, "Tick", "Duck", null, null))));
-        when(ldapService.lookupUser("uid=trick.duck,".concat(ActiveDirectoryGroupsTest.LDAP_USER_SEARCH_BASE))).thenReturn(Optional.of(new EnhancedLdapUserDTO(new LdapBaseUserDTO("lhmObjectIdTrickDuck", null, null, "Trick", "Duck", null, null))));
-        when(ldapService.lookupUser("uid=track.duck,".concat(ActiveDirectoryGroupsTest.LDAP_USER_SEARCH_BASE))).thenReturn(Optional.of(new EnhancedLdapUserDTO(new LdapBaseUserDTO("lhmObjectIdTrackDuck", null, null, "Track", "Duck", null, null))));
+        when(activeDirectoryService.lookupUser("CN=tick.duck,OU=d,OU=ITM,OU=c,DC=b,DC=a")).thenReturn(new ActiveDirectoryUserDTO("cn", "lhmObjectIdTickDuck", "distinguishedName", "displayName", "name", "uid", "Ticke", "Duck", "mail", "ou"));
+        when(activeDirectoryService.lookupUser("CN=trick.duck,OU=kd,OU=ITM,OU=c,DC=b,DC=a")).thenReturn(new ActiveDirectoryUserDTO("cn", "lhmObjectIdTrickDuck", "distinguishedName", "displayName", "name", "uid", "Trick", "Duck", "mail", "ou"));
+        when(activeDirectoryService.lookupUser("CN=track.duck,OU=d,OU=ITM,OU=c,DC=bn,DC=a")).thenReturn(new ActiveDirectoryUserDTO("cn", "lhmObjectIdTrackDuck", "distinguishedName", "displayName", "name", "uid", "Track", "Duck", "mail", "ou"));
 
     }
 
     protected void mockZammadServiceActions(ZammadService zammadService) {
 
-        when(zammadService.createZammadUser(new User(null, "Trick", "Duck", "lhmObjectIdTrickDuck", true, null, null, "lhmObjectIdTrickDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998)), null, null, true, null))).thenReturn(new User(1, "Trick", "Duck", "lhmObjectIdTrickDuck", true, null, null, "lhmObjectIdTrickDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998)), null, null, true, null));
-        when(zammadService.createZammadUser(new User(null, "Track", "Duck", "lhmObjectIdTrackDuck", true, null, null, "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998)), null, null, true, null))).thenReturn(new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", true, null, null, "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998)), null, null, true, null));
+        when(zammadService.createZammadUser(new User(null, "Trick", "Duck", "lhmObjectIdTrickDuck", true, "mail", "ou", "lhmObjectIdTrickDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998)), null, null, true, null))).thenReturn(new User(1, "Trick", "Duck", "lhmObjectIdTrickDuck", true, "mail", "ou", "lhmObjectIdTrickDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998)), null, null, true, null));
+        when(zammadService.createZammadUser(new User(null, "Track", "Duck", "lhmObjectIdTrackDuck", true, "mail", "ou", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998)), null, null, true, null))).thenReturn(new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", true, "mail", "ou", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998)), null, null, true, null));
 
         when(zammadService.updateZammadUser(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", false, null, "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0, 1)), null, null, false, null))).thenReturn(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", false, null, "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0, 1)), null, null, false, null));
         when(zammadService.updateZammadUser(new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", false, null, "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0, 1)), null, null, false, null))).thenReturn(new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", false, null, "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0, 1)), null, null, false, null));

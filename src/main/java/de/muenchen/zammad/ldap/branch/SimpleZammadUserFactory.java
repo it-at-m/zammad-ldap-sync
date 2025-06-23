@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import de.muenchen.oss.ezldap.core.LdapUserDTO;
+import de.muenchen.zammad.ad.ActiveDirectoryUserDTO;
 import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.property.ZammadProperties;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,23 @@ import lombok.AllArgsConstructor;
 public class SimpleZammadUserFactory {
 
     ZammadProperties zammadProperties;
+
+
+    public User mapToZammadUser(ActiveDirectoryUserDTO activeDirectoryUserDTO, Optional<Integer> zammadGroupId) {
+
+        User zammadUser = new User(
+                activeDirectoryUserDTO.getGivenName(),
+                activeDirectoryUserDTO.getSn(),
+                activeDirectoryUserDTO.getLhmObjectId(),
+                activeDirectoryUserDTO.getMail(),
+                activeDirectoryUserDTO.getOu(),
+                activeDirectoryUserDTO.getLhmObjectId());
+
+                zammadUser.setRoleIds(defaultSynchronizationRoles());
+                zammadGroupId.ifPresent(id -> zammadUser.setGroupIds(Map.of(id.toString(), List.of("full"))));
+                return zammadUser;
+    }
+
 
     public User mapToZammadUser(LdapUserDTO ldapBaseUserDTO, Optional<Integer> zammadGroupId) {
 
