@@ -104,7 +104,7 @@ public class EliminatedLdapUser extends AbstractTree {
             findChildGroups(zammadService.getZammadGroups(), zammadGroups.get(0).getId(), zammadGroups);
 
             final var zammadBranchUsers = new ArrayList<User>();
-            final var zammadUsers = zammadService.getZammadUsers();
+            final var zammadUsers =  zammadService.getZammadCache().flatMapUsersByLhmObjectId();
             zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
 
             Collections.sort(zammadBranchUsers, Comparator.comparing(User::getId));

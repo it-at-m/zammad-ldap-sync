@@ -29,7 +29,6 @@ public class User {
     private String department;
     @EqualsAndHashCode.Include
     private String lhmobjectid;
-    @EqualsAndHashCode.Include
     @JsonProperty("role_ids")
     private List<Integer> roleIds;
     @JsonProperty("group_ids")

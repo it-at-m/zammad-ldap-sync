@@ -19,11 +19,15 @@ import de.muenchen.zammad.domain.Role;
 import de.muenchen.zammad.domain.Signatures;
 import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.property.ZammadProperties;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class ZammadService {
+
+    @Getter
+    private final ZammadCache zammadCache = new ZammadCache();
 
     private static final String AUTHORIZATION = "Authorization";
 
@@ -68,6 +72,7 @@ public class ZammadService {
         ResponseEntity<Group> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "/" + userId, HttpMethod.PUT, requestEntity,
                 Group.class);
 
+        this.zammadCache.putGroup(responseEntity.getBody());
         return responseEntity.getBody();
     }
 
@@ -80,6 +85,7 @@ public class ZammadService {
         ResponseEntity<String> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups() + "/" + id, HttpMethod.DELETE, requestEntity,
                 String.class);
 
+        this.zammadCache.getZammadGroupsByLhmObjectId().remove(responseEntity.getBody());
         return responseEntity.getBody();
     }
 
@@ -93,7 +99,10 @@ public class ZammadService {
         try {
             responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getGroups(), HttpMethod.POST, requestEntity,
                 Group.class);
+
             log.trace(responseEntity.toString());
+
+            this.zammadCache.putGroup(responseEntity.getBody());
             return Optional.of(responseEntity.getBody());
 
         } catch (Exception ex)
@@ -135,6 +144,7 @@ public class ZammadService {
         ResponseEntity<User> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers() + "/" + userId, HttpMethod.PUT, requestEntity,
                 User.class);
 
+        this.zammadCache.putUser(responseEntity.getBody());
         return responseEntity.getBody();
     }
 
@@ -147,6 +157,7 @@ public class ZammadService {
         ResponseEntity<User> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers(), HttpMethod.POST, requestEntity,
                 User.class);
 
+        this.zammadCache.putUser(responseEntity.getBody());
         return responseEntity.getBody();
     }
 
@@ -159,6 +170,7 @@ public class ZammadService {
         ResponseEntity<String> responseEntity = restTemplate.exchange(zammadProperties.getUrl().getBase() + zammadProperties.getUrl().getUsers() + "/" + id, HttpMethod.DELETE, requestEntity,
                 String.class);
 
+        this.zammadCache.getZammadUsersByLhmObjectId().remove(responseEntity.getBody());
         return responseEntity.getBody();
     }
 

@@ -24,6 +24,7 @@ import de.muenchen.zammad.ad.ActiveDirectoryGroupService;
 import de.muenchen.zammad.ad.ldap.mediator.ActiveDirectoryGroupZammadRoleMapper;
 import de.muenchen.zammad.domain.Role;
 import de.muenchen.zammad.domain.User;
+import de.muenchen.zammad.ldap.branch.ZammadCache;
 import de.muenchen.zammad.ldap.branch.ZammadService;
 import de.muenchen.zammad.property.ActiveDirectoryProperty;
 
@@ -44,29 +45,39 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
 
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
-        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1))),
-                                                                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1)))));
+        when(zammadService.getZammadRoles()).thenReturn(
+                List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
+
+        var users = List.of(
+                new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck",
+                        new ArrayList<Integer>(Arrays.asList(0, 1))),
+                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck",
+                        new ArrayList<Integer>(Arrays.asList(0, 1))));
+        mockUsers(zammadService, users);
+
         mockZammadServiceActions(zammadService);
 
         var activeDirectoryService = mock(ActiveDirectoryService.class);
         mockUserLookUps(activeDirectoryService);
 
         var activeDirectoryGroupService = mock(ActiveDirectoryGroupService.class);
-        when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(createAndUpdateZammadRolesEveryUserOnlyInOneRole()));
+        when(activeDirectoryGroupService.crossOrganizationalGroups())
+                .thenReturn(Optional.of(createAndUpdateZammadRolesEveryUserOnlyInOneRole()));
 
-        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService, createZammadProperties(), new ActiveDirectoryProperty(null, null, null,null, "lhm-ab-dbsticketing-"), activeDirectoryGroupService, zammadService);
+        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService,
+                createZammadProperties(), new ActiveDirectoryProperty(null, null, null, null, "lhm-ab-dbsticketing-"),
+                activeDirectoryGroupService, zammadService);
         activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
 
         verify(zammadService, times(1)).createZammadUser(createUserCaptor.capture());
         assertEquals("lhmObjectIdTrickDuck", createUserCaptor.getAllValues().get(0).getLhmobjectid());
-        assertEquals(List.of(0,1,998), createUserCaptor.getAllValues().get(0).getRoleIds());
+        assertEquals(List.of(0, 1, 998), createUserCaptor.getAllValues().get(0).getRoleIds());
 
         verify(zammadService, times(2)).updateZammadUser(updateUserCaptor.capture());
         assertEquals("lhmObjectIdTickDuck", updateUserCaptor.getAllValues().get(0).getLhmobjectid());
-        assertEquals(List.of(0,1,998), updateUserCaptor.getAllValues().get(0).getRoleIds());
+        assertEquals(List.of(0, 1, 998), updateUserCaptor.getAllValues().get(0).getRoleIds());
         assertEquals("lhmObjectIdTrackDuck", updateUserCaptor.getAllValues().get(1).getLhmobjectid());
-        assertEquals(List.of(0,1,999), updateUserCaptor.getAllValues().get(1).getRoleIds());
+        assertEquals(List.of(0, 1, 999), updateUserCaptor.getAllValues().get(1).getRoleIds());
 
     }
 
@@ -75,9 +86,16 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
 
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
-        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1,998))),
-                                                                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1,999)))));
+        when(zammadService.getZammadRoles()).thenReturn(
+                List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
+
+        var users = List.of(
+                new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck",
+                        new ArrayList<Integer>(Arrays.asList(0, 1, 998))),
+                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck",
+                        new ArrayList<Integer>(Arrays.asList(0, 1, 999))));
+        mockUsers(zammadService, users);
+
         mockZammadServiceActions(zammadService);
 
         var activeDirectoryService = mock(ActiveDirectoryService.class);
@@ -86,18 +104,20 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
         var activeDirectoryGroupService = mock(ActiveDirectoryGroupService.class);
         when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(removedZammadRoleUsers()));
 
-        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService, createZammadProperties(), new ActiveDirectoryProperty(null, null, null,null, "lhm-ab-dbsticketing-"), activeDirectoryGroupService, zammadService);
+        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService,
+                createZammadProperties(), new ActiveDirectoryProperty(null, null, null, null, "lhm-ab-dbsticketing-"),
+                activeDirectoryGroupService, zammadService);
         activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
 
         verify(zammadService, times(1)).createZammadUser(createUserCaptor.capture());
         assertEquals("lhmObjectIdTrickDuck", createUserCaptor.getAllValues().get(0).getLhmobjectid());
-        assertEquals(List.of(0,1,998), createUserCaptor.getAllValues().get(0).getRoleIds());
+        assertEquals(List.of(0, 1, 998), createUserCaptor.getAllValues().get(0).getRoleIds());
 
         verify(zammadService, times(2)).updateZammadUser(updateUserCaptor.capture());
         assertEquals("lhmObjectIdTickDuck", updateUserCaptor.getAllValues().get(0).getLhmobjectid());
-        assertEquals(List.of(0,1), updateUserCaptor.getAllValues().get(0).getRoleIds());
+        assertEquals(List.of(0, 1), updateUserCaptor.getAllValues().get(0).getRoleIds());
         assertEquals("lhmObjectIdTrackDuck", updateUserCaptor.getAllValues().get(1).getLhmobjectid());
-        assertEquals(List.of(0,1), updateUserCaptor.getAllValues().get(1).getRoleIds());
+        assertEquals(List.of(0, 1), updateUserCaptor.getAllValues().get(1).getRoleIds());
 
     }
 
@@ -107,17 +127,25 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
         when(zammadService.getZammadRoles()).thenReturn(List.of());
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1))),
-                                                                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1)))));
+        var users = List.of(
+                new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck",
+                        new ArrayList<Integer>(Arrays.asList(0, 1))),
+                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck",
+                        new ArrayList<Integer>(Arrays.asList(0, 1))));
+
+        mockUsers(zammadService, users);
         mockZammadServiceActions(zammadService);
 
         var activeDirectoryService = mock(ActiveDirectoryService.class);
         mockUserLookUps(activeDirectoryService);
 
         var activeDirectoryGroupService = mock(ActiveDirectoryGroupService.class);
-        when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(createAndUpdateZammadRolesEveryUserOnlyInOneRole()));
+        when(activeDirectoryGroupService.crossOrganizationalGroups())
+                .thenReturn(Optional.of(createAndUpdateZammadRolesEveryUserOnlyInOneRole()));
 
-        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService, createZammadProperties(), new ActiveDirectoryProperty(null, null, null,null, "lhm-ab-dbsticketing-"), activeDirectoryGroupService, zammadService);
+        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService,
+                createZammadProperties(), new ActiveDirectoryProperty(null, null, null, null, "lhm-ab-dbsticketing-"),
+                activeDirectoryGroupService, zammadService);
         activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
 
         verify(zammadService, times(0)).createZammadUser(createUserCaptor.capture());
@@ -133,9 +161,14 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
 
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
-        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1,998))),
-                                                                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck", new ArrayList<Integer>(Arrays.asList(0,1,999)))));
+        when(zammadService.getZammadRoles()).thenReturn(
+                List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
+        var users = List.of(
+                new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck",
+                        new ArrayList<Integer>(Arrays.asList(0, 1, 998))),
+                new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck",
+                        new ArrayList<Integer>(Arrays.asList(0, 1, 999))));
+        mockUsers(zammadService, users);
         mockZammadServiceActions(zammadService);
 
         var activeDirectoryService = mock(ActiveDirectoryService.class);
@@ -144,7 +177,9 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
         var activeDirectoryGroupService = mock(ActiveDirectoryGroupService.class);
         when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(List.of()));
 
-        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService, createZammadProperties(), new ActiveDirectoryProperty(null, null, null,null, "lhm-ab-dbsticketing-"), activeDirectoryGroupService, zammadService);
+        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService,
+                createZammadProperties(), new ActiveDirectoryProperty(null, null, null, null, "lhm-ab-dbsticketing-"),
+                activeDirectoryGroupService, zammadService);
         activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
 
         verify(zammadService, times(0)).createZammadUser(createUserCaptor.capture());
@@ -152,34 +187,42 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
     }
 
     /*
-     * Add users not exist in ldap and are present in more than one active directory group.
+     * Add users not exist in ldap and are present in more than one active directory
+     * group.
      */
     @Test
     void userExistsInManyActiveDirectoryGroups() {
 
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of());
-        when(zammadService.getZammadRoles()).thenReturn(List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
-        when(zammadService.getZammadUsers()).thenReturn(List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck", "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0,1,998)))));
+        when(zammadService.getZammadRoles()).thenReturn(
+                List.of(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null)));
+    var users = List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck",
+                "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998))));
 
+        mockUsers(zammadService, users);
         mockZammadServiceActions(zammadService);
 
         var activeDirectoryService = mock(ActiveDirectoryService.class);
         mockUserLookUps(activeDirectoryService);
 
         var activeDirectoryGroupService = mock(ActiveDirectoryGroupService.class);
-        when(activeDirectoryGroupService.crossOrganizationalGroups()).thenReturn(Optional.of(createAndUpdateZammadRolesUserInManyRoles()));
+        when(activeDirectoryGroupService.crossOrganizationalGroups())
+                .thenReturn(Optional.of(createAndUpdateZammadRolesUserInManyRoles()));
 
-        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService, createZammadProperties(), new ActiveDirectoryProperty(null, null, null,null, "lhm-ab-dbsticketing-"), activeDirectoryGroupService, zammadService);
+        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService,
+                createZammadProperties(), new ActiveDirectoryProperty(null, null, null, null, "lhm-ab-dbsticketing-"),
+                activeDirectoryGroupService, zammadService);
         activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
 
         verify(zammadService, times(2)).createZammadUser(createUserCaptor.capture());
-        var track = createUserCaptor.getAllValues().stream().filter(user -> user.getFirstname().equals("Track")).toList();
+        var track = createUserCaptor.getAllValues().stream().filter(user -> user.getFirstname().equals("Track"))
+                .toList();
         assertEquals("Track", track.get(0).getFirstname());
-        assertEquals(List.of(0,1,998), track.get(0).getRoleIds());
+        assertEquals(List.of(0, 1, 998), track.get(0).getRoleIds());
         verify(zammadService, times(1)).updateZammadUser(updateUserCaptor.capture());
         assertEquals("Track", updateUserCaptor.getAllValues().get(0).getFirstname());
-        assertEquals(List.of(0,1,998,999), updateUserCaptor.getAllValues().get(0).getRoleIds());
+        assertEquals(List.of(0, 1, 998, 999), updateUserCaptor.getAllValues().get(0).getRoleIds());
 
     }
 

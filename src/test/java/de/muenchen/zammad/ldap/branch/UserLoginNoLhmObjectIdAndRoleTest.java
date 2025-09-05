@@ -57,6 +57,8 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareZammadTestEnvironment {
         when(zammadService.getZammadUsers()).thenReturn(
                 List.of(new User(1, "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", true, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
 
+        when(zammadService.getZammadCache()).thenReturn(new ZammadCache());
+
         when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail(null));
         when(zammadService.getZammadEmailSignatures()).thenReturn(List.of());
 
@@ -84,8 +86,9 @@ class UserLoginNoLhmObjectIdAndRoleTest extends PrepareZammadTestEnvironment {
         var zammadService = mock(ZammadService.class);
 
         when(zammadService.getZammadGroups()).thenReturn(List.of(new Group(1, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
-        when(zammadService.getZammadUsers()).thenReturn(
-                List.of(new User(1, "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", false, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null)));
+
+        var users = List.of(new User(1, "vorname_0_0_1", "nachname_0_0_1", "lhmobjectId_0_0_1", false, null, null, null, List.of(8), Map.of("10", List.of("full")), null, true, null));
+        mockUsers(zammadService, users);
 
         var zammadSyncService = new OrgUnitBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
 

@@ -47,8 +47,10 @@ class DeleteGroupAndUserTest extends PrepareZammadTestEnvironment {
 	void deleteOneGroupTest() {
 
 		var zammadService = mock(ZammadService.class);
-		when(zammadService.getZammadGroups()).thenReturn(List.of(new Group(1, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
-        when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
+		var groups = List.of(new Group(1, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
+		mockGroups(zammadService, groups);
+
+		mockUsers(zammadService, zammadUsers());
 
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
@@ -76,8 +78,8 @@ class DeleteGroupAndUserTest extends PrepareZammadTestEnvironment {
     void deleteAllGroupsTest() {
 
         var zammadService = mock(ZammadService.class);
-        when(zammadService.getZammadGroups()).thenReturn(zammadGroups());
-        when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
+        mockGroups(zammadService, zammadGroups());
+        mockUsers(zammadService, zammadUsers());
 
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);

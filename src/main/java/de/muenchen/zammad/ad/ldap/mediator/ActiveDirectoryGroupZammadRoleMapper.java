@@ -44,8 +44,7 @@ public class ActiveDirectoryGroupZammadRoleMapper {
 
     public void syncAdGroupsToLdapRoles() {
 
-        zammadUsers = OrgUnitBranchSynchronization.generatelhmObjectIdZammadUserMap(zammadService.getZammadUsers().stream()
-                .filter(user -> user.isLdapsyncupdate() && user.isActive()).toList());
+        zammadUsers = OrgUnitBranchSynchronization.generatelhmObjectIdZammadUserMap(zammadService.getZammadCache().flatMapUsersByLhmObjectId().stream().filter(user -> user.isLdapsyncupdate() && user.isActive()).toList());
 
         Optional<List<EnhancedActiveDirectoryGroupDTO>> adGroups = activeDirectoryGroupService
                 .crossOrganizationalGroups();
