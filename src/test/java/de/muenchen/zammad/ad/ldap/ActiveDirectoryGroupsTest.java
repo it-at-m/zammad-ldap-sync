@@ -1,5 +1,7 @@
 package de.muenchen.zammad.ad.ldap;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -9,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -20,11 +23,15 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import de.muenchen.userservice.ActiveDirectoryService;
+import de.muenchen.userservice.ShadeTree;
 import de.muenchen.zammad.ad.ActiveDirectoryGroupService;
+import de.muenchen.zammad.ad.ActiveDirectoryUserDTO;
+import de.muenchen.zammad.ad.EnhancedActiveDirectoryGroupDTO;
 import de.muenchen.zammad.ad.ldap.mediator.ActiveDirectoryGroupZammadRoleMapper;
+import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.Role;
 import de.muenchen.zammad.domain.User;
-import de.muenchen.zammad.ldap.branch.ZammadCache;
+import de.muenchen.zammad.ldap.branch.EliminatedLdapUser;
 import de.muenchen.zammad.ldap.branch.ZammadService;
 import de.muenchen.zammad.property.ActiveDirectoryProperty;
 
@@ -223,6 +230,80 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
         verify(zammadService, times(1)).updateZammadUser(updateUserCaptor.capture());
         assertEquals("Track", updateUserCaptor.getAllValues().get(0).getFirstname());
         assertEquals(List.of(0, 1, 998, 999), updateUserCaptor.getAllValues().get(0).getRoleIds());
+
+    }
+
+    /*
+     * User is deactivated because they left their ldap organization unit and then reactivated through an active directory role.
+     */
+     @Test
+    void deactivationResetByActiveDirectorRoleTest() {
+
+        // Deactivate by ldap
+
+        var zammadService = mock(ZammadService.class);
+        var groups = List.of(new Group(1, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
+        mockGroups(zammadService, groups);
+
+        var zammadUsers = new ArrayList<User>(Arrays.asList(new User(1, "trick", "duck", "lhmObjectIdTrickDuck", true, null, null, "lhmObjectIdTrickDuck", new ArrayList<>(Arrays.asList(0, 1)), Map.of("1", List.of("full")), null, true, null)));
+
+        mockUsers(zammadService, zammadUsers);
+
+        userAndGroupMocks(zammadService);
+        channelsMock(zammadService);
+
+        assertEquals(1, zammadService.getZammadGroups().size());
+        assertEquals(1, zammadService.getZammadUsers().size());
+
+        var deletedLdapUser = new EliminatedLdapUser(zammadService);
+
+        var reducedLdapTree = reducedLdapTree();
+        var rootNode = reducedLdapTree.entrySet().iterator().next().getValue();
+
+        assertEquals(17, rootNode.flatListLdapUserDTO().size());
+
+        var reducedEnhancedLdapUserDTO = ShadeTree.collectUserFromAllBranches(reducedLdapTree);
+
+        deletedLdapUser.checkForRemoval(Map.of(rootNode.getDistinguishedName(), rootNode).entrySet().iterator().next(), Optional.of(reducedEnhancedLdapUserDTO));
+
+        verify(zammadService, times(1)).updateZammadUser(updateUserCaptor.capture());
+        assertEquals("delete", updateUserCaptor.getAllValues().get(0).getLdapsyncstate());
+        assertFalse(updateUserCaptor.getAllValues().get(0).isActive());
+
+        // Activate by active directory
+
+        var activeDirectoryService = mock(ActiveDirectoryService.class);
+        mockUserLookUps(activeDirectoryService);
+
+        when(zammadService.getZammadRoles()).thenReturn(new ArrayList<>(Arrays.asList(new Role(998, "rit-testrolle1-ig", null), new Role(999, "rit-testrolle2-ig", null))));
+
+        var activeDirectoryGroupService = mock(ActiveDirectoryGroupService.class);
+
+        var adRole = new ArrayList<>(Arrays.asList(new EnhancedActiveDirectoryGroupDTO("lhm-ab-dbsticketing-rit-testrolle1-ig",
+                "lhm-ab-dbsticketing-rit-testrolle1-ig",
+                "CN=lhm-ab-dbsticketing-rit-testrolle1-ig,OU=f,OU=d,OU=c,DC=b,DC=a",
+                "lhm-ab-dbsticketing-rit-testrolle1-ig",
+                List.of(activeDirectoryUsers.get("tick.duck"),
+                        activeDirectoryUsers.get("trick.duck")),
+                Map.of("lhmObjectIdTrickDuck",
+                        new ActiveDirectoryUserDTO("trick.duck", "lhmObjectIdTrickDuck",
+                                activeDirectoryUsers.get("trick.duck"),
+                                "Trick Duck", "trick.duck", "trick.duck", "Trick", "Duck", "mail@", "ou")))));
+
+        when(activeDirectoryGroupService.crossOrganizationalGroups())
+                .thenReturn(Optional.of(adRole));
+
+        var activeDirectoryRoleMapper = new ActiveDirectoryGroupZammadRoleMapper(activeDirectoryService,
+                createZammadProperties(), new ActiveDirectoryProperty(null, null, null, null, "lhm-ab-dbsticketing-"),
+                activeDirectoryGroupService, zammadService);
+
+        activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
+
+        verify(zammadService, times(2)).updateZammadUser(updateUserCaptor.capture());
+        var updates = updateUserCaptor.getAllValues();
+        assertEquals("lhmObjectIdTrickDuck", updates.get(0).getLhmobjectid());
+        assertTrue("Should be reset to activate.", updates.get(0).isActive());
+        assertTrue("Should be reset to blank", updates.get(0).getLdapsyncstate().isEmpty());
 
     }
 

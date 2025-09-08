@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
@@ -108,6 +107,5 @@ class DeleteGroupAndUserTest extends PrepareZammadTestEnvironment {
         assertEquals("vorname_1_3_3", updateUserCaptor.getAllValues().get(3).getFirstname());
 
     }
-
 
 }

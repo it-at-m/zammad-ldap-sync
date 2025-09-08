@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class EliminatedLdapUser extends AbstractTree {
 
+    public static final String DELETE = "delete";
+
     public EliminatedLdapUser(ZammadService zammadService) {
         this.zammadService = zammadService;
     }
@@ -85,7 +87,7 @@ public class EliminatedLdapUser extends AbstractTree {
                 log.debug("User in Zammad is active '{}' - setting to inactive as a first step.",
                         zammadUser.isActive());
                 zammadUser.setActive(false);
-                zammadUser.setLdapsyncstate("delete");
+                zammadUser.setLdapsyncstate(DELETE);
                 zammadService.updateZammadUser(zammadUser);
             }
         } else {

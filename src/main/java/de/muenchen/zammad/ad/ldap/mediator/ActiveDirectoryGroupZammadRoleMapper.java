@@ -44,7 +44,7 @@ public class ActiveDirectoryGroupZammadRoleMapper {
 
     public void syncAdGroupsToLdapRoles() {
 
-        zammadUsers = OrgUnitBranchSynchronization.generatelhmObjectIdZammadUserMap(zammadService.getZammadCache().flatMapUsersByLhmObjectId().stream().filter(user -> user.isLdapsyncupdate() && user.isActive()).toList());
+        zammadUsers = OrgUnitBranchSynchronization.generatelhmObjectIdZammadUserMap(zammadService.getZammadCache().flatMapUsersByLhmObjectId().stream().filter(user -> user.isLdapsyncupdate()).toList());
 
         Optional<List<EnhancedActiveDirectoryGroupDTO>> adGroups = activeDirectoryGroupService
                 .crossOrganizationalGroups();
@@ -71,9 +71,9 @@ public class ActiveDirectoryGroupZammadRoleMapper {
 
                         activeDirectoryUsers.forEach(activeDirectoryUser -> {
 
-                            Optional<List<User>> currentUser = Optional
+                            Optional<List<User>> zammadUser = Optional
                                     .ofNullable(zammadUsers.get(activeDirectoryUser.getLhmObjectId()));
-                            currentUser.ifPresentOrElse(users -> this.updateUser(users, roleId), () -> newUser(activeDirectoryUser, roleId));
+                            zammadUser.ifPresentOrElse(users -> this.updateUser(users, roleId), () -> this.newUser(activeDirectoryUser, roleId));
                         });
 
                         zammadUsers.values().forEach(users -> removeUserRoleId(users, adGroup, roleId));
@@ -102,11 +102,18 @@ public class ActiveDirectoryGroupZammadRoleMapper {
 
     private void updateUser(List<User> users, Integer roleId) {
         users.forEach(user -> {
-            if (!user.getRoleIds().contains(roleId)) {
-                user.getRoleIds().add(roleId);
+            if (!user.getRoleIds().contains(roleId) || !user.isActive()) {
+                if (!user.getRoleIds().contains(roleId)) {
+                    user.getRoleIds().add(roleId);
+                    log.debug("User '{}' with zammad id '{}' roleIds '{}' updated.", user.getLhmobjectid(), user.getId(),
+                            user.getRoleIds().toString());
+                }
+                if (!user.isActive()) {
+                    user.setActive(true);
+                    user.setLdapsyncstate("");
+                    log.debug("Reactivate User (active=true, ldapsyncstate='') '{}' with zammad id '{}'.", user.getLhmobjectid(), user.getId());
+                }
                 zammadService.updateZammadUser(user);
-                log.debug("User '{}' with zammad id '{}' roleIds '{}' updated.", user.getLhmobjectid(), user.getId(),
-                        user.getRoleIds().toString());
             } else {
                 log.debug("User '{}' with zammad id '{}' already has roleIds '{}' ({}).", user.getLhmobjectid(),
                         user.getId(), roleId, user.getRoleIds().toString());
