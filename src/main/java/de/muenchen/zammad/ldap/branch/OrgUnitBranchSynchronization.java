@@ -36,11 +36,17 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
 
         this.statistic = new Statistic();
 
-        if (zammadService.getZammadCache().isEmptyZammadGroupsByLhmObjectId())
+        if (zammadService.getZammadCache().isEmptyZammadGroupsByLhmObjectId()) {
+            log.info("Start read Zammad groups ...");
             zammadService.getZammadCache().setZammadGroupsByLhmObjectId(getCurrentZammadGroups());
+            log.info("Stop read Zammad groups. '{}' groups read.", zammadService.getZammadCache().getZammadGroupsByLhmObjectId().size());
+        }
 
-         if (zammadService.getZammadCache().isEmptyZammadUsersByLhmObjectId())
+         if (zammadService.getZammadCache().isEmptyZammadUsersByLhmObjectId()) {
+             log.info("Start read Zammad users ...");
              zammadService.getZammadCache().setZammadUsersByLhmObjectId(getCurrentZammadUsers());
+             log.info("Stop read Zammad users. '{}' users read.", zammadService.getZammadCache().getZammadUsersByLhmObjectId().size());
+         }
 
         shadeLdapSubtree.entrySet().stream().findFirst()
                 .ifPresent(finding -> statistic.logInfoStartProcessing(finding.getValue()));
@@ -248,7 +254,8 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
     private void prepareUserForComparison(User zammadUserCompare, User foundZammadUser) {
         zammadUserCompare.setId(foundZammadUser.getId());
         zammadUserCompare.setUpdatedAt(foundZammadUser.getUpdatedAt());
-        zammadUserCompare.setActive(foundZammadUser.isActive());
+        zammadUserCompare.setActive(true);
+        zammadUserCompare.setLdapsyncstate(null);
         zammadUserCompare.setLdapsyncupdate(true);
     }
 

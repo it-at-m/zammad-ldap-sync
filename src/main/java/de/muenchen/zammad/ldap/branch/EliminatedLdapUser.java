@@ -102,9 +102,7 @@ public class EliminatedLdapUser extends AbstractTree {
         if (zammadGroups.isEmpty())
             return new HashMap<>();
         else {
-
-            findChildGroups(zammadService.getZammadGroups(), zammadGroups.get(0).getId(), zammadGroups);
-
+            findChildGroups(zammadService.getZammadCache().flatMapGroupsByLhmObjectId(), zammadGroups.get(0).getId(), zammadGroups);
             final var zammadBranchUsers = new ArrayList<User>();
             final var zammadUsers =  zammadService.getZammadCache().flatMapUsersByLhmObjectId();
             zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
@@ -120,7 +118,7 @@ public class EliminatedLdapUser extends AbstractTree {
 
     private List<Group> findRootZammadGroup(String ldapOuRootLhmObjectId) {
 
-        final var rootZammadGroups = getCurrentZammadGroups().get(ldapOuRootLhmObjectId);
+        final var rootZammadGroups = zammadService.getZammadCache().getZammadGroupsByLhmObjectId().get(ldapOuRootLhmObjectId);
         if (rootZammadGroups == null) {
             log.debug("No zammad root group found '{}'.", ldapOuRootLhmObjectId);
             return new ArrayList<>();

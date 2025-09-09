@@ -1,6 +1,7 @@
 package de.muenchen.zammad.ad.ldap;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -60,7 +61,7 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
                         new ArrayList<Integer>(Arrays.asList(0, 1))),
                 new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck",
                         new ArrayList<Integer>(Arrays.asList(0, 1))));
-        mockUsers(zammadService, users);
+        mockUsersCache(zammadService, users);
 
         mockZammadServiceActions(zammadService);
 
@@ -101,7 +102,7 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
                         new ArrayList<Integer>(Arrays.asList(0, 1, 998))),
                 new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck",
                         new ArrayList<Integer>(Arrays.asList(0, 1, 999))));
-        mockUsers(zammadService, users);
+        mockUsersCache(zammadService, users);
 
         mockZammadServiceActions(zammadService);
 
@@ -140,7 +141,7 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
                 new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck",
                         new ArrayList<Integer>(Arrays.asList(0, 1))));
 
-        mockUsers(zammadService, users);
+        mockUsersCache(zammadService, users);
         mockZammadServiceActions(zammadService);
 
         var activeDirectoryService = mock(ActiveDirectoryService.class);
@@ -175,7 +176,7 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
                         new ArrayList<Integer>(Arrays.asList(0, 1, 998))),
                 new User(3, "Track", "Duck", "lhmObjectIdTrackDuck", "ITM", "lhmObjectIdTrackDuck",
                         new ArrayList<Integer>(Arrays.asList(0, 1, 999))));
-        mockUsers(zammadService, users);
+        mockUsersCache(zammadService, users);
         mockZammadServiceActions(zammadService);
 
         var activeDirectoryService = mock(ActiveDirectoryService.class);
@@ -207,7 +208,7 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
     var users = List.of(new User(2, "Tick", "Duck", "lhmObjectIdTickDuck",
                 "ITM", "lhmObjectIdTickDuck", new ArrayList<Integer>(Arrays.asList(0, 1, 998))));
 
-        mockUsers(zammadService, users);
+        mockUsersCache(zammadService, users);
         mockZammadServiceActions(zammadService);
 
         var activeDirectoryService = mock(ActiveDirectoryService.class);
@@ -243,11 +244,10 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
 
         var zammadService = mock(ZammadService.class);
         var groups = List.of(new Group(1, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
-        mockGroups(zammadService, groups);
+        mockGroupsCache(zammadService, groups);
 
         var zammadUsers = new ArrayList<User>(Arrays.asList(new User(1, "trick", "duck", "lhmObjectIdTrickDuck", true, null, null, "lhmObjectIdTrickDuck", new ArrayList<>(Arrays.asList(0, 1)), Map.of("1", List.of("full")), null, true, null)));
-
-        mockUsers(zammadService, zammadUsers);
+        mockUsersCache(zammadService, zammadUsers);
 
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
@@ -303,7 +303,7 @@ class ActiveDirectoryGroupsTest extends PrepareTestCrossFunctionalGroups {
         var updates = updateUserCaptor.getAllValues();
         assertEquals("lhmObjectIdTrickDuck", updates.get(0).getLhmobjectid());
         assertTrue("Should be reset to activate.", updates.get(0).isActive());
-        assertTrue("Should be reset to blank", updates.get(0).getLdapsyncstate().isEmpty());
+        assertNull("Should be reset.", updates.get(0).getLdapsyncstate());
 
     }
 

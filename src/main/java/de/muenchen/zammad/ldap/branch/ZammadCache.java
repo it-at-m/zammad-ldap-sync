@@ -38,4 +38,8 @@ public class ZammadCache {
         return zammadUsersByLhmObjectId.values().stream().flatMap(List::stream).collect(Collectors.toList());
     }
 
+    public List<Group> flatMapGroupsByLhmObjectId() {
+        return zammadGroupsByLhmObjectId.values().stream().flatMap(List::stream).collect(Collectors.toList());
+    }
+
 }

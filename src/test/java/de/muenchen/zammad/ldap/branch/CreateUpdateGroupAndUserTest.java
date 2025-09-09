@@ -45,7 +45,7 @@ class CreateUpdateGroupAndUserTest extends PrepareZammadTestEnvironment {
 
 		var zammadService = mock(ZammadService.class);
 		when(zammadService.getZammadGroups()).thenReturn(List.of(zammadGroup_lhmobjectId_1_1_reset(), zammadGroup_lhmobjectId_2_2_2_reset()));
-        mockUsers(zammadService, List.of(zammadUser_lhmobjectId_2_2_3_reset()));
+        mockUsersCache(zammadService, List.of(zammadUser_lhmobjectId_2_2_3_reset()));
 
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
@@ -86,7 +86,7 @@ class CreateUpdateGroupAndUserTest extends PrepareZammadTestEnvironment {
 
         var zammadService = mock(ZammadService.class);
 
-        mockGroups(zammadService, List.of());
+        mockGroupsCache(zammadService, List.of());
 
         var modifiedUserList = zammadUsers();
         modifiedUserList.remove(17);

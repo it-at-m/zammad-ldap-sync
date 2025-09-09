@@ -29,6 +29,8 @@ class PrepareZammadTestEnvironment extends PrepareLdapTestShadetree {
     public static final String ORGANIZATIONAL_UNIT_CHANNEL = "ITM";
     public static final String STANDARD_EMAIL_CHANNEL = "LHM";
 
+    private ZammadCache cache = new ZammadCache();
+
     protected void userAndGroupMocks(ZammadService zammadService) {
         // Groups
         when(zammadService.createZammadGroup(new Group(null, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null))).thenReturn(Optional.of(new Group(1, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
@@ -146,19 +148,18 @@ class PrepareZammadTestEnvironment extends PrepareLdapTestShadetree {
         return zammadProperties;
 	}
 
-	protected void mockUsers(ZammadService zammadService, List<User> users) {
+
+	protected void mockUsersCache(ZammadService zammadService, List<User> users) {
 
         when(zammadService.getZammadUsers()).thenReturn(users);
-        var cache = new ZammadCache();
         users.stream().forEach(u -> cache.putUser(u));
 
         when(zammadService.getZammadCache()).thenReturn(cache);
     }
 
-	protected void mockGroups(ZammadService zammadService, List<Group> groups) {
+	protected void mockGroupsCache(ZammadService zammadService, List<Group> groups) {
 
         when(zammadService.getZammadGroups()).thenReturn(groups);
-        var cache = new ZammadCache();
         groups.stream().forEach(g -> cache.putGroup(g));
 
         when(zammadService.getZammadCache()).thenReturn(cache);

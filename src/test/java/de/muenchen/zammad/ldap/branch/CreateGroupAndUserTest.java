@@ -47,7 +47,7 @@ class CreateGroupAndUserTest extends PrepareZammadTestEnvironment {
 
 		var zammadService = mock(ZammadService.class);
 		when(zammadService.getZammadGroups()).thenReturn(List.of());
-		mockUsers(zammadService, List.of());
+		mockUsersCache(zammadService, List.of());
 
         userAndGroupMocks(zammadService);
 
@@ -76,7 +76,7 @@ class CreateGroupAndUserTest extends PrepareZammadTestEnvironment {
 
         var zammadService = mock(ZammadService.class);
         when(zammadService.getZammadGroups()).thenReturn(List.of( new Group(1, 0, "shortname_2_1", true, true, "lhmobjectId_2_1", null, null, null)));
-        mockUsers(zammadService, List.of());
+        mockUsersCache(zammadService, List.of());
 
         assertEquals(1, zammadService.getZammadGroups().size());
         assertEquals(0, zammadService.getZammadUsers().size());
