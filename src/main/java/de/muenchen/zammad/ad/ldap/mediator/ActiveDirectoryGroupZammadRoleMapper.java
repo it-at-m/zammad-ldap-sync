@@ -48,8 +48,7 @@ public class ActiveDirectoryGroupZammadRoleMapper {
         zammadUsers = OrgUnitBranchSynchronization.generatelhmObjectIdZammadUserMap(zammadService.getZammadCache().flatMapUsersByLhmObjectId());
 
         log.info("Start active directory user lookup ...");
-        Optional<List<EnhancedActiveDirectoryGroupDTO>> adGroups = activeDirectoryGroupService
-                .crossOrganizationalGroups();
+        Optional<List<EnhancedActiveDirectoryGroupDTO>> adGroups = activeDirectoryGroupService.crossOrganizationalGroups();
         log.info("End active directory user lookup.");
 
         Map<String, Role> zammadRoles = zammadService.getZammadRoles().stream().collect(
@@ -128,7 +127,7 @@ public class ActiveDirectoryGroupZammadRoleMapper {
                 }
             }
             else {
-                log.warn("User with zammad id {} and roleId {} : ldapsyncupdate = false, skip update. ", user.getId(), roleId);
+                log.warn("User with zammad id {} (lhmobjectid={}) and roleId {} : ldapsyncupdate = false, skip update. ", user.getId(), user.getLhmobjectid(), roleId);
             }
         });
 
