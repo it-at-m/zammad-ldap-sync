@@ -5,13 +5,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.muenchen.zammad.domain.Group;
-import de.muenchen.zammad.domain.User;
 import de.muenchen.zammad.property.ZammadProperties;
 
 public class AbstractTree {
-
-    protected Map<String, List<Group>> zammadGroupsByLhmObjectId;
-    protected Map<String, List<User>> zammadUsersByLhmObjectId;
 
     protected ZammadService zammadService;
     protected ZammadProperties zammadProperties;

@@ -43,41 +43,43 @@ public class OrgUnitBranchControl {
      */
     public void synchronizationControl() {
 
+        log.info("Start sychronize Zammad groups, user and roles ...");
+
         List<String> ldapDistinguishedNames = requestedOrgUnits.flatMapDistinguishedNames();
         log.info("OuBases :");
         ldapDistinguishedNames.forEach(dn -> log.info("   {}", dn));
 
-        log.info("Start sychronize Zammad groups, user and roles ...");
-
-        log.debug("1/6 Start LDAP operations ...");
+        log.info("1/5 Start LDAP operations ...");
         Map<String, LdapOuNode> ldapShadeTrees = ldapTreeService.buildLdapTrees(null, requestedOrgUnits);
 
-        log.debug("2/6 Check completeness of the requested ldap ous ...");
+        log.info("2/5 Check completeness of the requested ldap ous ...");
         dnValidation.warnIncompleteness(ldapDistinguishedNames, ldapShadeTrees);
 
+        log.info("3/5 Start process ouBases ...");
+        int ouNumber = 0;
         for (Map.Entry<String, LdapOuNode> entry : ldapShadeTrees.entrySet()) {
 
             log.info("Begin synchronize Zammad groups and users with ouBase : {}. ", entry.getKey());
 
             log.trace(entry.getValue().toString());
 
-            log.debug("3/6 Update zammad groups and users ...");
+            log.info("3/5-{} Update zammad groups and users ...", ++ouNumber);
             final var map = new HashMap<String, LdapOuNode>();
             map.put(entry.getKey(), entry.getValue());
             subtree.updateZammadGroupsWithUsers(map);
 
-            log.debug("4/6 Mark user for deletion ...");
+            log.info("3/5-{} Mark user for deletion ...", ouNumber);
             deletedLdapUser.checkForRemoval(entry,
                     Optional.ofNullable(ShadeTree.collectUserFromAllBranches(ldapShadeTrees)));
 
             log.info("End sychronize Zammad groups and users with ouBase : {}.", entry.getKey());
         }
 
-        log.info("5/6 Sync active directory groups and zammad roles ...");
+        log.info("4/5 Sync active directory groups and zammad roles ...");
         activeDirectoryRoleMapper.syncAdGroupsToLdapRoles();
 
         if (!ldapShadeTrees.isEmpty()) {
-            log.debug("6/6 Sync assignment roles for all ouBases ...");
+            log.info("5/5 Sync assignment roles for all ouBases ...");
             groupAssignmentAuthorizations.assignRoleAuthorizations();
         }
 

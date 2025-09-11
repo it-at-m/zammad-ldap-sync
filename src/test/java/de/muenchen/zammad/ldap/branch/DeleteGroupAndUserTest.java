@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
@@ -47,8 +46,10 @@ class DeleteGroupAndUserTest extends PrepareZammadTestEnvironment {
 	void deleteOneGroupTest() {
 
 		var zammadService = mock(ZammadService.class);
-		when(zammadService.getZammadGroups()).thenReturn(List.of(new Group(1, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null)));
-        when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
+		var groups = List.of(new Group(1, null, "shortname_0_1", true, true, "lhmobjectId_0_1", null, null, null));
+		mockGroupsCache(zammadService, groups);
+
+		mockUsersCache(zammadService, zammadUsers());
 
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
@@ -76,8 +77,8 @@ class DeleteGroupAndUserTest extends PrepareZammadTestEnvironment {
     void deleteAllGroupsTest() {
 
         var zammadService = mock(ZammadService.class);
-        when(zammadService.getZammadGroups()).thenReturn(zammadGroups());
-        when(zammadService.getZammadUsers()).thenReturn(zammadUsers());
+        mockGroupsCache(zammadService, zammadGroups());
+        mockUsersCache(zammadService, zammadUsers());
 
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
@@ -106,6 +107,5 @@ class DeleteGroupAndUserTest extends PrepareZammadTestEnvironment {
         assertEquals("vorname_1_3_3", updateUserCaptor.getAllValues().get(3).getFirstname());
 
     }
-
 
 }

@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class EliminatedLdapUser extends AbstractTree {
 
+    public static final String DELETE = "delete";
+
     public EliminatedLdapUser(ZammadService zammadService) {
         this.zammadService = zammadService;
     }
@@ -85,7 +87,7 @@ public class EliminatedLdapUser extends AbstractTree {
                 log.debug("User in Zammad is active '{}' - setting to inactive as a first step.",
                         zammadUser.isActive());
                 zammadUser.setActive(false);
-                zammadUser.setLdapsyncstate("delete");
+                zammadUser.setLdapsyncstate(DELETE);
                 zammadService.updateZammadUser(zammadUser);
             }
         } else {
@@ -100,11 +102,9 @@ public class EliminatedLdapUser extends AbstractTree {
         if (zammadGroups.isEmpty())
             return new HashMap<>();
         else {
-
-            findChildGroups(zammadService.getZammadGroups(), zammadGroups.get(0).getId(), zammadGroups);
-
+            findChildGroups(zammadService.getZammadCache().flatMapGroupsByLhmObjectId(), zammadGroups.get(0).getId(), zammadGroups);
             final var zammadBranchUsers = new ArrayList<User>();
-            final var zammadUsers = zammadService.getZammadUsers();
+            final var zammadUsers =  zammadService.getZammadCache().flatMapUsersByLhmObjectId();
             zammadGroups.forEach(g -> zammadBranchUsers.addAll(findUsers(zammadUsers, g.getId())));
 
             Collections.sort(zammadBranchUsers, Comparator.comparing(User::getId));
@@ -118,7 +118,7 @@ public class EliminatedLdapUser extends AbstractTree {
 
     private List<Group> findRootZammadGroup(String ldapOuRootLhmObjectId) {
 
-        final var rootZammadGroups = getCurrentZammadGroups().get(ldapOuRootLhmObjectId);
+        final var rootZammadGroups = zammadService.getZammadCache().getZammadGroupsByLhmObjectId().get(ldapOuRootLhmObjectId);
         if (rootZammadGroups == null) {
             log.debug("No zammad root group found '{}'.", ldapOuRootLhmObjectId);
             return new ArrayList<>();

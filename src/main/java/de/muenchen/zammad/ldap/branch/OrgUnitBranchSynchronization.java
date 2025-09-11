@@ -35,8 +35,18 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
     public void updateZammadGroupsWithUsers(Map<String, LdapOuNode> shadeLdapSubtree) {
 
         this.statistic = new Statistic();
-        zammadGroupsByLhmObjectId = getCurrentZammadGroups();
-        zammadUsersByLhmObjectId = getCurrentZammadUsers();
+
+        if (zammadService.getZammadCache().isEmptyZammadGroupsByLhmObjectId()) {
+            log.info("Start read Zammad groups ...");
+            zammadService.getZammadCache().setZammadGroupsByLhmObjectId(getCurrentZammadGroups());
+            log.info("Stop read Zammad groups. '{}' groups read.", zammadService.getZammadCache().getZammadGroupsByLhmObjectId().size());
+        }
+
+         if (zammadService.getZammadCache().isEmptyZammadUsersByLhmObjectId()) {
+             log.info("Start read Zammad users ...");
+             zammadService.getZammadCache().setZammadUsersByLhmObjectId(getCurrentZammadUsers());
+             log.info("Stop read Zammad users. '{}' users read.", zammadService.getZammadCache().getZammadUsersByLhmObjectId().size());
+         }
 
         shadeLdapSubtree.entrySet().stream().findFirst()
                 .ifPresent(finding -> statistic.logInfoStartProcessing(finding.getValue()));
@@ -64,7 +74,7 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
 
                 // Find zammad group with lhmObjectID
                 final var lhmObjectIdToFind = ldapOuDto.getLhmObjectId();
-                final var zammadGroupList = zammadGroupsByLhmObjectId.get(lhmObjectIdToFind);
+                final var zammadGroupList = this.zammadService.getZammadCache().getZammadGroupsByLhmObjectId().get(lhmObjectIdToFind);
 
                 Integer currentZammadGroupId = null;
                 if (zammadGroupList != null && zammadGroupList.size() > 1) {
@@ -120,7 +130,6 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
 
     private Optional<Integer> createNewZammadGroup(Group zammadGroupCompare, String lhmObjectIdToFind) {
 
-        StringBuilder zammadId = new StringBuilder();
         log.debug("Group not found in Zammad with lhmObjectId '{}' - creating.", lhmObjectIdToFind);
         // Not found: create new with isLdapsyncupdate=true
         Optional<Group> zammadGroup = zammadService.createZammadGroup(zammadGroupCompare);
@@ -172,7 +181,7 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
                 log.trace(zammadUserCompare.toString());
                 // Find zammad-user with lhmObjectID
                 String lhmObjectIdToFind = user.getLhmObjectId();
-                final var foundZammadUser = Optional.ofNullable(zammadUsersByLhmObjectId.get(lhmObjectIdToFind));
+                final var foundZammadUser = Optional.ofNullable(this.zammadService.getZammadCache().getZammadUsersByLhmObjectId().get(lhmObjectIdToFind));
                 foundZammadUser.ifPresentOrElse(users ->  this.updateUsers(zammadUserCompare, users, lhmObjectIdToFind), () -> createZammadUser(zammadUserCompare, lhmObjectIdToFind));
                 log.debug(LOG_DIVIDER);
             });
@@ -245,7 +254,8 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
     private void prepareUserForComparison(User zammadUserCompare, User foundZammadUser) {
         zammadUserCompare.setId(foundZammadUser.getId());
         zammadUserCompare.setUpdatedAt(foundZammadUser.getUpdatedAt());
-        zammadUserCompare.setActive(foundZammadUser.isActive());
+        zammadUserCompare.setActive(true);
+        zammadUserCompare.setLdapsyncstate(null);
         zammadUserCompare.setLdapsyncupdate(true);
     }
 

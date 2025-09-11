@@ -5,12 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import de.muenchen.oss.ezldap.core.EnhancedLdapUserDTO;
-import de.muenchen.oss.ezldap.core.LdapUserDTO;
-import de.muenchen.userservice.LdapService;
+import de.muenchen.userservice.ActiveDirectoryService;
 import de.muenchen.zammad.ad.ActiveDirectoryGroupService;
 import de.muenchen.zammad.ad.ActiveDirectoryUserDTO;
 import de.muenchen.zammad.ad.EnhancedActiveDirectoryGroupDTO;
@@ -20,8 +17,6 @@ import de.muenchen.zammad.ldap.branch.OrgUnitBranchSynchronization;
 import de.muenchen.zammad.ldap.branch.SimpleZammadUserFactory;
 import de.muenchen.zammad.ldap.branch.ZammadService;
 import de.muenchen.zammad.property.ActiveDirectoryProperty;
-import de.muenchen.zammad.property.LdapProperty;
-import de.muenchen.zammad.property.RequestedOrganizationalUnits;
 import de.muenchen.zammad.property.ZammadProperties;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,53 +28,38 @@ public class ActiveDirectoryGroupZammadRoleMapper {
     private final ZammadService zammadService;
     private final ZammadProperties zammadProperties;
     private final ActiveDirectoryProperty activeDirectoryProperties;
-
-    private final RequestedOrganizationalUnits requestedOuUnits;
-    private final LdapService ldapService;
-
+    private final ActiveDirectoryService adService;
     private Map<String, List<User>> zammadUsers;
 
-    @Autowired
-    public ActiveDirectoryGroupZammadRoleMapper(LdapProperty ldapProperty, ZammadProperties zammadProperties, ActiveDirectoryProperty activeDirectoryProperties,
-            ActiveDirectoryGroupService activeDirectoryGroupService, ZammadService zammadService,
-            RequestedOrganizationalUnits requestedOuUnits) {
-        super();
-        this.ldapService = new LdapService(ldapProperty.getUrl(), null, null, null, null);
-        this.activeDirectoryGroupService = activeDirectoryGroupService;
-        this.zammadService = zammadService;
-        this.requestedOuUnits = requestedOuUnits;
-        this.zammadProperties = zammadProperties;
-        this.activeDirectoryProperties = activeDirectoryProperties;
-    }
+    public ActiveDirectoryGroupZammadRoleMapper(ActiveDirectoryService adService, ZammadProperties zammadProperties,
+            ActiveDirectoryProperty activeDirectoryProperties, ActiveDirectoryGroupService activeDirectoryGroupService,
+            ZammadService zammadService) {
 
-   public ActiveDirectoryGroupZammadRoleMapper(LdapService ldapService, ZammadProperties zammadProperties, ActiveDirectoryProperty activeDirectoryProperties,
-            ActiveDirectoryGroupService activeDirectoryGroupService, ZammadService zammadService,
-            RequestedOrganizationalUnits requestedOuUnits) {
         super();
-        this.ldapService = ldapService;
+        this.adService = adService;
         this.activeDirectoryGroupService = activeDirectoryGroupService;
         this.zammadService = zammadService;
-        this.requestedOuUnits = requestedOuUnits;
         this.zammadProperties = zammadProperties;
         this.activeDirectoryProperties = activeDirectoryProperties;
     }
 
     public void syncAdGroupsToLdapRoles() {
 
-        zammadUsers = OrgUnitBranchSynchronization.generatelhmObjectIdZammadUserMap(zammadService.getZammadUsers().stream()
-                .filter(user -> user.isLdapsyncupdate() && user.isActive()).toList());
+        zammadUsers = OrgUnitBranchSynchronization.generatelhmObjectIdZammadUserMap(zammadService.getZammadCache().flatMapUsersByLhmObjectId());
 
-        Optional<List<EnhancedActiveDirectoryGroupDTO>> adGroups = activeDirectoryGroupService
-                .crossOrganizationalGroups();
+        log.info("Start active directory user lookup ...");
+        Optional<List<EnhancedActiveDirectoryGroupDTO>> adGroups = activeDirectoryGroupService.crossOrganizationalGroups();
+        log.info("End active directory user lookup.");
 
-        Map<String, Role> zammadRoles = zammadService.getZammadRoles().stream()
-                .collect(Collectors.toMap(role -> role.getName().replace(groupNamePrefixNullCheck(), ""), role -> role));
+        Map<String, Role> zammadRoles = zammadService.getZammadRoles().stream().collect(
+                Collectors.toMap(role -> role.getName().replace(groupNamePrefixNullCheck(), ""), role -> role));
 
         adGroups.ifPresent(activeDirectoryGroups -> {
 
             for (EnhancedActiveDirectoryGroupDTO adGroup : activeDirectoryGroups) {
 
-                var zammadRole = Optional.ofNullable(zammadRoles.get(adGroup.getName().replace(groupNamePrefixNullCheck(), "")));
+                var zammadRole = Optional
+                        .ofNullable(zammadRoles.get(adGroup.getName().replace(groupNamePrefixNullCheck(), "")));
                 zammadRole.ifPresentOrElse(role -> {
 
                     var zammadRoleId = Optional.of(role.getId());
@@ -88,35 +68,36 @@ public class ActiveDirectoryGroupZammadRoleMapper {
 
                         log.info("Processing role name '{}' with zammad id '{}' ... ", role.getName(), roleId);
 
-                        List<EnhancedLdapUserDTO> activeDirectoryLdapUsers = lookupLdapUsers(
-                                adGroup.getAdUserByLhmObjectId());
+                        List<ActiveDirectoryUserDTO> activeDirectoryUsers = adGroup.getAdUserByLhmObjectId().values()
+                                .stream().map(user -> adService.lookupUser(user.getDistinguishedName())).toList();
 
-                        log.debug("'{}' Users found in role name '{}' with zammad id '{}'.", activeDirectoryLdapUsers.size(), role.getName(), roleId);
+                        log.debug("'{}' Users found in role name '{}' with zammad id '{}'.",
+                                activeDirectoryUsers.size(), role.getName(), roleId);
 
-                        activeDirectoryLdapUsers.forEach(activeDirectoryLdapUser -> {
+                        activeDirectoryUsers.forEach(activeDirectoryUser -> {
 
-                            Optional<List<User>> currentUser = Optional
-                                    .ofNullable(zammadUsers.get(activeDirectoryLdapUser.getLhmObjectId()));
-                            currentUser.ifPresentOrElse(users -> this.updateUser(users, roleId), () -> newUser(activeDirectoryLdapUser, roleId));
+                            Optional<List<User>> zammadUser = Optional
+                                    .ofNullable(zammadUsers.get(activeDirectoryUser.getLhmObjectId()));
+                            zammadUser.ifPresentOrElse(users -> this.updateUser(users, roleId),
+                                    () -> this.newUser(activeDirectoryUser, roleId));
                         });
 
                         zammadUsers.values().forEach(users -> removeUserRoleId(users, adGroup, roleId));
 
                     });
-                }, () -> log.warn("Active directory group/role '{}' not found in current zammad instance. The search applies 'group-name-pefix' : '{}'.",
-                        adGroup.getName().replace(activeDirectoryProperties.getGroupNamePrefix(), ""), activeDirectoryProperties.getGroupNamePrefix()));
+                }, () -> log.warn(
+                        "Active directory group/role '{}' not found in current zammad instance. The search applies 'group-name-pefix' : '{}'.",
+                        adGroup.getName().replace(activeDirectoryProperties.getGroupNamePrefix(), ""),
+                        activeDirectoryProperties.getGroupNamePrefix()));
             }
         });
     }
 
-    protected void removeUserRoleId(List<User> zammadUsers, EnhancedActiveDirectoryGroupDTO adGroup,
-            Integer roleId) {
+    protected void removeUserRoleId(List<User> zammadUsers, EnhancedActiveDirectoryGroupDTO adGroup, Integer roleId) {
 
-        var zammadUsersWithRoleId = zammadUsers.stream()
-                .filter(user -> user.getRoleIds().contains(roleId)).toList();
+        var zammadUsersWithRoleId = zammadUsers.stream().filter(user -> user.getRoleIds().contains(roleId)).toList();
         var removeRoleIdFromUsers = zammadUsersWithRoleId.stream()
-                .filter(user -> adGroup.getAdUserByLhmObjectId().get(user.getLhmobjectid()) == null)
-                .toList();
+                .filter(user -> adGroup.getAdUserByLhmObjectId().get(user.getLhmobjectid()) == null).toList();
         removeRoleIdFromUsers.forEach(user -> {
             user.getRoleIds().remove(roleId);
             var updatedUser = zammadService.updateZammadUser(user);
@@ -126,55 +107,49 @@ public class ActiveDirectoryGroupZammadRoleMapper {
 
     private void updateUser(List<User> users, Integer roleId) {
         users.forEach(user -> {
-            if (!user.getRoleIds().contains(roleId)) {
-                user.getRoleIds().add(roleId);
-                zammadService.updateZammadUser(user);
-                log.debug("User '{}' with zammad id '{}' roleIds '{}' updated.", user.getLhmobjectid(), user.getId(),
-                        user.getRoleIds().toString());
-            } else {
-                log.debug("User '{}' with zammad id '{}' already has roleIds '{}' ({}).", user.getLhmobjectid(),
-                        user.getId(), roleId, user.getRoleIds().toString());
+            if (user.isLdapsyncupdate()) {
+                if (!user.getRoleIds().contains(roleId) || !user.isActive()) {
+                    if (!user.getRoleIds().contains(roleId)) {
+                        user.getRoleIds().add(roleId);
+                        log.debug("User '{}' with zammad id '{}' roleIds '{}' updated.", user.getLhmobjectid(),
+                                user.getId(), user.getRoleIds().toString());
+                    }
+                    if (!user.isActive()) {
+                        user.setActive(true);
+                        user.setLdapsyncstate(null);
+                        log.debug("Reactivate User (active=true, ldapsyncstate='') '{}' with zammad id '{}'.",
+                                user.getLhmobjectid(), user.getId());
+                    }
+                    zammadService.updateZammadUser(user);
+                } else {
+                    log.debug("User '{}' with zammad id '{}' already has roleIds '{}' ({}).", user.getLhmobjectid(),
+                            user.getId(), roleId, user.getRoleIds().toString());
+                }
+            }
+            else {
+                log.warn("User with zammad id {} (lhmobjectid={}) and roleId {} : ldapsyncupdate = false, skip update. ", user.getId(), user.getLhmobjectid(), roleId);
             }
         });
+
     }
 
-    private void newUser(LdapUserDTO activeDirectoryLdapUser, Integer roleId) {
+    private void newUser(ActiveDirectoryUserDTO activeDirectoryUser, Integer roleId) {
 
-      SimpleZammadUserFactory simpleBuilder = new SimpleZammadUserFactory(
-              this.zammadProperties);
-      var newUser = simpleBuilder.mapToZammadUser(activeDirectoryLdapUser, Optional.empty());
-      newUser.getRoleIds().add(roleId);
-      SimpleZammadUserFactory.activate(newUser);
-      var addedUser = zammadService.createZammadUser(newUser);
-      log.debug("New user '{}' with zammad id '{}' added.", addedUser.getLhmobjectid(),
-        addedUser.getId());
-      var shouldBeNull = Optional.ofNullable(zammadUsers.putIfAbsent(addedUser.getLhmobjectid(), List.of(addedUser)));
-      shouldBeNull.ifPresent(users -> log.warn("User '{}' already exists.", users.stream().map(User::getLhmobjectid).toList()));
+        SimpleZammadUserFactory simpleBuilder = new SimpleZammadUserFactory(this.zammadProperties);
+        var newUser = simpleBuilder.mapToZammadUser(activeDirectoryUser, Optional.empty());
+        newUser.getRoleIds().add(roleId);
+        SimpleZammadUserFactory.activate(newUser);
+        var addedUser = zammadService.createZammadUser(newUser);
+        log.debug("New user '{}' with zammad id '{}' added.", addedUser.getLhmobjectid(), addedUser.getId());
+        var shouldBeNull = Optional.ofNullable(zammadUsers.putIfAbsent(addedUser.getLhmobjectid(), List.of(addedUser)));
+        shouldBeNull.ifPresent(
+                users -> log.warn("User '{}' already exists.", users.stream().map(User::getLhmobjectid).toList()));
 
     }
 
     protected CharSequence groupNamePrefixNullCheck() {
-        return activeDirectoryProperties.getGroupNamePrefix() != null ? activeDirectoryProperties.getGroupNamePrefix() : "";
-    }
-
-    private List<EnhancedLdapUserDTO> lookupLdapUsers(Map<String, ActiveDirectoryUserDTO> adUserByLhmObjectId) {
-        return adUserByLhmObjectId.entrySet().stream().filter(entry -> investigateLdapUserDn(entry.getValue()) != null)
-                .map(entry -> ldapService.lookupUser(investigateLdapUserDn(entry.getValue())).get()).toList();
-    }
-
-    /*
-     * Determine the ldap search base using the department abbreviation in the
-     * configuration, add uid and return complete ldap user distinguished name. This
-     * assumes that the OU identifiers in the configuration correspond to the
-     * department AD identifiers.
-     */
-    private String investigateLdapUserDn(ActiveDirectoryUserDTO user) {
-        var propertiesOuAbbrevationExists = Optional.ofNullable(requestedOuUnits.getOrganizationalUnits().get(user.getLhmReferatName().toUpperCase()));
-        if (propertiesOuAbbrevationExists.isPresent())
-            return String.join(",", "uid=" + user.getUid(), propertiesOuAbbrevationExists.get().getUserSearchBase());
-        else {
-            log.warn("Organizational unit abbrevation '{}' of active directory user ('lhmObjectId={}') contained in 'distinguished name' attribute of the user is not configured in application properties. The active directory user is not synced with 'zammad role authorization'.", user.getLhmReferatName(), user.getLhmObjectId());
-            return null;}
+        return activeDirectoryProperties.getGroupNamePrefix() != null ? activeDirectoryProperties.getGroupNamePrefix()
+                : "";
     }
 
 }

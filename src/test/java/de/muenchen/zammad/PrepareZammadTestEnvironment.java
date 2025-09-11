@@ -13,6 +13,7 @@ import de.muenchen.userservice.LdapOuNode;
 import de.muenchen.zammad.domain.ChannelsEmail;
 import de.muenchen.zammad.domain.Group;
 import de.muenchen.zammad.domain.User;
+import de.muenchen.zammad.ldap.branch.ZammadCache;
 import de.muenchen.zammad.ldap.branch.ZammadService;
 import de.muenchen.zammad.property.Assignment;
 import de.muenchen.zammad.property.OrganizationalUnitsCommonProperties;
@@ -27,6 +28,8 @@ class PrepareZammadTestEnvironment extends PrepareLdapTestShadetree {
 
     public static final String ORGANIZATIONAL_UNIT_CHANNEL = "ITM";
     public static final String STANDARD_EMAIL_CHANNEL = "LHM";
+
+    private ZammadCache cache = new ZammadCache();
 
     protected void userAndGroupMocks(ZammadService zammadService) {
         // Groups
@@ -145,4 +148,20 @@ class PrepareZammadTestEnvironment extends PrepareLdapTestShadetree {
         return zammadProperties;
 	}
 
+
+	protected void mockUsersCache(ZammadService zammadService, List<User> users) {
+
+        when(zammadService.getZammadUsers()).thenReturn(users);
+        users.stream().forEach(u -> cache.putUser(u));
+
+        when(zammadService.getZammadCache()).thenReturn(cache);
+    }
+
+	protected void mockGroupsCache(ZammadService zammadService, List<Group> groups) {
+
+        when(zammadService.getZammadGroups()).thenReturn(groups);
+        groups.stream().forEach(g -> cache.putGroup(g));
+
+        when(zammadService.getZammadCache()).thenReturn(cache);
+    }
 }
