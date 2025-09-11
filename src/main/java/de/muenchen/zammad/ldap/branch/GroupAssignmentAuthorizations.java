@@ -30,7 +30,7 @@ public class GroupAssignmentAuthorizations {
 
      // Fetch all zammad groups
         log.debug("Getting all zammad groups");
-        zammadGroups = zammadService.getZammadCache().flatMapGroupsByLhmObjectId();
+        zammadGroups = zammadService.getZammadGroups();
 
         assignRolesTicketGroupAssignment();
         assignRolesTechnicalUser();
