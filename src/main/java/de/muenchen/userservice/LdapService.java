@@ -183,7 +183,7 @@ public class LdapService extends AbstractLdap {
                     this.enhancedLdapOuAttributesMapper);
 
             searchResults.forEach(o -> {
-                var dn = String.format("ou=%s,%s", o.getOu().replace(",", "\\,"), distinguishedName);
+                var dn = String.format("ou=%s,%s", o.getOu().replace(",", "\\2C"), distinguishedName);
                 var node = new LdapOuNode();
                 node.setNode(o);
                 node.setDistinguishedName(dn);
