@@ -40,7 +40,7 @@ class FindEmailChannelTest extends PrepareZammadTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(new ChannelsEmail(null));
 
-        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService);
 
         assertNull(cache.findEmailAdressId("Value does not matter"));
 
@@ -56,7 +56,7 @@ class FindEmailChannelTest extends PrepareZammadTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(null);
 
-        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService);
         assertNull(cache.findEmailAdressId("Value does not matter"));
 
         verify(zammadService, times(1)).getZammadChannelsEmail();
@@ -73,7 +73,7 @@ class FindEmailChannelTest extends PrepareZammadTestEnvironment {
         var mockChannelIsActive = mockChannelsEmailResponse(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, new Channel(ORGANIZATIONAL_UNIT_CHANNEL_ID, false), STANDARD_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, false)));
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelIsActive);
 
-        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService);
 
         // Only one call, first response is cached.
         assertNull(cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
@@ -92,7 +92,7 @@ class FindEmailChannelTest extends PrepareZammadTestEnvironment {
         var mockChannelIsActive = mockChannelsEmailResponse(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, new Channel(ORGANIZATIONAL_UNIT_CHANNEL_ID, true), STANDARD_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, true)));
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelIsActive);
 
-        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService);
 
         // Only one call, first response is cached.
         assertEquals(ORGANIZATIONAL_EMAIL_ID, cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
@@ -101,7 +101,7 @@ class FindEmailChannelTest extends PrepareZammadTestEnvironment {
     }
 
     @Test
-    void organizationalUnitChannelInactiveStandardActiveTest() {
+    void organizationalUnitChannelInactiveReturnsNullTest() {
 
         var zammadService = mock(ZammadService.class);
 
@@ -111,16 +111,16 @@ class FindEmailChannelTest extends PrepareZammadTestEnvironment {
         var mockChannelIsActive = mockChannelsEmailResponse(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, new Channel(ORGANIZATIONAL_UNIT_CHANNEL_ID, false), STANDARD_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, true)));
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelIsActive);
 
-        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService);
 
         // Only one call, first response is cached.
-        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
-        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
+        assertEquals(null, cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
+        assertEquals(null, cache.findEmailAdressId(ORGANIZATIONAL_UNIT_CHANNEL));
         verify(zammadService, times(1)).getZammadChannelsEmail();
     }
 
     @Test
-    void organizationalUnitNotFoundStandardEmailTest() {
+    void organizationalUnitNotFoundNullReturnTest() {
 
         var zammadService = mock(ZammadService.class);
 
@@ -130,9 +130,9 @@ class FindEmailChannelTest extends PrepareZammadTestEnvironment {
         var onlyStandardEmailChannelExists = mockChannelsEmailResponse(Map.of(ORGANIZATIONAL_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, true), STANDARD_UNIT_CHANNEL_ID, new Channel(STANDARD_UNIT_CHANNEL_ID, true)));
         when(zammadService.getZammadChannelsEmail()).thenReturn(onlyStandardEmailChannelExists);
 
-        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
-        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), cache.findEmailAdressId("FOO"));
-        assertEquals(Integer.valueOf(STANDARD_EMAIL_ID), cache.findEmailAdressId("FOO"));
+        var cache = new EmailAddressCache(zammadService);
+        assertEquals(null, cache.findEmailAdressId("FOO"));
+        assertEquals(null, cache.findEmailAdressId("FOO"));
         verify(zammadService, times(1)).getZammadChannelsEmail();
     }
 
@@ -146,7 +146,7 @@ class FindEmailChannelTest extends PrepareZammadTestEnvironment {
 
         when(zammadService.getZammadChannelsEmail()).thenReturn(mockChannelsEmailResponse(null));
 
-        var cache = new EmailAddressCache(zammadService, standardDefaultMock());
+        var cache = new EmailAddressCache(zammadService);
         assertNull(cache.findEmailAdressId(null));
 
         verify(zammadService, times(0)).getZammadChannelsEmail();

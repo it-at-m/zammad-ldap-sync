@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.muenchen.zammad.property.OrganizationalUnitsCommonProperties;
 import org.springframework.stereotype.Component;
 
 import de.muenchen.oss.ezldap.core.EnhancedLdapOuSearchResultDTO;
@@ -22,14 +23,16 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
 
     private final EmailAddressCache emailAddressCache;
     private final SignatureCache signatureCache;
+    private OrganizationalUnitsCommonProperties commonProperties;
     private Statistic statistic;
 
     public OrgUnitBranchSynchronization(ZammadService zammadService, ZammadProperties zammadProperties,
-            EmailAddressCache emailAddress, SignatureCache signature) {
+            EmailAddressCache emailAddress, SignatureCache signature, OrganizationalUnitsCommonProperties commonProperties) {
         this.zammadService = zammadService;
         this.zammadProperties = zammadProperties;
         this.emailAddressCache = emailAddress;
         this.signatureCache = signature;
+        this.commonProperties = commonProperties;
     }
 
     public void updateZammadGroupsWithUsers(Map<String, LdapOuNode> shadeLdapSubtree) {
@@ -68,7 +71,7 @@ public class OrgUnitBranchSynchronization extends AbstractTree {
                 final var ldapOuDto = node.getNode();
                 final var zammadCurrentGroupName = createGroupName(zammadGroupName, ldapOuDto);
                 final var zammadGroupCompare = mapToZammadGroup(node.getNode(), zammadCurrentGroupName, parentGroupID);
-                zammadGroupCompare.setEmailAddressId(emailAddressCache.findEmailAdressId(node.getOrganizationalUnit()));
+                zammadGroupCompare.setEmailAddressId(emailAddressCache.findEmailAdressId(commonProperties.getEmailChannelOutboundName()));
                 zammadGroupCompare.setSignatureId(signatureCache.findEmailSignatureId(node.getOrganizationalUnit()));
                 log.debug(zammadGroupCompare.toString());
 
