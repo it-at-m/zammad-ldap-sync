@@ -24,17 +24,17 @@ public class EmailAddressCache {
             return null;
         }
 
-        if (cache.containsKey(emailAddressName.toUpperCase())) {
-            final var emailAddressID = cache.get(emailAddressName.toUpperCase());
+        if (cache.containsKey(emailAddressName)) {
+            final var emailAddressID = cache.get(emailAddressName);
             log.debug("Fetch emaildAddressId from cache : {}={}", emailAddressName, emailAddressID);
             return emailAddressID;
         } else {
             final var zammadServiceResponse = zammadService.getZammadChannelsEmail();
             if (zammadServiceResponse == null)
-                cache.put(emailAddressName.toUpperCase(), null);
+                cache.put(emailAddressName, null);
             else
                 cache.put(
-                        emailAddressName.toUpperCase(),
+                        emailAddressName,
                         zammadServiceResponse.findEmailsAddressId(emailAddressName)
                 );
 

@@ -20,9 +20,12 @@ public class ChannelsEmail {
             return null;
 
         var address = getAssets().getEmailAddress().values().stream()
-                .filter(adress -> adress.getName().toLowerCase().startsWith(name.toLowerCase())).findFirst()
+                .filter(ad -> ad.getName() != null)
+                .filter(ad -> ad.getName().equalsIgnoreCase(name))
+                .filter(this::isChannelActive)
+                .findFirst()
                 .orElse(null);
-        if (isChannelActive(address))
+        if (address != null)
             return address.getId();
         else
             return null;
