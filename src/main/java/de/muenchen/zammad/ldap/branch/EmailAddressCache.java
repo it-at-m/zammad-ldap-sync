@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 public class EmailAddressCache {
 
     private ZammadService zammadService;
-    private OrganizationalUnitsCommonProperties commonProperties;
 
     private final HashMap<String, Integer> cache = new HashMap<>();
 
@@ -34,8 +33,10 @@ public class EmailAddressCache {
             if (zammadServiceResponse == null)
                 cache.put(emailAddressName.toUpperCase(), null);
             else
-                cache.put(emailAddressName.toUpperCase(), zammadServiceResponse
-                        .findEmailsAddressId(emailAddressName, commonProperties.getMailStartsWith()));
+                cache.put(
+                        emailAddressName.toUpperCase(),
+                        zammadServiceResponse.findEmailsAddressId(emailAddressName)
+                );
 
             log.debug("EmaildAddressId account found in Zammad '{}={}' and added to cache.", emailAddressName,
                     cache.get(emailAddressName));

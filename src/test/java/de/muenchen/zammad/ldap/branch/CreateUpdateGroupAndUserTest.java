@@ -50,7 +50,7 @@ class CreateUpdateGroupAndUserTest extends PrepareZammadTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-		var zammadSyncServiceSubtree = new OrgUnitBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
+		var zammadSyncServiceSubtree = new OrgUnitBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService), new SignatureCache(zammadService, standardDefaultMock()), standardDefaultMock());
 
 		var ldapTree = createLdapTree();
 
@@ -96,7 +96,7 @@ class CreateUpdateGroupAndUserTest extends PrepareZammadTestEnvironment {
         userAndGroupMocks(zammadService);
         channelsMock(zammadService);
 
-        var zammadSyncService = new OrgUnitBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService, standardDefaultMock()), new SignatureCache(zammadService, standardDefaultMock()));
+        var zammadSyncService = new OrgUnitBranchSynchronization(zammadService, createZammadProperties(), new EmailAddressCache(zammadService), new SignatureCache(zammadService, standardDefaultMock()), standardDefaultMock());
 
         var ldapTree = createLdapTree();
 

@@ -10,8 +10,8 @@ active-directory:
 
 sync:
   organizational-units-common:
-    mail-starts-with: Landeshauptstadt München
     signature-starts-with: LHM
+    email-channel-outbound-name: Landeshauptstadt München
   organizational-units:
     identifier-1:
       distinguished-names:

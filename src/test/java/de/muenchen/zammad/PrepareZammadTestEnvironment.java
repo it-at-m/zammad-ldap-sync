@@ -89,14 +89,14 @@ class PrepareZammadTestEnvironment extends PrepareLdapTestShadetree {
         // Email Channel
         var channelsMock = mock(ChannelsEmail.class);
         when(zammadService.getZammadChannelsEmail()).thenReturn(channelsMock);
-        when(channelsMock.findEmailsAddressId(anyString(), anyString())).thenReturn(null);
+        when(channelsMock.findEmailsAddressId(anyString())).thenReturn(null);
         when(channelsMock.getAssets()).thenReturn(null);
     }
 
     protected OrganizationalUnitsCommonProperties standardDefaultMock() {
 
         var standardMock = mock(OrganizationalUnitsCommonProperties.class);
-        when(standardMock.getMailStartsWith()).thenReturn(STANDARD_EMAIL_CHANNEL);
+        when(standardMock.getEmailChannelOutboundName()).thenReturn(STANDARD_EMAIL_CHANNEL);
         when(standardMock.getSignatureStartsWith()).thenReturn(STANDARD_EMAIL_CHANNEL);
         return standardMock;
     }

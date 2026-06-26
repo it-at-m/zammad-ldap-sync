@@ -10,7 +10,10 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "sync.organizational-units-common")
 public class OrganizationalUnitsCommonProperties {
 
-    private String mailStartsWith;
+    /**
+     * Name of the Email Channel in Zammad used to send notifications of ticket updates to clients of a group.
+     */
+    private String emailChannelOutboundName;
     private String signatureStartsWith;
 
 }

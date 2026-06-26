@@ -24,37 +24,37 @@ class EmailAddressIdTest {
     @Test
     void nameIsNullTest() {
         var emailChannels = new ChannelsEmail(null);
-        assertNull(emailChannels.findEmailsAddressId(null, null));
+        assertNull(emailChannels.findEmailsAddressId( null));
     }
 
     @Test
     void notCompleteZammadResponseTest() {
         var emailChannels = new ChannelsEmail(null);
-        assertNull(emailChannels.findEmailsAddressId("FOO", "FOO"));
+        assertNull(emailChannels.findEmailsAddressId("FOO"));
 
         emailChannels = new ChannelsEmail(new Assets(null, null));
-        assertNull(emailChannels.findEmailsAddressId("FOO", null));
+        assertNull(emailChannels.findEmailsAddressId("FOO"));
 
         emailChannels = new ChannelsEmail(new Assets(Map.of(), null));
-        assertNull(emailChannels.findEmailsAddressId("FOO", "FOO"));
+        assertNull(emailChannels.findEmailsAddressId("FOO"));
     }
 
     @Test
     void nameNotFoundTest() {
         var emailChannels = new ChannelsEmail(new Assets(Map.of("5", new EmailAddress(5, null, "ITM")), null));
-        assertNull(emailChannels.findEmailsAddressId("FOO", null));
+        assertNull(emailChannels.findEmailsAddressId("FOO"));
     }
 
     @Test
     void organizationalUnitIgnoreCaseFoundTest() {
         var emailChannels = new ChannelsEmail(new Assets(Map.of("5", new EmailAddress(5, 1, "ItM"), "6", new EmailAddress(6, 2, "FOO")), Map.of(1, new Channel(1, true), 2, new Channel(2, true))));
-        assertEquals(Integer.valueOf(5), emailChannels.findEmailsAddressId("iTM", "lHM"));
+        assertEquals(Integer.valueOf(5), emailChannels.findEmailsAddressId("iTM"));
     }
 
 
     @Test
     void standardIgnoreCaseFoundTest() {
         var emailChannels = new ChannelsEmail(new Assets(Map.of("5", new EmailAddress(5, 1, "FOO"), "6", new EmailAddress(6, 2, "LhM")), Map.of(1, new Channel(1, true), 2, new Channel(2, true))));
-        assertEquals(Integer.valueOf(6), emailChannels.findEmailsAddressId("iTM", "lHM"));
+        assertEquals(Integer.valueOf(6), emailChannels.findEmailsAddressId("LhM"));
     }
 }
